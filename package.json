@@ -1,0 +1,14 @@
+{
+  "name": "sau-portal",
+  "private": true,
+  "version": "1.0.0",
+  "description": "SAU Enterprise portal page (HTML + Tailwind v4), from Figma 'Portal / Desktop SAU V2 Soft'",
+  "scripts": {
+    "build": "tailwindcss -i src/input.css -o styles.css --minify",
+    "dev": "tailwindcss -i src/input.css -o styles.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.0",
+    "tailwindcss": "^4.1.0"
+  }
+}

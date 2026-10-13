@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SAU Enterprise · Ruang Kerja Digital</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Compiled Tailwind v4 (source: src/input.css) -->
+  <link rel="stylesheet" href="styles.css">
+  <script src="main.js" defer></script>
+</head>
+<body class="font-sans antialiased">
+
+<!-- Figma: "Portal / Desktop SAU V2 Soft" (64:912) -->
+<div class="page-bg relative isolate min-h-screen overflow-hidden">
+  <div class="page-blobs" aria-hidden="true">
+    <div class="page-blobs__frame">
+      <span class="blob blob--biru"></span>
+      <span class="blob blob--lavender"></span>
+      <span class="blob blob--persik"></span>
+      <span class="blob blob--mint"></span>
+    </div>
+  </div>
+
+  <!-- Navbar (64:917) -->
+  <header class="relative z-30 px-5 pb-2 pt-6 md:px-10">
+    <div class="mx-auto flex max-w-[1200px] items-center justify-between gap-3">
+      <a href="#" class="flex shrink-0 items-center gap-3.5">
+        <img src="assets/logo-sau.png" width="92" height="40" alt="SAU · PT Siaga Abdi Utama">
+        <span class="hidden h-[22px] w-px bg-line sm:block" aria-hidden="true"></span>
+        <span class="hidden text-[14px] font-semibold leading-[normal] text-muted sm:block">Ruang Kerja Digital</span>
+      </a>
+
+      <!-- On phones the dropdowns anchor to this nav (full width); from sm up, to their own button. -->
+      <nav class="relative flex items-center gap-2 sm:gap-3" aria-label="Akun">
+
+        <!-- Notifikasi -->
+        <div class="sm:relative" data-menu>
+          <button type="button" data-menu-button aria-expanded="false" aria-controls="menu-notif" aria-label="Notifikasi, 3 baru"
+                  class="glass-pill sb flex size-11 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-white [--sb-a:0.07] [--sb-inset:5px]">
+            <img src="assets/icon-bell.svg" width="18" height="18" alt="">
+          </button>
+          <div id="menu-notif" data-menu-panel class="menu-panel">
+            <div class="flex items-center justify-between px-3 pb-2 pt-1.5">
+              <p class="text-[14px] font-extrabold leading-[normal] text-heading">Notifikasi</p>
+              <span class="rounded-full bg-brand-tint px-2.5 py-[3px] text-[11px] font-bold leading-[normal] text-brand">3 baru</span>
+            </div>
+            <ul role="list" class="flex flex-col gap-0.5">
+              <li>
+                <a href="#" class="menu-item items-start">
+                  <span class="grad-upd-blue flex size-9 shrink-0 items-center justify-center rounded-xl"><img src="assets/update-zap.svg" width="18" height="18" alt=""></span>
+                  <span class="flex min-w-0 flex-col gap-[3px]">
+                    <span class="text-[13px] font-bold leading-[18px]">MySAU v2.4: pengajuan cuti lebih cepat</span>
+                    <span class="text-[11px] font-medium text-muted">Pembaruan · 11 Okt 2026</span>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="menu-item items-start">
+                  <span class="grad-upd-orange flex size-9 shrink-0 items-center justify-center rounded-xl"><img src="assets/update-shield.svg" width="18" height="18" alt=""></span>
+                  <span class="flex min-w-0 flex-col gap-[3px]">
+                    <span class="text-[13px] font-bold leading-[18px]">Pemeliharaan SAUpay akhir pekan ini</span>
+                    <span class="text-[11px] font-medium text-muted">Pemeliharaan · 10 Okt 2026</span>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="menu-item items-start">
+                  <span class="grad-upd-teal flex size-9 shrink-0 items-center justify-center rounded-xl"><img src="assets/update-plane.svg" width="18" height="18" alt=""></span>
+                  <span class="flex min-w-0 flex-col gap-[3px]">
+                    <span class="text-[13px] font-bold leading-[18px]">Kebijakan perjalanan dinas terbaru</span>
+                    <span class="text-[11px] font-medium text-muted">Kebijakan · 08 Okt 2026</span>
+                  </span>
+                </a>
+              </li>
+            </ul>
+            <a href="#berita" class="mt-1 flex items-center justify-center gap-1.5 rounded-[14px] px-3 py-2.5 text-[13px] font-bold leading-[normal] text-brand transition-colors hover:bg-brand-soft/55">
+              Lihat semua pembaruan
+              <img src="assets/icon-arrow-sm-blue.svg" width="14" height="14" alt="">
+            </a>
+          </div>
+        </div>
+
+        <!-- Organisasi -->
+        <div class="sm:relative" data-menu>
+          <button type="button" data-menu-button aria-expanded="false" aria-controls="menu-org" aria-label="Organisasi: PT Siaga Abdi Utama"
+                  class="glass-pill sb flex items-center gap-2.5 rounded-full py-1.5 pl-2 pr-3.5 transition-colors hover:bg-white [--sb-a:0.07] [--sb-inset:5px]">
+            <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-soft">
+              <img src="assets/icon-building.svg" width="16" height="16" alt="">
+            </span>
+            <span class="hidden whitespace-nowrap text-[13px] font-semibold leading-[normal] text-heading lg:inline">PT Siaga Abdi Utama</span>
+            <img src="assets/icon-chevron-down.svg" width="16" height="16" alt="">
+          </button>
+          <div id="menu-org" data-menu-panel class="menu-panel [--menu-w:19rem]">
+            <p class="px-3 pb-1.5 pt-1.5 text-[11px] font-bold uppercase leading-[normal] tracking-[0.06em] text-subtle">Organisasi Anda</p>
+            <a href="#" aria-current="true" class="menu-item">
+              <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft"><img src="assets/icon-building.svg" width="16" height="16" alt=""></span>
+              <span class="flex min-w-0 flex-1 flex-col gap-[3px]">
+                <span class="font-bold">PT Siaga Abdi Utama</span>
+                <span class="text-[11px] font-medium text-muted">6 aplikasi tersedia</span>
+              </span>
+              <span class="rounded-full bg-success-soft px-2.5 py-[3px] text-[11px] font-bold text-success-ink">Aktif</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Profil -->
+        <div class="sm:relative" data-menu>
+          <button type="button" data-menu-button aria-expanded="false" aria-controls="menu-profile" aria-label="Menu profil: Reza Oktovian Siregar"
+                  class="glass-pill sb flex items-center gap-2.5 rounded-full py-1.5 pl-1.5 pr-3.5 transition-colors hover:bg-white [--sb-a:0.07] [--sb-inset:5px]">
+            <span class="grad-avatar flex size-8 shrink-0 items-center justify-center rounded-full text-[12px] font-extrabold leading-[normal] text-white">RS</span>
+            <span class="hidden flex-col items-start whitespace-nowrap leading-[normal] md:flex">
+              <span class="text-[13px] font-bold text-heading">Reza Oktovian Siregar</span>
+              <span class="text-[11px] font-medium text-subtle">Karyawan</span>
+            </span>
+            <img src="assets/icon-chevron-down.svg" width="16" height="16" alt="">
+          </button>
+          <div id="menu-profile" data-menu-panel class="menu-panel [--menu-w:17rem]">
+            <div class="flex items-center gap-3 px-3 pb-3 pt-2">
+              <span class="grad-avatar flex size-10 shrink-0 items-center justify-center rounded-full text-[13px] font-extrabold text-white">RS</span>
+              <span class="flex min-w-0 flex-col gap-[2px] leading-[normal]">
+                <span class="text-[13px] font-bold text-heading">Reza Oktovian Siregar</span>
+                <span class="text-[11px] font-medium text-subtle">Karyawan · PT Siaga Abdi Utama</span>
+              </span>
+            </div>
+            <div class="mx-2 mb-1 h-px bg-line"></div>
+            <a href="#" class="menu-item">Profil Saya</a>
+            <a href="#" class="menu-item">Pengaturan Akun</a>
+            <a href="#" class="menu-item">Pusat Bantuan</a>
+            <div class="mx-2 my-1 h-px bg-line"></div>
+            <a href="#" class="menu-item text-[#d6361f]">Keluar</a>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero (64:944) -->
+    <section class="px-5 pt-6 md:px-10" aria-labelledby="hero-title">
+      <div class="hero-card stroke-15 sb mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-8 rounded-[32px] px-[19.5px] py-[33.5px] [--sb-a:0.09] sm:rounded-[44px] sm:px-[41.5px] sm:py-[41.5px] lg:flex-row lg:gap-6 xl:gap-0 xl:py-[57.5px] xl:pl-[65.5px] xl:pr-[49.5px]">
+
+        <!-- Konten (64:946) -->
+        <div class="flex w-full flex-col items-start gap-5 lg:w-auto lg:min-w-0 lg:flex-1 xl:w-[540px] xl:flex-none">
+          <p class="hero-rise flex items-center gap-2 rounded-full bg-success-soft py-[7px] pl-3 pr-3.5 text-[12px] font-bold leading-[normal] text-success-ink [--d:0]">
+            <span class="relative flex size-2 shrink-0">
+              <span class="absolute inset-0 rounded-full bg-[#4db67e] opacity-60 motion-safe:animate-ping"></span>
+              <img class="relative" src="assets/status-dot.svg" width="8" height="8" alt="">
+            </span>
+            Ruang kerja Anda sudah siap
+          </p>
+
+          <h1 id="hero-title" class="flex flex-col gap-[2px] text-[34px] font-extrabold leading-[42px] tracking-[-1.4px] text-heading sm:text-[48px] sm:leading-[58px] lg:text-[42px] lg:leading-[52px] xl:whitespace-nowrap xl:text-[48px] xl:leading-[58px]">
+            <span class="hero-rise [--d:1]">Selamat datang di</span>
+            <span class="hero-rise [--d:2]"><span class="text-brand">SAU Enterprise</span>, Reza <span class="wave" role="img" aria-label="melambaikan tangan">👋</span></span>
+          </h1>
+
+          <p class="hero-rise max-w-[520px] text-[16px] leading-[26px] text-muted [--d:3] sm:text-[17px] sm:leading-[27px]">
+            Kelola berbagai kebutuhan bisnis Anda melalui satu platform.
+          </p>
+
+          <form role="search" action="#" id="search-form"
+                class="hero-rise flex h-[60px] w-full max-w-[540px] items-center gap-3 rounded-[22px] border border-line bg-white py-2 pl-4 pr-2 shadow-[0_10px_30px_-6px_rgb(51_77_140/0.08)] transition-[border-color,box-shadow] duration-200 [--d:4] focus-within:border-brand/40 focus-within:shadow-[0_14px_34px_-8px_rgb(9_87_195/0.22)] sm:pl-[22px]">
+            <img src="assets/icon-search.svg" width="20" height="20" alt="">
+            <label for="q" class="sr-only">Cari aplikasi, alat, atau fitur</label>
+            <input id="q" name="q" type="search" autocomplete="off" enterkeyhint="search" placeholder="Cari aplikasi, alat, atau fitur..."
+                   class="min-w-0 flex-1 bg-transparent text-[15px] leading-[normal] text-heading outline-none placeholder:text-subtle">
+            <kbd class="hidden rounded-lg bg-kbd px-2 py-[3px] font-sans text-[12px] font-bold leading-[normal] text-subtle sm:block" title="Tekan / untuk mencari">/</kbd>
+            <button type="submit" class="shrink-0 rounded-2xl bg-brand px-[22px] py-3 text-[14px] font-bold leading-[normal] text-white transition-colors hover:bg-[#0849a6] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">Cari</button>
+          </form>
+
+          <div class="hero-rise flex flex-wrap items-center gap-2 [--d:5]">
+            <span class="text-[13px] font-semibold leading-[normal] text-subtle">Sering dicari:</span>
+            <button type="button" data-quick="MySAU" class="rounded-full border border-line bg-white/80 px-3.5 py-1.5 text-[13px] font-semibold leading-[normal] text-muted transition-colors hover:bg-white hover:text-heading">MySAU</button>
+            <button type="button" data-quick="Travel" class="rounded-full border border-line bg-white/80 px-3.5 py-1.5 text-[13px] font-semibold leading-[normal] text-muted transition-colors hover:bg-white hover:text-heading">Travel</button>
+            <button type="button" data-quick="Keuangan" class="rounded-full border border-line bg-white/80 px-3.5 py-1.5 text-[13px] font-semibold leading-[normal] text-muted transition-colors hover:bg-white hover:text-heading">Keuangan</button>
+            <button type="button" data-quick="Operasional" class="rounded-full border border-line bg-white/80 px-3.5 py-1.5 text-[13px] font-semibold leading-[normal] text-muted transition-colors hover:bg-white hover:text-heading">Operasional</button>
+          </div>
+        </div>
+
+        <!-- Orbit Ekosistem (64:973): scales to fit, every app tile is a link -->
+        <nav aria-label="Ekosistem aplikasi" class="orbit-fit w-full max-w-[440px] shrink-0 lg:w-[42%] xl:w-[440px]">
+          <div class="orbit" data-orbit>
+            <div class="orbit-layer [--depth:0.25]" aria-hidden="true">
+              <img class="orbit-ring absolute left-[70px] top-[40px]" src="assets/orbit-ring.svg" width="300" height="300" alt="">
+            </div>
+            <div class="orbit-layer [--depth:0.5]" aria-hidden="true">
+              <span class="orbit-halo"></span>
+              <span class="orbit-halo"></span>
+              <img class="orbit-disc absolute left-[120px] top-[90px]" src="assets/orbit-disc.svg" width="200" height="200" alt="">
+            </div>
+            <div class="orbit-layer [--depth:0.8]" aria-hidden="true">
+              <div class="orbit-avatar absolute left-[161px] top-[96px] h-[190px] w-[112px]">
+                <img class="absolute left-0 top-[38px]" src="assets/avatar-body.png" width="112" height="152" alt="">
+                <img class="absolute left-0 top-0" src="assets/avatar-head.png" width="112" height="160" alt="">
+              </div>
+            </div>
+
+            <a href="#" class="orbit-app left-[190px] top-[10px] [--i:0]">
+              <span class="orbit-bob">
+                <span class="orbit-tile"><span class="grad-moover"><img src="assets/orbit-car.svg" width="22" height="22" alt=""></span></span>
+                <span class="orbit-label orbit-label--side">Moover</span>
+              </span>
+            </a>
+            <a href="#" class="orbit-app left-[319.9px] top-[85px] [--i:1]">
+              <span class="orbit-bob">
+                <span class="orbit-tile"><span class="grad-patrol"><img src="assets/orbit-shield.svg" width="22" height="22" alt=""></span></span>
+                <span class="orbit-label orbit-label--top">Digital Patrol</span>
+              </span>
+            </a>
+            <a href="#" class="orbit-app left-[319.9px] top-[235px] [--i:2]">
+              <span class="orbit-bob">
+                <span class="orbit-tile"><span class="grad-travel"><img src="assets/orbit-plane.svg" width="22" height="22" alt=""></span></span>
+                <span class="orbit-label orbit-label--bottom">SAU Travel</span>
+              </span>
+            </a>
+            <a href="#" class="orbit-app left-[190px] top-[310px] [--i:3]">
+              <span class="orbit-bob">
+                <span class="orbit-tile"><span class="grad-saupay"><img src="assets/orbit-wallet.svg" width="22" height="22" alt=""></span></span>
+                <span class="orbit-label orbit-label--side">SAUpay</span>
+              </span>
+            </a>
+            <a href="#" class="orbit-app left-[60.1px] top-[235px] [--i:4]">
+              <span class="orbit-bob">
+                <span class="orbit-tile"><span class="grad-fintera"><img src="assets/orbit-landmark.svg" width="22" height="22" alt=""></span></span>
+                <span class="orbit-label orbit-label--bottom">Fintera</span>
+              </span>
+            </a>
+            <a href="#" class="orbit-app left-[60.1px] top-[85px] [--i:5]">
+              <span class="orbit-bob">
+                <span class="orbit-tile"><span class="grad-mysau"><img src="assets/orbit-users.svg" width="22" height="22" alt=""></span></span>
+                <span class="orbit-label orbit-label--top">MySAU</span>
+              </span>
+            </a>
+          </div>
+        </nav>
+      </div>
+    </section>
+
+    <!-- Berita & Update Terbaru (64:1326) -->
+    <section id="berita" class="scroll-mt-4 px-5 pt-12 md:px-10" aria-labelledby="berita-title">
+      <div class="mx-auto flex max-w-[1200px] flex-col gap-5">
+        <div class="flex flex-wrap items-end justify-between gap-3">
+          <div class="flex flex-col items-start gap-1">
+            <div class="flex flex-wrap items-center gap-3">
+              <h2 id="berita-title" class="text-[26px] font-extrabold leading-[normal] text-ink sm:text-[30px]">Berita &amp; Update Terbaru</h2>
+              <span class="rounded-full bg-brand-tint px-2.5 py-[3px] text-[12px] font-bold leading-[normal] text-brand">3 baru</span>
+            </div>
+            <p class="text-[14px] leading-[normal] text-body">Pengumuman dan pembaruan terbaru dari ekosistem SAU Enterprise.</p>
+          </div>
+          <a href="#" class="group flex items-center gap-1.5 text-[13px] font-bold leading-[normal] text-brand">
+            Lihat semua
+            <img class="transition-transform group-hover:translate-x-0.5" src="assets/icon-arrow-sm-blue.svg" width="14" height="14" alt="">
+          </a>
+        </div>
+
+        <div class="flex flex-col gap-5 xl:h-[280px] xl:flex-row">
+          <!-- Banner / Berita Utama (64:1339): carousel -->
+          <article data-carousel aria-roledescription="carousel" aria-label="Berita utama"
+                   class="banner relative flex min-h-[280px] flex-col gap-3.5 overflow-hidden rounded-[30px] px-6 pb-[26px] pt-7 text-white sm:rounded-[36px] sm:px-9 xl:min-h-0 xl:flex-1">
+            <img class="pointer-events-none absolute right-0 top-0" src="assets/banner-ring.svg" width="290" height="280" alt="">
+            <img class="pointer-events-none absolute right-0 top-[5px]" src="assets/banner-glow.svg" width="215" height="230" alt="">
+            <span class="banner-ikon pointer-events-none absolute right-5 top-5 flex size-28 origin-top-right scale-[0.5715] items-center justify-center rounded-[36px] lg:right-[44px] lg:top-16 lg:scale-100" aria-hidden="true">
+              <img src="assets/icon-megaphone.svg" width="52" height="52" alt="">
+            </span>
+
+            <div class="relative grid touch-pan-y" data-slides aria-live="off">
+              <div class="slide col-start-1 row-start-1 flex flex-col gap-3.5" data-slide data-active data-href="#"
+                   role="group" aria-roledescription="slide" aria-label="1 dari 3">
+                <div class="flex flex-wrap items-center gap-2.5 max-sm:pr-16">
+                  <span class="banner-glass flex items-center gap-1.5 rounded-full px-3 py-[5px] text-[12px] font-bold leading-[normal]">
+                    <img src="assets/icon-bell-sm-white.svg" width="12" height="12" alt="">
+                    Pengumuman
+                  </span>
+                  <time datetime="2026-10-12" class="text-[12px] font-medium leading-[normal] text-white/80">12 Oktober 2026</time>
+                </div>
+                <h3 class="max-w-[500px] text-[24px] font-extrabold leading-[32px] max-sm:pr-16 sm:text-[28px] sm:leading-[36px]">SAUpay kini mendukung pembayaran QR di seluruh unit kerja</h3>
+                <p class="max-w-[470px] text-[14px] leading-[22px] text-white/82">Bayar kebutuhan operasional lebih cepat dan aman langsung dari aplikasi SAUpay, tanpa antre dan tanpa uang tunai.</p>
+              </div>
+
+              <div class="slide col-start-1 row-start-1 flex flex-col gap-3.5" data-slide data-href="#" inert aria-hidden="true"
+                   role="group" aria-roledescription="slide" aria-label="2 dari 3">
+                <div class="flex flex-wrap items-center gap-2.5 max-sm:pr-16">
+                  <span class="banner-glass flex items-center gap-1.5 rounded-full px-3 py-[5px] text-[12px] font-bold leading-[normal]">
+                    <img src="assets/update-zap.svg" width="12" height="12" alt="">
+                    Pembaruan
+                  </span>
+                  <time datetime="2026-10-11" class="text-[12px] font-medium leading-[normal] text-white/80">11 Oktober 2026</time>
+                </div>
+                <h3 class="max-w-[500px] text-[24px] font-extrabold leading-[32px] max-sm:pr-16 sm:text-[28px] sm:leading-[36px]">MySAU v2.4: pengajuan cuti kini lebih cepat dan praktis</h3>
+                <p class="max-w-[470px] text-[14px] leading-[22px] text-white/82">Ajukan, pantau, dan setujui cuti langsung dari MySAU dengan alur persetujuan yang lebih singkat.</p>
+              </div>
+
+              <div class="slide col-start-1 row-start-1 flex flex-col gap-3.5" data-slide data-href="#" inert aria-hidden="true"
+                   role="group" aria-roledescription="slide" aria-label="3 dari 3">
+                <div class="flex flex-wrap items-center gap-2.5 max-sm:pr-16">
+                  <span class="banner-glass flex items-center gap-1.5 rounded-full px-3 py-[5px] text-[12px] font-bold leading-[normal]">
+                    <img src="assets/update-plane.svg" width="12" height="12" alt="">
+                    Kebijakan
+                  </span>
+                  <time datetime="2026-10-08" class="text-[12px] font-medium leading-[normal] text-white/80">08 Oktober 2026</time>
+                </div>
+                <h3 class="max-w-[500px] text-[24px] font-extrabold leading-[32px] max-sm:pr-16 sm:text-[28px] sm:leading-[36px]">Kebijakan perjalanan dinas terbaru mulai berlaku bulan ini</h3>
+                <p class="max-w-[470px] text-[14px] leading-[22px] text-white/82">Cek ketentuan tiket, akomodasi, dan klaim biaya perjalanan dinas yang kini dikelola lewat SAU Travel.</p>
+              </div>
+            </div>
+
+            <div class="min-h-px flex-[1_0_0]" aria-hidden="true"></div>
+
+            <div class="relative flex w-full flex-wrap items-center justify-between gap-3">
+              <a href="#" data-slide-link class="group flex items-center gap-2 rounded-2xl bg-white py-[11px] pl-5 pr-[18px] text-[14px] font-bold leading-[normal] text-brand shadow-[0_6px_14px_0_rgb(5_26_102/0.2)]">
+                Baca Selengkapnya
+                <img class="transition-transform group-hover:translate-x-0.5" src="assets/icon-arrow-read.svg" width="16" height="16" alt="">
+              </a>
+              <div class="flex items-center gap-3.5">
+                <div class="flex items-center gap-1.5">
+                  <button type="button" data-dot aria-label="Berita 1" aria-current="true" class="relative h-2 w-2 rounded-full bg-white/40 transition-[width,background-color] duration-300 after:absolute after:-inset-2 aria-[current=true]:w-6 aria-[current=true]:bg-white"></button>
+                  <button type="button" data-dot aria-label="Berita 2" aria-current="false" class="relative h-2 w-2 rounded-full bg-white/40 transition-[width,background-color] duration-300 after:absolute after:-inset-2 aria-[current=true]:w-6 aria-[current=true]:bg-white"></button>
+                  <button type="button" data-dot aria-label="Berita 3" aria-current="false" class="relative h-2 w-2 rounded-full bg-white/40 transition-[width,background-color] duration-300 after:absolute after:-inset-2 aria-[current=true]:w-6 aria-[current=true]:bg-white"></button>
+                </div>
+                <button type="button" data-prev aria-label="Berita sebelumnya" class="banner-glass flex size-[34px] items-center justify-center rounded-full transition-colors hover:bg-white/30">
+                  <img src="assets/icon-chevron-left-white.svg" width="16" height="16" alt="">
+                </button>
+                <button type="button" data-next aria-label="Berita berikutnya" class="banner-glass flex size-[34px] items-center justify-center rounded-full transition-colors hover:bg-white/30">
+                  <img src="assets/icon-chevron-right-white.svg" width="16" height="16" alt="">
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Panel / Update Terbaru (64:1371) -->
+          <aside aria-labelledby="update-title"
+                 class="tint-panel--blue stroke-15 sb flex w-full flex-col gap-2.5 rounded-[32px] p-[19.5px] [--tint-angle:146.31deg] xl:h-full xl:w-[420px] xl:shrink-0">
+            <div class="flex items-center justify-between whitespace-nowrap leading-[normal]">
+              <h3 id="update-title" class="text-[16px] font-extrabold text-heading">Update Terbaru</h3>
+              <span class="text-[12px] font-medium text-muted">Terbaru dulu</span>
+            </div>
+            <ul role="list" class="grid gap-2.5 md:grid-cols-3 xl:grid-cols-1">
+              <li>
+                <a href="#" class="flex h-full items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3 py-2.5 transition-colors hover:bg-white">
+                  <span class="grad-upd-blue flex size-10 shrink-0 items-center justify-center rounded-[14px]"><img src="assets/update-zap.svg" width="18" height="18" alt=""></span>
+                  <span class="flex min-w-0 flex-1 flex-col gap-[3px]">
+                    <span class="text-[13px] font-bold leading-[18px] text-heading">MySAU v2.4: pengajuan cuti lebih cepat</span>
+                    <span class="text-[11px] font-medium leading-[normal] text-muted">Pembaruan · 11 Okt 2026</span>
+                  </span>
+                  <img src="assets/icon-chevron-right-gray.svg" width="16" height="16" alt="">
+                </a>
+              </li>
+              <li>
+                <a href="#" class="flex h-full items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3 py-2.5 transition-colors hover:bg-white">
+                  <span class="grad-upd-orange flex size-10 shrink-0 items-center justify-center rounded-[14px]"><img src="assets/update-shield.svg" width="18" height="18" alt=""></span>
+                  <span class="flex min-w-0 flex-1 flex-col gap-[3px]">
+                    <span class="text-[13px] font-bold leading-[18px] text-heading">Pemeliharaan SAUpay akhir pekan ini</span>
+                    <span class="text-[11px] font-medium leading-[normal] text-muted">Pemeliharaan · 10 Okt 2026</span>
+                  </span>
+                  <img src="assets/icon-chevron-right-gray.svg" width="16" height="16" alt="">
+                </a>
+              </li>
+              <li>
+                <a href="#" class="flex h-full items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3 py-2.5 transition-colors hover:bg-white">
+                  <span class="grad-upd-teal flex size-10 shrink-0 items-center justify-center rounded-[14px]"><img src="assets/update-plane.svg" width="18" height="18" alt=""></span>
+                  <span class="flex min-w-0 flex-1 flex-col gap-[3px]">
+                    <span class="text-[13px] font-bold leading-[18px] text-heading">Kebijakan perjalanan dinas terbaru</span>
+                    <span class="text-[11px] font-medium leading-[normal] text-muted">Kebijakan · 08 Okt 2026</span>
+                  </span>
+                  <img src="assets/icon-chevron-right-gray.svg" width="16" height="16" alt="">
+                </a>
+              </li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- Favorit Harian Anda (64:1264) -->
+    <section class="px-5 pt-14 md:px-10" aria-labelledby="favorit-title">
+      <div class="mx-auto flex max-w-[1200px] flex-col gap-5">
+        <div class="flex flex-col items-start gap-1">
+          <h2 id="favorit-title" class="text-[26px] font-extrabold leading-[normal] tracking-[-0.6px] text-ink sm:text-[30px]">Favorit Harian Anda</h2>
+          <p class="text-[14px] leading-[normal] text-body">Aplikasi yang Anda sematkan, selalu hanya satu klik.</p>
+        </div>
+
+        <ul role="list" class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <li>
+            <a href="#" aria-label="Buka MySAU"
+               class="fav-card--mysau group flex h-full min-h-[124px] items-center gap-3.5 overflow-hidden rounded-[28px] border px-[18px] py-4 transition duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+              <span class="tile--glass flex size-[52px] shrink-0 items-center justify-center rounded-2xl">
+                <img src="assets/fav-users.svg" width="24" height="24" alt="">
+              </span>
+              <span class="flex min-w-0 flex-1 flex-col items-start gap-[3px]">
+                <span class="max-w-full truncate rounded-full bg-white/22 px-2.5 py-[3px] text-[11px] font-bold leading-[normal] text-white">SDM &amp; Karyawan</span>
+                <span class="text-[18px] font-extrabold leading-[normal] tracking-[-0.4px] text-white">MySAU</span>
+                <span class="text-[12px] leading-[19px] text-white/85">HRIS berbasis cloud untuk mengelola SDM</span>
+              </span>
+              <img class="shrink-0" src="assets/fav-pin-white.svg" width="14" height="14" alt="Disematkan" title="Disematkan">
+              <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-white">
+                <img class="transition-transform duration-200 group-hover:translate-x-0.5" src="assets/fav-arrow-blue.svg" width="16" height="16" alt="">
+              </span>
+            </a>
+          </li>
+          <li class="fav-shadow-behind">
+            <a href="#" aria-label="Buka Moover"
+               class="fav-card--glass fav-card--moover group flex h-full min-h-[124px] items-center gap-3.5 overflow-hidden rounded-[28px] border px-[18px] py-4 transition duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+              <span class="grad-moover flex size-[52px] shrink-0 items-center justify-center rounded-2xl">
+                <img src="assets/fav-car.svg" width="24" height="24" alt="">
+              </span>
+              <span class="flex min-w-0 flex-1 flex-col items-start gap-[3px]">
+                <span class="max-w-full truncate rounded-full bg-moover-soft px-2.5 py-[3px] text-[11px] font-bold leading-[normal] text-moover-ink">Mobilitas &amp; Operasional</span>
+                <span class="text-[18px] font-extrabold leading-[normal] tracking-[-0.4px] text-ink">Moover</span>
+                <span class="text-[12px] leading-[19px] text-body">Manajemen perjalanan dan operasional pengemudi</span>
+              </span>
+              <img class="shrink-0" src="assets/fav-pin.svg" width="14" height="14" alt="Disematkan" title="Disematkan">
+              <span class="grad-moover flex size-9 shrink-0 items-center justify-center rounded-full">
+                <img class="transition-transform duration-200 group-hover:translate-x-0.5" src="assets/fav-arrow-white.svg" width="16" height="16" alt="">
+              </span>
+            </a>
+          </li>
+          <li class="fav-shadow-behind md:col-span-2 xl:col-span-1">
+            <a href="#" aria-label="Buka SAUpay"
+               class="fav-card--glass fav-card--saupay group flex h-full min-h-[124px] items-center gap-3.5 overflow-hidden rounded-[28px] border px-[18px] py-4 transition duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+              <span class="grad-saupay flex size-[52px] shrink-0 items-center justify-center rounded-2xl">
+                <img src="assets/fav-wallet.svg" width="24" height="24" alt="">
+              </span>
+              <span class="flex min-w-0 flex-1 flex-col items-start gap-[3px]">
+                <span class="max-w-full truncate rounded-full bg-saupay-soft px-2.5 py-[3px] text-[11px] font-bold leading-[normal] text-saupay-ink">Keuangan &amp; Pembayaran</span>
+                <span class="text-[18px] font-extrabold leading-[normal] tracking-[-0.4px] text-ink">SAUpay</span>
+                <span class="text-[12px] leading-[19px] text-body">Pembayaran digital untuk transaksi lebih mudah</span>
+              </span>
+              <img class="shrink-0" src="assets/fav-pin.svg" width="14" height="14" alt="Disematkan" title="Disematkan">
+              <span class="grad-saupay flex size-9 shrink-0 items-center justify-center rounded-full">
+                <img class="transition-transform duration-200 group-hover:translate-x-0.5" src="assets/fav-arrow-white.svg" width="16" height="16" alt="">
+              </span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Jelajahi Semua Aplikasi (64:1086) -->
+    <section id="jelajahi" class="scroll-mt-4 px-5 pt-16 md:px-10" aria-labelledby="jelajahi-title">
+      <div class="mx-auto flex max-w-[1200px] flex-col gap-5">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="flex flex-col items-start gap-1">
+            <div class="flex items-center gap-3">
+              <h2 id="jelajahi-title" class="text-[24px] font-extrabold leading-[normal] tracking-[-0.5px] text-heading sm:text-[28px]">Jelajahi Semua Aplikasi</h2>
+              <span class="rounded-full bg-brand-soft px-2.5 py-[3px] text-[13px] font-bold leading-[normal] text-brand-ink">6</span>
+            </div>
+            <p class="text-[14px] leading-[normal] text-muted">Aplikasi yang tersedia untuk Anda di PT Siaga Abdi Utama.</p>
+          </div>
+
+          <div class="flex items-center gap-2.5">
+            <div role="group" aria-label="Tampilan" class="glass-pill sb flex gap-0.5 rounded-[14px] p-1 [--sb-a:0.07] [--sb-inset:5px]">
+              <button type="button" data-set-view="grid" aria-pressed="true" aria-label="Tampilan kisi"
+                      class="rounded-[10px] px-2.5 py-[7px] transition-colors hover:bg-brand-soft/50 aria-pressed:bg-brand-soft">
+                <img src="assets/icon-grid.svg" width="16" height="16" alt="">
+              </button>
+              <button type="button" data-set-view="list" aria-pressed="false" aria-label="Tampilan daftar"
+                      class="rounded-[10px] px-2.5 py-[7px] transition-colors hover:bg-brand-soft/50 aria-pressed:bg-brand-soft">
+                <img src="assets/icon-list.svg" width="16" height="16" alt="">
+              </button>
+            </div>
+
+            <div class="relative" data-menu>
+              <button type="button" data-menu-button aria-expanded="false" aria-controls="menu-sort"
+                      class="glass-pill sb flex items-center gap-2 whitespace-nowrap rounded-[14px] py-[11px] pl-4 pr-3 text-[13px] font-semibold leading-[normal] text-heading transition-colors hover:bg-white [--sb-a:0.07] [--sb-inset:5px]">
+                <span>Urutkan: <span data-sort-label>Terakhir dibuka</span></span>
+                <img src="assets/icon-chevron-down.svg" width="16" height="16" alt="">
+              </button>
+              <div id="menu-sort" data-menu-panel class="menu-panel [--menu-w:14rem]">
+                <button type="button" data-sort="recent" aria-pressed="true" class="menu-item group justify-between">Terakhir dibuka <span class="size-2 rounded-full bg-brand opacity-0 group-aria-pressed:opacity-100"></span></button>
+                <button type="button" data-sort="az" aria-pressed="false" class="menu-item group justify-between">Nama (A–Z) <span class="size-2 rounded-full bg-brand opacity-0 group-aria-pressed:opacity-100"></span></button>
+                <button type="button" data-sort="za" aria-pressed="false" class="menu-item group justify-between">Nama (Z–A) <span class="size-2 rounded-full bg-brand opacity-0 group-aria-pressed:opacity-100"></span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Kategori (64:1114) -->
+        <div role="toolbar" aria-label="Filter kategori"
+             class="-mx-5 flex items-start gap-2.5 overflow-x-auto px-5 pb-1 [scrollbar-width:none] md:mx-0 md:flex-wrap md:overflow-visible md:px-0 md:pb-0">
+          <button type="button" data-filter="all" aria-pressed="true"
+                  class="shrink-0 whitespace-nowrap rounded-full border border-line bg-white/80 px-4 py-[9px] text-[13px] font-semibold leading-[normal] text-muted transition-colors hover:bg-white aria-pressed:border-0 aria-pressed:bg-brand aria-pressed:font-bold aria-pressed:text-white">Semua · 6</button>
+          <button type="button" data-filter="pinned" aria-pressed="false"
+                  class="shrink-0 whitespace-nowrap rounded-full border border-line bg-white/80 px-4 py-[9px] text-[13px] font-semibold leading-[normal] text-muted transition-colors hover:bg-white aria-pressed:border-0 aria-pressed:bg-brand aria-pressed:font-bold aria-pressed:text-white">Disematkan · 3</button>
+          <button type="button" data-filter="sdm" aria-pressed="false"
+                  class="shrink-0 whitespace-nowrap rounded-full border border-line bg-white/80 px-4 py-[9px] text-[13px] font-semibold leading-[normal] text-muted transition-colors hover:bg-white aria-pressed:border-0 aria-pressed:bg-brand aria-pressed:font-bold aria-pressed:text-white">SDM &amp; Karyawan · 1</button>
+          <button type="button" data-filter="mobilitas" aria-pressed="false"
+                  class="shrink-0 whitespace-nowrap rounded-full border border-line bg-white/80 px-4 py-[9px] text-[13px] font-semibold leading-[normal] text-muted transition-colors hover:bg-white aria-pressed:border-0 aria-pressed:bg-brand aria-pressed:font-bold aria-pressed:text-white">Mobilitas &amp; Operasional · 3</button>
+          <button type="button" data-filter="keuangan" aria-pressed="false"
+                  class="shrink-0 whitespace-nowrap rounded-full border border-line bg-white/80 px-4 py-[9px] text-[13px] font-semibold leading-[normal] text-muted transition-colors hover:bg-white aria-pressed:border-0 aria-pressed:bg-brand aria-pressed:font-bold aria-pressed:text-white">Keuangan &amp; Pembayaran · 2</button>
+        </div>
+
+        <!-- Search result bar (shown after searching from the hero) -->
+        <div id="search-status" hidden role="status"
+             class="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-[20px] border border-white bg-white/80 px-4 py-3 text-[13px] leading-[normal] text-muted">
+          <img src="assets/icon-search.svg" width="20" height="20" alt="">
+          <span>Hasil untuk <strong class="font-bold text-heading">“<span data-search-term></span>”</strong> · <span data-search-count></span></span>
+          <button type="button" data-clear-search class="ml-auto rounded-full px-3 py-1.5 text-[13px] font-bold text-brand transition-colors hover:bg-brand-soft/60">Hapus pencarian</button>
+        </div>
+
+        <div id="no-results" hidden class="stroke-15 flex flex-col items-center gap-2 rounded-[32px] bg-white/70 px-6 py-12 text-center">
+          <p class="text-[16px] font-extrabold leading-[normal] text-heading">Aplikasi tidak ditemukan</p>
+          <p class="max-w-[360px] text-[13px] leading-[20px] text-muted">Coba kata kunci lain, atau ajukan akses ke aplikasi yang Anda butuhkan.</p>
+          <button type="button" data-clear-search class="mt-2 rounded-2xl bg-brand px-5 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-[#0849a6]">Tampilkan semua aplikasi</button>
+        </div>
+
+        <!-- Panel Kategori (64:1125) -->
+        <div id="app-panels" data-view="grid" class="grid items-start gap-5 md:grid-cols-2 xl:grid-cols-3">
+
+          <!-- Panel / SDM & Karyawan (64:1126) -->
+          <section data-category="sdm" aria-labelledby="cat-sdm"
+                   class="tint-panel--blue stroke-15 sb flex flex-col gap-4 rounded-[32px] p-[19.5px] sm:p-[23.5px]">
+            <div class="flex items-center gap-3">
+              <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-white"><img src="assets/panel-users.svg" width="20" height="20" alt=""></span>
+              <div class="flex min-w-0 flex-1 flex-col gap-[2px]">
+                <h3 id="cat-sdm" class="text-[16px] font-extrabold leading-[normal] text-brand-ink">SDM &amp; Karyawan</h3>
+                <p class="text-[12px] leading-[18px] text-muted">Layanan karyawan dan pengelolaan SDM.</p>
+              </div>
+            </div>
+            <ul role="list" class="flex flex-col gap-4">
+              <li data-app="mysau" data-name="MySAU" data-order="1" data-pinned="true" data-keywords="hris sdm karyawan cuti absensi hr">
+                <a href="#" class="group flex items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3.5 py-3 transition-colors hover:bg-white">
+                  <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-brand-soft"><img src="assets/app-users.svg" width="20" height="20" alt=""></span>
+                  <span class="flex min-w-0 flex-1 flex-col gap-px leading-[normal]">
+                    <span class="text-[14px] font-extrabold text-heading">MySAU</span>
+                    <span class="text-[11px] text-muted">Sistem informasi SDM berbasis cloud</span>
+                  </span>
+                  <span class="flex size-[30px] shrink-0 items-center justify-center rounded-full bg-brand-soft"><img class="transition-transform group-hover:translate-x-0.5" src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </a>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Panel / Mobilitas & Operasional (64:1151) -->
+          <section data-category="mobilitas" aria-labelledby="cat-mobilitas"
+                   class="tint-panel--teal stroke-15 sb flex flex-col gap-4 rounded-[32px] p-[19.5px] sm:p-[23.5px]">
+            <div class="flex items-center gap-3">
+              <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-white"><img src="assets/panel-car.svg" width="20" height="20" alt=""></span>
+              <div class="flex min-w-0 flex-1 flex-col gap-[2px]">
+                <h3 id="cat-mobilitas" class="text-[16px] font-extrabold leading-[normal] text-teal-ink">Mobilitas &amp; Operasional</h3>
+                <p class="text-[12px] leading-[18px] text-muted">Alat operasional, mobilitas, dan aktivitas lapangan.</p>
+              </div>
+            </div>
+            <ul role="list" class="flex flex-col gap-4">
+              <li data-app="moover" data-name="Moover" data-order="2" data-pinned="true" data-keywords="perjalanan pengemudi driver kendaraan mobil">
+                <a href="#" class="group flex items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3.5 py-3 transition-colors hover:bg-white">
+                  <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-tint-teal"><img src="assets/app-car.svg" width="20" height="20" alt=""></span>
+                  <span class="flex min-w-0 flex-1 flex-col gap-px leading-[normal]">
+                    <span class="text-[14px] font-extrabold text-heading">Moover</span>
+                    <span class="text-[11px] text-muted">Perjalanan &amp; operasional pengemudi</span>
+                  </span>
+                  <span class="flex size-[30px] shrink-0 items-center justify-center rounded-full bg-tint-teal"><img class="transition-transform group-hover:translate-x-0.5" src="assets/arrow-car.svg" width="14" height="14" alt=""></span>
+                </a>
+              </li>
+              <li data-app="digital-patrol" data-name="Digital Patrol" data-order="3" data-keywords="keamanan security satpam patroli petugas">
+                <a href="#" class="group flex items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3.5 py-3 transition-colors hover:bg-white">
+                  <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-tint-green"><img src="assets/app-shield.svg" width="20" height="20" alt=""></span>
+                  <span class="flex min-w-0 flex-1 flex-col gap-px leading-[normal]">
+                    <span class="text-[14px] font-extrabold text-heading">Digital Patrol</span>
+                    <span class="text-[11px] text-muted">Pemantauan petugas keamanan</span>
+                  </span>
+                  <span class="flex size-[30px] shrink-0 items-center justify-center rounded-full bg-tint-green"><img class="transition-transform group-hover:translate-x-0.5" src="assets/arrow-shield.svg" width="14" height="14" alt=""></span>
+                </a>
+              </li>
+              <li data-app="sau-travel" data-name="SAU Travel" data-order="4" data-keywords="travel perjalanan dinas tiket hotel">
+                <a href="#" class="group flex items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3.5 py-3 transition-colors hover:bg-white">
+                  <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-tint-sky"><img src="assets/app-plane.svg" width="20" height="20" alt=""></span>
+                  <span class="flex min-w-0 flex-1 flex-col gap-px leading-[normal]">
+                    <span class="text-[14px] font-extrabold text-heading">SAU Travel</span>
+                    <span class="text-[11px] text-muted">Layanan perjalanan dinas</span>
+                  </span>
+                  <span class="flex size-[30px] shrink-0 items-center justify-center rounded-full bg-tint-sky"><img class="transition-transform group-hover:translate-x-0.5" src="assets/arrow-plane.svg" width="14" height="14" alt=""></span>
+                </a>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Panel / Keuangan & Pembayaran (64:1199) -->
+          <section data-category="keuangan" aria-labelledby="cat-keuangan"
+                   class="tint-panel--orange stroke-15 sb flex flex-col gap-4 rounded-[32px] p-[19.5px] sm:p-[23.5px]">
+            <div class="flex items-center gap-3">
+              <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-white"><img src="assets/panel-wallet.svg" width="20" height="20" alt=""></span>
+              <div class="flex min-w-0 flex-1 flex-col gap-[2px]">
+                <h3 id="cat-keuangan" class="text-[16px] font-extrabold leading-[normal] text-orange-ink">Keuangan &amp; Pembayaran</h3>
+                <p class="text-[12px] leading-[18px] text-muted">Transaksi, pembayaran, dan layanan keuangan.</p>
+              </div>
+            </div>
+            <ul role="list" class="flex flex-col gap-4">
+              <li data-app="saupay" data-name="SAUpay" data-order="5" data-pinned="true" data-keywords="pembayaran payment qr transaksi">
+                <a href="#" class="group flex items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3.5 py-3 transition-colors hover:bg-white">
+                  <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-tint-orange"><img src="assets/app-wallet.svg" width="20" height="20" alt=""></span>
+                  <span class="flex min-w-0 flex-1 flex-col gap-px leading-[normal]">
+                    <span class="text-[14px] font-extrabold text-heading">SAUpay</span>
+                    <span class="text-[11px] text-muted">Pembayaran digital</span>
+                  </span>
+                  <span class="flex size-[30px] shrink-0 items-center justify-center rounded-full bg-tint-orange"><img class="transition-transform group-hover:translate-x-0.5" src="assets/arrow-wallet.svg" width="14" height="14" alt=""></span>
+                </a>
+              </li>
+              <li data-app="fintera" data-name="Fintera" data-order="6" data-keywords="finance keuangan digital">
+                <a href="#" class="group flex items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3.5 py-3 transition-colors hover:bg-white">
+                  <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-tint-violet"><img src="assets/app-landmark.svg" width="20" height="20" alt=""></span>
+                  <span class="flex min-w-0 flex-1 flex-col gap-px leading-[normal]">
+                    <span class="text-[14px] font-extrabold text-heading">Fintera</span>
+                    <span class="text-[11px] text-muted">Layanan keuangan digital</span>
+                  </span>
+                  <span class="flex size-[30px] shrink-0 items-center justify-center rounded-full bg-tint-violet"><img class="transition-transform group-hover:translate-x-0.5" src="assets/arrow-landmark.svg" width="14" height="14" alt=""></span>
+                </a>
+              </li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ajukan akses (64:1236) -->
+    <section class="px-5 pt-10 md:px-10" aria-labelledby="ajukan-title">
+      <div class="ajukan-panel mx-auto flex max-w-[1200px] flex-col items-start gap-[18px] rounded-[32px] px-[21.5px] py-[23.5px] sm:flex-row sm:items-center sm:pl-[29.5px] sm:pr-[25.5px]">
+        <span class="flex size-[52px] shrink-0 items-center justify-center rounded-[18px] bg-white">
+          <img src="assets/icon-circle-plus.svg" width="24" height="24" alt="">
+        </span>
+        <div class="flex min-w-0 flex-1 flex-col gap-[2px] leading-[normal]">
+          <h2 id="ajukan-title" class="text-[17px] font-extrabold tracking-[-0.2px] text-heading">Butuh aplikasi lain untuk kebutuhan bisnis Anda?</h2>
+          <p class="text-[13px] text-muted">Ajukan akses ke administrator organisasi Anda.</p>
+        </div>
+        <a href="#" class="group flex w-full shrink-0 items-center justify-center gap-2 rounded-2xl bg-brand py-[13px] pl-[22px] pr-5 text-[14px] font-bold leading-[normal] text-white transition-colors hover:bg-[#0849a6] sm:w-auto">
+          Ajukan Akses
+          <img class="transition-transform group-hover:translate-x-0.5" src="assets/icon-arrow-white-cta.svg" width="16" height="16" alt="">
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer (64:1251) -->
+  <footer class="px-5 pb-9 pt-12 md:px-10">
+    <div class="mx-auto flex max-w-[1200px] flex-col gap-6 md:flex-row md:items-center md:justify-between">
+      <div class="flex items-center gap-3">
+        <img src="assets/logo-sau.png" width="92" height="40" alt="SAU · PT Siaga Abdi Utama">
+        <div class="flex flex-col gap-[2px] leading-[normal]">
+          <p class="text-[13px] font-extrabold text-heading">Satu SAU. Satu Ruang Kerja Digital.</p>
+          <p class="flex flex-wrap gap-1 text-[12px]">
+            <span class="text-subtle">© 2026</span>
+            <span class="text-link">PT Siaga Abdi Utama</span>
+            <span class="text-subtle">· SAU Enterprise</span>
+          </p>
+        </div>
+      </div>
+      <nav aria-label="Tautan footer" class="flex flex-wrap gap-x-[22px] gap-y-2 text-[12px] font-medium leading-[normal] text-muted">
+        <a href="#" class="hover:text-heading">Pusat Bantuan</a>
+        <a href="#" class="hover:text-heading">Kebijakan Privasi</a>
+        <span>Versi 1.0</span>
+      </nav>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>
