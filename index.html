@@ -2,12 +2,14 @@
 <html lang="id">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>SAU Enterprise · Ruang Kerja Digital</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Inter ExtraBold, subset to the "DIGITAL PATROL" wordmark only -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@800&text=DIGITALPATROL&display=swap" rel="stylesheet">
 
   <!-- Compiled Tailwind v4 (source: src/input.css) -->
   <link rel="stylesheet" href="styles.css">
@@ -101,7 +103,7 @@
               <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-soft"><img src="assets/icon-building.svg" width="16" height="16" alt=""></span>
               <span class="flex min-w-0 flex-1 flex-col gap-[3px]">
                 <span class="font-bold">PT Siaga Abdi Utama</span>
-                <span class="text-[11px] font-medium text-muted">6 aplikasi tersedia</span>
+                <span class="text-[11px] font-medium text-muted"><span data-app-total>16</span> aplikasi tersedia</span>
               </span>
               <span class="rounded-full bg-success-soft px-2.5 py-[3px] text-[11px] font-bold text-success-ink">Aktif</span>
             </a>
@@ -186,51 +188,57 @@
         <nav aria-label="Ekosistem aplikasi" class="orbit-fit w-full max-w-[440px] shrink-0 lg:w-[42%] xl:w-[440px]">
           <div class="orbit" data-orbit>
             <div class="orbit-layer [--depth:0.25]" aria-hidden="true">
-              <img class="orbit-ring absolute left-[70px] top-[40px]" src="assets/orbit-ring.svg" width="300" height="300" alt="">
+              <img class="orbit-ring absolute left-[70px] top-[40px]" src="assets/orbit-ring.png" width="300" height="300" alt="">
             </div>
-            <div class="orbit-layer [--depth:0.5]" aria-hidden="true">
-              <span class="orbit-halo"></span>
-              <span class="orbit-halo"></span>
-              <img class="orbit-disc absolute left-[120px] top-[90px]" src="assets/orbit-disc.svg" width="200" height="200" alt="">
-            </div>
-            <div class="orbit-layer [--depth:0.8]" aria-hidden="true">
-              <div class="orbit-avatar absolute left-[161px] top-[96px] h-[190px] w-[112px]">
-                <img class="absolute left-0 top-[38px]" src="assets/avatar-body.png" width="112" height="152" alt="">
-                <img class="absolute left-0 top-0" src="assets/avatar-head.png" width="112" height="160" alt="">
+
+            <!-- Disc kaca + resonance waves + "Sambutan Profesional" (107:955, masked to the disc) -->
+            <div class="orbit-layer [--depth:0.5]">
+              <span class="orbit-wave [--w:0]" aria-hidden="true"></span>
+              <span class="orbit-wave [--w:1]" aria-hidden="true"></span>
+              <span class="orbit-wave [--w:2]" aria-hidden="true"></span>
+              <img class="orbit-disc absolute left-[120px] top-[90px]" src="assets/orbit-disc.svg" width="200" height="200" alt="" aria-hidden="true">
+              <div class="hero-woman" data-hero-woman role="img" aria-label="Resepsionis SAU menyambut Anda">
+                <div class="hero-woman__float">
+                  <div class="hero-woman__greet">
+                    <img class="hero-pose hero-pose--salam" src="assets/hero-woman-salam.png" width="512" height="768" alt="">
+                    <!-- Pose 2 (tangan terbuka): once loaded, main.js starts alternating the poses -->
+                    <img class="hero-pose hero-pose--welcome" data-welcome src="assets/hero-woman-welcome.png" width="528" height="768" alt="" hidden>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <a href="#" class="orbit-app left-[190px] top-[10px] [--i:0]">
+            <a href="#" data-app-link="moover" class="orbit-app left-[190px] top-[10px] [--i:0]">
               <span class="orbit-bob">
                 <span class="orbit-tile"><span class="grad-moover"><img src="assets/orbit-car.svg" width="22" height="22" alt=""></span></span>
                 <span class="orbit-label orbit-label--side">Moover</span>
               </span>
             </a>
-            <a href="#" class="orbit-app left-[319.9px] top-[85px] [--i:1]">
+            <a href="#" data-app-link="digital-patrol" class="orbit-app left-[319.9px] top-[85px] [--i:1]">
               <span class="orbit-bob">
                 <span class="orbit-tile"><span class="grad-patrol"><img src="assets/orbit-shield.svg" width="22" height="22" alt=""></span></span>
                 <span class="orbit-label orbit-label--top">Digital Patrol</span>
               </span>
             </a>
-            <a href="#" class="orbit-app left-[319.9px] top-[235px] [--i:2]">
+            <a href="#" data-app-link="sau-travel" class="orbit-app left-[319.9px] top-[235px] [--i:2]">
               <span class="orbit-bob">
                 <span class="orbit-tile"><span class="grad-travel"><img src="assets/orbit-plane.svg" width="22" height="22" alt=""></span></span>
                 <span class="orbit-label orbit-label--bottom">SAU Travel</span>
               </span>
             </a>
-            <a href="#" class="orbit-app left-[190px] top-[310px] [--i:3]">
+            <a href="#" data-app-link="saupay" class="orbit-app left-[190px] top-[310px] [--i:3]">
               <span class="orbit-bob">
                 <span class="orbit-tile"><span class="grad-saupay"><img src="assets/orbit-wallet.svg" width="22" height="22" alt=""></span></span>
                 <span class="orbit-label orbit-label--side">SAUpay</span>
               </span>
             </a>
-            <a href="#" class="orbit-app left-[60.1px] top-[235px] [--i:4]">
+            <a href="#" data-app-link="fintera" class="orbit-app left-[60.1px] top-[235px] [--i:4]">
               <span class="orbit-bob">
                 <span class="orbit-tile"><span class="grad-fintera"><img src="assets/orbit-landmark.svg" width="22" height="22" alt=""></span></span>
                 <span class="orbit-label orbit-label--bottom">Fintera</span>
               </span>
             </a>
-            <a href="#" class="orbit-app left-[60.1px] top-[85px] [--i:5]">
+            <a href="#" data-app-link="mysau" class="orbit-app left-[60.1px] top-[85px] [--i:5]">
               <span class="orbit-bob">
                 <span class="orbit-tile"><span class="grad-mysau"><img src="assets/orbit-users.svg" width="22" height="22" alt=""></span></span>
                 <span class="orbit-label orbit-label--top">MySAU</span>
@@ -258,185 +266,171 @@
           </a>
         </div>
 
-        <div class="flex flex-col gap-5 xl:h-[280px] xl:flex-row">
-          <!-- Banner / Berita Utama (64:1339): carousel -->
-          <article data-carousel aria-roledescription="carousel" aria-label="Berita utama"
-                   class="banner relative flex min-h-[280px] flex-col gap-3.5 overflow-hidden rounded-[30px] px-6 pb-[26px] pt-7 text-white sm:rounded-[36px] sm:px-9 xl:min-h-0 xl:flex-1">
-            <img class="pointer-events-none absolute right-0 top-0" src="assets/banner-ring.svg" width="290" height="280" alt="">
-            <img class="pointer-events-none absolute right-0 top-[5px]" src="assets/banner-glow.svg" width="215" height="230" alt="">
-            <span class="banner-ikon pointer-events-none absolute right-5 top-5 flex size-28 origin-top-right scale-[0.5715] items-center justify-center rounded-[36px] lg:right-[44px] lg:top-16 lg:scale-100" aria-hidden="true">
-              <img src="assets/icon-megaphone.svg" width="52" height="52" alt="">
-            </span>
+        <!-- Konten Berita (64:1338): stacked deck that autoplays, swipes and loops -->
+        <div class="news flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-6" data-carousel aria-roledescription="carousel" aria-label="Berita terbaru">
+          <div class="news-deck min-w-0 flex-1" data-deck aria-live="off">
 
-            <div class="relative grid touch-pan-y" data-slides aria-live="off">
-              <div class="slide col-start-1 row-start-1 flex flex-col gap-3.5" data-slide data-active data-href="#"
-                   role="group" aria-roledescription="slide" aria-label="1 dari 3">
-                <div class="flex flex-wrap items-center gap-2.5 max-sm:pr-16">
-                  <span class="banner-glass flex items-center gap-1.5 rounded-full px-3 py-[5px] text-[12px] font-bold leading-[normal]">
-                    <img src="assets/icon-bell-sm-white.svg" width="12" height="12" alt="">
-                    Pengumuman
-                  </span>
-                  <time datetime="2026-10-12" class="text-[12px] font-medium leading-[normal] text-white/80">12 Oktober 2026</time>
-                </div>
-                <h3 class="max-w-[500px] text-[24px] font-extrabold leading-[32px] max-sm:pr-16 sm:text-[28px] sm:leading-[36px]">SAUpay kini mendukung pembayaran QR di seluruh unit kerja</h3>
-                <p class="max-w-[470px] text-[14px] leading-[22px] text-white/82">Bayar kebutuhan operasional lebih cepat dan aman langsung dari aplikasi SAUpay, tanpa antre dan tanpa uang tunai.</p>
+            <!-- Slide 1: banner from Figma (101:402) -->
+            <article class="news-card tint-panel tint--blue [--tint-angle:159.89deg]" data-slide data-pos="0" aria-roledescription="slide" aria-label="1 dari 4: Discover your future with SAU">
+              <div class="flex items-center justify-between gap-3 whitespace-nowrap leading-[normal]">
+                <p class="text-[16px] font-extrabold text-heading">Berita Terbaru</p>
+                <p class="min-w-0 truncate text-[12px] font-medium text-muted">Rekrutmen · <time datetime="2026-10-13">13 Okt 2026</time></p>
               </div>
-
-              <div class="slide col-start-1 row-start-1 flex flex-col gap-3.5" data-slide data-href="#" inert aria-hidden="true"
-                   role="group" aria-roledescription="slide" aria-label="2 dari 3">
-                <div class="flex flex-wrap items-center gap-2.5 max-sm:pr-16">
-                  <span class="banner-glass flex items-center gap-1.5 rounded-full px-3 py-[5px] text-[12px] font-bold leading-[normal]">
-                    <img src="assets/update-zap.svg" width="12" height="12" alt="">
-                    Pembaruan
-                  </span>
-                  <time datetime="2026-10-11" class="text-[12px] font-medium leading-[normal] text-white/80">11 Oktober 2026</time>
-                </div>
-                <h3 class="max-w-[500px] text-[24px] font-extrabold leading-[32px] max-sm:pr-16 sm:text-[28px] sm:leading-[36px]">MySAU v2.4: pengajuan cuti kini lebih cepat dan praktis</h3>
-                <p class="max-w-[470px] text-[14px] leading-[22px] text-white/82">Ajukan, pantau, dan setujui cuti langsung dari MySAU dengan alur persetujuan yang lebih singkat.</p>
-              </div>
-
-              <div class="slide col-start-1 row-start-1 flex flex-col gap-3.5" data-slide data-href="#" inert aria-hidden="true"
-                   role="group" aria-roledescription="slide" aria-label="3 dari 3">
-                <div class="flex flex-wrap items-center gap-2.5 max-sm:pr-16">
-                  <span class="banner-glass flex items-center gap-1.5 rounded-full px-3 py-[5px] text-[12px] font-bold leading-[normal]">
-                    <img src="assets/update-plane.svg" width="12" height="12" alt="">
-                    Kebijakan
-                  </span>
-                  <time datetime="2026-10-08" class="text-[12px] font-medium leading-[normal] text-white/80">08 Oktober 2026</time>
-                </div>
-                <h3 class="max-w-[500px] text-[24px] font-extrabold leading-[32px] max-sm:pr-16 sm:text-[28px] sm:leading-[36px]">Kebijakan perjalanan dinas terbaru mulai berlaku bulan ini</h3>
-                <p class="max-w-[470px] text-[14px] leading-[22px] text-white/82">Cek ketentuan tiket, akomodasi, dan klaim biaya perjalanan dinas yang kini dikelola lewat SAU Travel.</p>
-              </div>
-            </div>
-
-            <div class="min-h-px flex-[1_0_0]" aria-hidden="true"></div>
-
-            <div class="relative flex w-full flex-wrap items-center justify-between gap-3">
-              <a href="#" data-slide-link class="group flex items-center gap-2 rounded-2xl bg-white py-[11px] pl-5 pr-[18px] text-[14px] font-bold leading-[normal] text-brand shadow-[0_6px_14px_0_rgb(5_26_102/0.2)]">
-                Baca Selengkapnya
-                <img class="transition-transform group-hover:translate-x-0.5" src="assets/icon-arrow-read.svg" width="16" height="16" alt="">
+              <a href="#" class="news-media" draggable="false">
+                <span class="news-frame">
+                  <img class="news-photo" src="assets/news-talenta-brilian.jpg" width="1920" height="727" draggable="false"
+                       alt="Discover your future with SAU: rekrutmen Talenta Brilian">
+                </span>
               </a>
-              <div class="flex items-center gap-3.5">
-                <div class="flex items-center gap-1.5">
-                  <button type="button" data-dot aria-label="Berita 1" aria-current="true" class="relative h-2 w-2 rounded-full bg-white/40 transition-[width,background-color] duration-300 after:absolute after:-inset-2 aria-[current=true]:w-6 aria-[current=true]:bg-white"></button>
-                  <button type="button" data-dot aria-label="Berita 2" aria-current="false" class="relative h-2 w-2 rounded-full bg-white/40 transition-[width,background-color] duration-300 after:absolute after:-inset-2 aria-[current=true]:w-6 aria-[current=true]:bg-white"></button>
-                  <button type="button" data-dot aria-label="Berita 3" aria-current="false" class="relative h-2 w-2 rounded-full bg-white/40 transition-[width,background-color] duration-300 after:absolute after:-inset-2 aria-[current=true]:w-6 aria-[current=true]:bg-white"></button>
-                </div>
-                <button type="button" data-prev aria-label="Berita sebelumnya" class="banner-glass flex size-[34px] items-center justify-center rounded-full transition-colors hover:bg-white/30">
-                  <img src="assets/icon-chevron-left-white.svg" width="16" height="16" alt="">
-                </button>
-                <button type="button" data-next aria-label="Berita berikutnya" class="banner-glass flex size-[34px] items-center justify-center rounded-full transition-colors hover:bg-white/30">
-                  <img src="assets/icon-chevron-right-white.svg" width="16" height="16" alt="">
-                </button>
-              </div>
-            </div>
-          </article>
+            </article>
 
-          <!-- Panel / Update Terbaru (64:1371) -->
-          <aside aria-labelledby="update-title"
-                 class="tint-panel--blue stroke-15 sb flex w-full flex-col gap-2.5 rounded-[32px] p-[19.5px] [--tint-angle:146.31deg] xl:h-full xl:w-[420px] xl:shrink-0">
-            <div class="flex items-center justify-between whitespace-nowrap leading-[normal]">
-              <h3 id="update-title" class="text-[16px] font-extrabold text-heading">Update Terbaru</h3>
-              <span class="text-[12px] font-medium text-muted">Terbaru dulu</span>
+            <!-- Slides 2–4: HTML banners drawn on a 1024×311 canvas that scales like an image -->
+            <article class="news-card tint-panel tint--blue [--tint-angle:159.89deg]" data-slide data-pos="1" aria-roledescription="slide" aria-label="2 dari 4: SAUpay kini mendukung pembayaran QR">
+              <div class="flex items-center justify-between gap-3 whitespace-nowrap leading-[normal]">
+                <p class="text-[16px] font-extrabold text-heading">Berita Terbaru</p>
+                <p class="min-w-0 truncate text-[12px] font-medium text-muted">Pengumuman · <time datetime="2026-10-12">12 Okt 2026</time></p>
+              </div>
+              <a href="#" class="news-media" draggable="false">
+                <span class="news-frame banner">
+                  <span class="news-canvas">
+                    <img class="absolute right-0 top-0" src="assets/banner-ring.svg" width="290" height="280" alt="">
+                    <img class="absolute right-0 top-[5px]" src="assets/banner-glow.svg" width="215" height="230" alt="">
+                    <span class="banner-ikon absolute right-[84px] top-[100px] flex size-28 items-center justify-center rounded-[36px]"><img src="assets/icon-megaphone.svg" width="52" height="52" alt=""></span>
+                    <span class="news-copy">
+                      <span class="flex items-center gap-2.5">
+                        <span class="banner-glass flex items-center gap-1.5 rounded-full px-3 py-[5px] text-[12px] font-bold leading-[normal]"><img src="assets/icon-bell-sm-white.svg" width="12" height="12" alt="">Pengumuman</span>
+                        <span class="text-[12px] font-medium leading-[normal] text-white/80">12 Oktober 2026</span>
+                      </span>
+                      <span class="news-title">SAUpay kini mendukung pembayaran QR di seluruh unit kerja</span>
+                      <span class="news-desc">Bayar kebutuhan operasional lebih cepat dan aman langsung dari aplikasi SAUpay, tanpa antre dan tanpa uang tunai.</span>
+                    </span>
+                    <span class="news-cta">Baca Selengkapnya <img src="assets/icon-arrow-read.svg" width="16" height="16" alt=""></span>
+                  </span>
+                </span>
+              </a>
+            </article>
+
+            <article class="news-card tint-panel tint--blue [--tint-angle:159.89deg]" data-slide data-pos="2" aria-roledescription="slide" aria-label="3 dari 4: MySAU v2.4">
+              <div class="flex items-center justify-between gap-3 whitespace-nowrap leading-[normal]">
+                <p class="text-[16px] font-extrabold text-heading">Berita Terbaru</p>
+                <p class="min-w-0 truncate text-[12px] font-medium text-muted">Pembaruan · <time datetime="2026-10-11">11 Okt 2026</time></p>
+              </div>
+              <a href="#" class="news-media" draggable="false">
+                <span class="news-frame banner banner--teal">
+                  <span class="news-canvas">
+                    <img class="absolute right-0 top-0" src="assets/banner-ring.svg" width="290" height="280" alt="">
+                    <img class="absolute right-0 top-[5px]" src="assets/banner-glow.svg" width="215" height="230" alt="">
+                    <span class="banner-ikon absolute right-[84px] top-[100px] flex size-28 items-center justify-center rounded-[36px]"><img src="assets/update-zap.svg" width="52" height="52" alt=""></span>
+                    <span class="news-copy">
+                      <span class="flex items-center gap-2.5">
+                        <span class="banner-glass flex items-center gap-1.5 rounded-full px-3 py-[5px] text-[12px] font-bold leading-[normal]"><img src="assets/update-zap.svg" width="12" height="12" alt="">Pembaruan</span>
+                        <span class="text-[12px] font-medium leading-[normal] text-white/80">11 Oktober 2026</span>
+                      </span>
+                      <span class="news-title">MySAU v2.4: pengajuan cuti kini lebih cepat dan praktis</span>
+                      <span class="news-desc">Ajukan, pantau, dan setujui cuti langsung dari MySAU dengan alur persetujuan yang lebih singkat.</span>
+                    </span>
+                    <span class="news-cta">Baca Selengkapnya <img src="assets/icon-arrow-read.svg" width="16" height="16" alt=""></span>
+                  </span>
+                </span>
+              </a>
+            </article>
+
+            <article class="news-card tint-panel tint--blue [--tint-angle:159.89deg]" data-slide data-pos="3" aria-roledescription="slide" aria-label="4 dari 4: Kebijakan perjalanan dinas terbaru">
+              <div class="flex items-center justify-between gap-3 whitespace-nowrap leading-[normal]">
+                <p class="text-[16px] font-extrabold text-heading">Berita Terbaru</p>
+                <p class="min-w-0 truncate text-[12px] font-medium text-muted">Kebijakan · <time datetime="2026-10-08">08 Okt 2026</time></p>
+              </div>
+              <a href="#" class="news-media" draggable="false">
+                <span class="news-frame banner banner--sky">
+                  <span class="news-canvas">
+                    <img class="absolute right-0 top-0" src="assets/banner-ring.svg" width="290" height="280" alt="">
+                    <img class="absolute right-0 top-[5px]" src="assets/banner-glow.svg" width="215" height="230" alt="">
+                    <span class="banner-ikon absolute right-[84px] top-[100px] flex size-28 items-center justify-center rounded-[36px]"><img src="assets/update-plane.svg" width="52" height="52" alt=""></span>
+                    <span class="news-copy">
+                      <span class="flex items-center gap-2.5">
+                        <span class="banner-glass flex items-center gap-1.5 rounded-full px-3 py-[5px] text-[12px] font-bold leading-[normal]"><img src="assets/update-plane.svg" width="12" height="12" alt="">Kebijakan</span>
+                        <span class="text-[12px] font-medium leading-[normal] text-white/80">08 Oktober 2026</span>
+                      </span>
+                      <span class="news-title">Kebijakan perjalanan dinas terbaru mulai berlaku bulan ini</span>
+                      <span class="news-desc">Cek ketentuan tiket, akomodasi, dan klaim biaya perjalanan dinas yang kini dikelola lewat SAU Travel.</span>
+                    </span>
+                    <span class="news-cta">Baca Selengkapnya <img src="assets/icon-arrow-read.svg" width="16" height="16" alt=""></span>
+                  </span>
+                </span>
+              </a>
+            </article>
+          </div>
+
+          <!-- Kontrol carousel (95:384) -->
+          <div class="flex shrink-0 items-center justify-between gap-3.5 px-1 lg:w-14 lg:flex-col lg:justify-center lg:px-0">
+            <div class="flex items-center lg:flex-col" role="group" aria-label="Pilih berita">
+              <button type="button" class="news-dot-btn" data-dot aria-label="Berita 1" aria-current="true"><span class="news-dot"></span></button>
+              <button type="button" class="news-dot-btn" data-dot aria-label="Berita 2" aria-current="false"><span class="news-dot"></span></button>
+              <button type="button" class="news-dot-btn" data-dot aria-label="Berita 3" aria-current="false"><span class="news-dot"></span></button>
+              <button type="button" class="news-dot-btn" data-dot aria-label="Berita 4" aria-current="false"><span class="news-dot"></span></button>
             </div>
-            <ul role="list" class="grid gap-2.5 md:grid-cols-3 xl:grid-cols-1">
-              <li>
-                <a href="#" class="flex h-full items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3 py-2.5 transition-colors hover:bg-white">
-                  <span class="grad-upd-blue flex size-10 shrink-0 items-center justify-center rounded-[14px]"><img src="assets/update-zap.svg" width="18" height="18" alt=""></span>
-                  <span class="flex min-w-0 flex-1 flex-col gap-[3px]">
-                    <span class="text-[13px] font-bold leading-[18px] text-heading">MySAU v2.4: pengajuan cuti lebih cepat</span>
-                    <span class="text-[11px] font-medium leading-[normal] text-muted">Pembaruan · 11 Okt 2026</span>
-                  </span>
-                  <img src="assets/icon-chevron-right-gray.svg" width="16" height="16" alt="">
-                </a>
-              </li>
-              <li>
-                <a href="#" class="flex h-full items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3 py-2.5 transition-colors hover:bg-white">
-                  <span class="grad-upd-orange flex size-10 shrink-0 items-center justify-center rounded-[14px]"><img src="assets/update-shield.svg" width="18" height="18" alt=""></span>
-                  <span class="flex min-w-0 flex-1 flex-col gap-[3px]">
-                    <span class="text-[13px] font-bold leading-[18px] text-heading">Pemeliharaan SAUpay akhir pekan ini</span>
-                    <span class="text-[11px] font-medium leading-[normal] text-muted">Pemeliharaan · 10 Okt 2026</span>
-                  </span>
-                  <img src="assets/icon-chevron-right-gray.svg" width="16" height="16" alt="">
-                </a>
-              </li>
-              <li>
-                <a href="#" class="flex h-full items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3 py-2.5 transition-colors hover:bg-white">
-                  <span class="grad-upd-teal flex size-10 shrink-0 items-center justify-center rounded-[14px]"><img src="assets/update-plane.svg" width="18" height="18" alt=""></span>
-                  <span class="flex min-w-0 flex-1 flex-col gap-[3px]">
-                    <span class="text-[13px] font-bold leading-[18px] text-heading">Kebijakan perjalanan dinas terbaru</span>
-                    <span class="text-[11px] font-medium leading-[normal] text-muted">Kebijakan · 08 Okt 2026</span>
-                  </span>
-                  <img src="assets/icon-chevron-right-gray.svg" width="16" height="16" alt="">
-                </a>
-              </li>
-            </ul>
-          </aside>
+            <div class="flex gap-3.5 lg:flex-col">
+              <button type="button" data-prev aria-label="Berita sebelumnya" class="news-nav"><img src="assets/icon-chevron-left-navy.svg" width="16" height="16" alt=""></button>
+              <button type="button" data-next aria-label="Berita berikutnya" class="news-nav"><img src="assets/icon-chevron-right-navy.svg" width="16" height="16" alt=""></button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Favorit Harian Anda (64:1264) -->
-    <section class="px-5 pt-14 md:px-10" aria-labelledby="favorit-title">
+    <!-- Favorit Harian Anda (64:1264): rendered from the pinned apps (main.js); this is the default set -->
+    <section id="favorit" class="scroll-mt-4 px-5 pt-14 md:px-10" aria-labelledby="favorit-title">
       <div class="mx-auto flex max-w-[1200px] flex-col gap-5">
         <div class="flex flex-col items-start gap-1">
-          <h2 id="favorit-title" class="text-[26px] font-extrabold leading-[normal] tracking-[-0.6px] text-ink sm:text-[30px]">Favorit Harian Anda</h2>
+          <h2 id="favorit-title" tabindex="-1" class="text-[26px] font-extrabold leading-[normal] tracking-[-0.6px] text-ink outline-none sm:text-[30px]">Favorit Harian Anda</h2>
           <p class="text-[14px] leading-[normal] text-body">Aplikasi yang Anda sematkan, selalu hanya satu klik.</p>
         </div>
 
-        <ul role="list" class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <li>
-            <a href="#" aria-label="Buka MySAU"
-               class="fav-card--mysau group flex h-full min-h-[124px] items-center gap-3.5 overflow-hidden rounded-[28px] border px-[18px] py-4 transition duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
-              <span class="tile--glass flex size-[52px] shrink-0 items-center justify-center rounded-2xl">
-                <img src="assets/fav-users.svg" width="24" height="24" alt="">
+        <ul role="list" data-fav-list class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <li class="fav-item" data-fav="mysau">
+            <div class="fav-card fav-card--solid">
+              <span class="fav-tile tile--glass"><img src="assets/fav-users.svg" width="24" height="24" alt=""></span>
+              <span class="fav-text">
+                <span class="fav-chip">SDM &amp; Karyawan</span>
+                <a href="#" class="fav-link" data-app-link="mysau">MySAU</a>
+                <span class="fav-desc">HRIS berbasis cloud untuk mengelola SDM</span>
               </span>
-              <span class="flex min-w-0 flex-1 flex-col items-start gap-[3px]">
-                <span class="max-w-full truncate rounded-full bg-white/22 px-2.5 py-[3px] text-[11px] font-bold leading-[normal] text-white">SDM &amp; Karyawan</span>
-                <span class="text-[18px] font-extrabold leading-[normal] tracking-[-0.4px] text-white">MySAU</span>
-                <span class="text-[12px] leading-[19px] text-white/85">HRIS berbasis cloud untuk mengelola SDM</span>
-              </span>
-              <img class="shrink-0" src="assets/fav-pin-white.svg" width="14" height="14" alt="Disematkan" title="Disematkan">
-              <span class="flex size-9 shrink-0 items-center justify-center rounded-full bg-white">
-                <img class="transition-transform duration-200 group-hover:translate-x-0.5" src="assets/fav-arrow-blue.svg" width="16" height="16" alt="">
-              </span>
-            </a>
+              <button type="button" class="fav-pin" data-unpin="mysau" aria-label="Lepas sematan MySAU" title="Lepas sematan"><img src="assets/fav-pin-white.svg" width="14" height="14" alt=""></button>
+              <span class="fav-go bg-white" aria-hidden="true"><img src="assets/fav-arrow-blue.svg" width="16" height="16" alt=""></span>
+            </div>
           </li>
-          <li class="fav-shadow-behind">
-            <a href="#" aria-label="Buka Moover"
-               class="fav-card--glass fav-card--moover group flex h-full min-h-[124px] items-center gap-3.5 overflow-hidden rounded-[28px] border px-[18px] py-4 transition duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
-              <span class="grad-moover flex size-[52px] shrink-0 items-center justify-center rounded-2xl">
-                <img src="assets/fav-car.svg" width="24" height="24" alt="">
+          <li class="fav-item" data-fav="moover">
+            <div class="fav-card fav-card--glass" data-theme="mobilitas">
+              <span class="fav-tile grad-moover"><img src="assets/fav-car.svg" width="24" height="24" alt=""></span>
+              <span class="fav-text">
+                <span class="fav-chip">Mobilitas &amp; Operasional</span>
+                <a href="#" class="fav-link" data-app-link="moover">Moover</a>
+                <span class="fav-desc">Manajemen perjalanan dan operasional pengemudi</span>
               </span>
-              <span class="flex min-w-0 flex-1 flex-col items-start gap-[3px]">
-                <span class="max-w-full truncate rounded-full bg-moover-soft px-2.5 py-[3px] text-[11px] font-bold leading-[normal] text-moover-ink">Mobilitas &amp; Operasional</span>
-                <span class="text-[18px] font-extrabold leading-[normal] tracking-[-0.4px] text-ink">Moover</span>
-                <span class="text-[12px] leading-[19px] text-body">Manajemen perjalanan dan operasional pengemudi</span>
-              </span>
-              <img class="shrink-0" src="assets/fav-pin.svg" width="14" height="14" alt="Disematkan" title="Disematkan">
-              <span class="grad-moover flex size-9 shrink-0 items-center justify-center rounded-full">
-                <img class="transition-transform duration-200 group-hover:translate-x-0.5" src="assets/fav-arrow-white.svg" width="16" height="16" alt="">
-              </span>
-            </a>
+              <button type="button" class="fav-pin" data-unpin="moover" aria-label="Lepas sematan Moover" title="Lepas sematan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button>
+              <span class="fav-go grad-moover" aria-hidden="true"><img src="assets/fav-arrow-white.svg" width="16" height="16" alt=""></span>
+            </div>
           </li>
-          <li class="fav-shadow-behind md:col-span-2 xl:col-span-1">
-            <a href="#" aria-label="Buka SAUpay"
-               class="fav-card--glass fav-card--saupay group flex h-full min-h-[124px] items-center gap-3.5 overflow-hidden rounded-[28px] border px-[18px] py-4 transition duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
-              <span class="grad-saupay flex size-[52px] shrink-0 items-center justify-center rounded-2xl">
-                <img src="assets/fav-wallet.svg" width="24" height="24" alt="">
+          <li class="fav-item" data-fav="saupay">
+            <div class="fav-card fav-card--glass" data-theme="keuangan">
+              <span class="fav-tile grad-saupay"><img src="assets/fav-wallet.svg" width="24" height="24" alt=""></span>
+              <span class="fav-text">
+                <span class="fav-chip">Keuangan &amp; Pembayaran</span>
+                <a href="#" class="fav-link" data-app-link="saupay">SAUpay</a>
+                <span class="fav-desc">Pembayaran digital untuk transaksi lebih mudah</span>
               </span>
-              <span class="flex min-w-0 flex-1 flex-col items-start gap-[3px]">
-                <span class="max-w-full truncate rounded-full bg-saupay-soft px-2.5 py-[3px] text-[11px] font-bold leading-[normal] text-saupay-ink">Keuangan &amp; Pembayaran</span>
-                <span class="text-[18px] font-extrabold leading-[normal] tracking-[-0.4px] text-ink">SAUpay</span>
-                <span class="text-[12px] leading-[19px] text-body">Pembayaran digital untuk transaksi lebih mudah</span>
-              </span>
-              <img class="shrink-0" src="assets/fav-pin.svg" width="14" height="14" alt="Disematkan" title="Disematkan">
-              <span class="grad-saupay flex size-9 shrink-0 items-center justify-center rounded-full">
-                <img class="transition-transform duration-200 group-hover:translate-x-0.5" src="assets/fav-arrow-white.svg" width="16" height="16" alt="">
-              </span>
-            </a>
+              <button type="button" class="fav-pin" data-unpin="saupay" aria-label="Lepas sematan SAUpay" title="Lepas sematan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button>
+              <span class="fav-go grad-saupay" aria-hidden="true"><img src="assets/fav-arrow-white.svg" width="16" height="16" alt=""></span>
+            </div>
           </li>
         </ul>
+
+        <div data-fav-empty hidden class="flex flex-col items-center gap-2 rounded-[28px] border border-dashed border-[#c9d6ea] bg-white/55 px-6 py-8 text-center">
+          <span class="flex size-11 items-center justify-center rounded-2xl bg-white"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></span>
+          <p class="text-[15px] font-extrabold leading-[normal] text-heading">Belum ada aplikasi yang disematkan</p>
+          <p class="max-w-[380px] text-[13px] leading-[20px] text-muted">Tekan ikon pin di samping nama aplikasi pada daftar di bawah untuk menyematkannya di sini.</p>
+          <a href="#jelajahi" class="mt-1 rounded-2xl bg-brand px-5 py-2.5 text-[14px] font-bold leading-[normal] text-white transition-colors hover:bg-[#0849a6]">Jelajahi aplikasi</a>
+        </div>
       </div>
     </section>
 
@@ -447,7 +441,7 @@
           <div class="flex flex-col items-start gap-1">
             <div class="flex items-center gap-3">
               <h2 id="jelajahi-title" class="text-[24px] font-extrabold leading-[normal] tracking-[-0.5px] text-heading sm:text-[28px]">Jelajahi Semua Aplikasi</h2>
-              <span class="rounded-full bg-brand-soft px-2.5 py-[3px] text-[13px] font-bold leading-[normal] text-brand-ink">6</span>
+              <span data-app-total class="rounded-full bg-brand-soft px-2.5 py-[3px] text-[13px] font-bold leading-[normal] text-brand-ink">16</span>
             </div>
             <p class="text-[14px] leading-[normal] text-muted">Aplikasi yang tersedia untuk Anda di PT Siaga Abdi Utama.</p>
           </div>
@@ -479,19 +473,17 @@
           </div>
         </div>
 
-        <!-- Filter Kategori (64:1114) -->
+        <!-- Filter Kategori (64:1114): counts are kept up to date by main.js -->
         <div role="toolbar" aria-label="Filter kategori"
-             class="-mx-5 flex items-start gap-2.5 overflow-x-auto px-5 pb-1 [scrollbar-width:none] md:mx-0 md:flex-wrap md:overflow-visible md:px-0 md:pb-0">
-          <button type="button" data-filter="all" aria-pressed="true"
-                  class="shrink-0 whitespace-nowrap rounded-full border border-line bg-white/80 px-4 py-[9px] text-[13px] font-semibold leading-[normal] text-muted transition-colors hover:bg-white aria-pressed:border-0 aria-pressed:bg-brand aria-pressed:font-bold aria-pressed:text-white">Semua · 6</button>
-          <button type="button" data-filter="pinned" aria-pressed="false"
-                  class="shrink-0 whitespace-nowrap rounded-full border border-line bg-white/80 px-4 py-[9px] text-[13px] font-semibold leading-[normal] text-muted transition-colors hover:bg-white aria-pressed:border-0 aria-pressed:bg-brand aria-pressed:font-bold aria-pressed:text-white">Disematkan · 3</button>
-          <button type="button" data-filter="sdm" aria-pressed="false"
-                  class="shrink-0 whitespace-nowrap rounded-full border border-line bg-white/80 px-4 py-[9px] text-[13px] font-semibold leading-[normal] text-muted transition-colors hover:bg-white aria-pressed:border-0 aria-pressed:bg-brand aria-pressed:font-bold aria-pressed:text-white">SDM &amp; Karyawan · 1</button>
-          <button type="button" data-filter="mobilitas" aria-pressed="false"
-                  class="shrink-0 whitespace-nowrap rounded-full border border-line bg-white/80 px-4 py-[9px] text-[13px] font-semibold leading-[normal] text-muted transition-colors hover:bg-white aria-pressed:border-0 aria-pressed:bg-brand aria-pressed:font-bold aria-pressed:text-white">Mobilitas &amp; Operasional · 3</button>
-          <button type="button" data-filter="keuangan" aria-pressed="false"
-                  class="shrink-0 whitespace-nowrap rounded-full border border-line bg-white/80 px-4 py-[9px] text-[13px] font-semibold leading-[normal] text-muted transition-colors hover:bg-white aria-pressed:border-0 aria-pressed:bg-brand aria-pressed:font-bold aria-pressed:text-white">Keuangan &amp; Pembayaran · 2</button>
+             class="-mx-5 flex items-start gap-2.5 overflow-x-auto px-5 pb-1 [scrollbar-width:none] md:mx-0 md:flex-wrap md:overflow-visible md:px-0 md:pb-0 xl:gap-2">
+          <button type="button" data-filter="all" data-label="Semua" aria-pressed="true" class="filter-chip">Semua · 16</button>
+          <button type="button" data-filter="pinned" data-label="Disematkan" aria-pressed="false" class="filter-chip">Disematkan · 3</button>
+          <button type="button" data-filter="sdm" data-label="SDM &amp; Karyawan" aria-pressed="false" class="filter-chip">SDM &amp; Karyawan · 4</button>
+          <button type="button" data-filter="mobilitas" data-label="Mobilitas &amp; Operasional" aria-pressed="false" class="filter-chip">Mobilitas &amp; Operasional · 3</button>
+          <button type="button" data-filter="keuangan" data-label="Keuangan &amp; Pembayaran" aria-pressed="false" class="filter-chip">Keuangan &amp; Pembayaran · 2</button>
+          <button type="button" data-filter="assessment" data-label="Assessment" aria-pressed="false" class="filter-chip">Assessment · 4</button>
+          <button type="button" data-filter="recruitment" data-label="Recruitment" aria-pressed="false" class="filter-chip">Recruitment · 2</button>
+          <button type="button" data-filter="others" data-label="Others" aria-pressed="false" class="filter-chip">Others · 1</button>
         </div>
 
         <!-- Search result bar (shown after searching from the hero) -->
@@ -503,112 +495,225 @@
         </div>
 
         <div id="no-results" hidden class="stroke-15 flex flex-col items-center gap-2 rounded-[32px] bg-white/70 px-6 py-12 text-center">
-          <p class="text-[16px] font-extrabold leading-[normal] text-heading">Aplikasi tidak ditemukan</p>
-          <p class="max-w-[360px] text-[13px] leading-[20px] text-muted">Coba kata kunci lain, atau ajukan akses ke aplikasi yang Anda butuhkan.</p>
+          <p data-empty-title class="text-[16px] font-extrabold leading-[normal] text-heading">Aplikasi tidak ditemukan</p>
+          <p data-empty-text class="max-w-[360px] text-[13px] leading-[20px] text-muted">Coba kata kunci lain, atau ajukan akses ke aplikasi yang Anda butuhkan.</p>
           <button type="button" data-clear-search class="mt-2 rounded-2xl bg-brand px-5 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-[#0849a6]">Tampilkan semua aplikasi</button>
         </div>
 
-        <!-- Panel Kategori (64:1125) -->
+        <!-- Panel Kategori (64:1125 + 87:218) -->
         <div id="app-panels" data-view="grid" class="grid items-start gap-5 md:grid-cols-2 xl:grid-cols-3">
 
           <!-- Panel / SDM & Karyawan (64:1126) -->
-          <section data-category="sdm" aria-labelledby="cat-sdm"
-                   class="tint-panel--blue stroke-15 sb flex flex-col gap-4 rounded-[32px] p-[19.5px] sm:p-[23.5px]">
+          <section data-category="sdm" aria-labelledby="cat-sdm" class="cat-panel tint-panel tint--blue [--tint-angle:133.25deg]">
             <div class="flex items-center gap-3">
-              <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-white"><img src="assets/panel-users.svg" width="20" height="20" alt=""></span>
+              <span class="cat-icon"><img src="assets/panel-users.svg" width="20" height="20" alt=""></span>
               <div class="flex min-w-0 flex-1 flex-col gap-[2px]">
-                <h3 id="cat-sdm" class="text-[16px] font-extrabold leading-[normal] text-brand-ink">SDM &amp; Karyawan</h3>
-                <p class="text-[12px] leading-[18px] text-muted">Layanan karyawan dan pengelolaan SDM.</p>
+                <h3 id="cat-sdm" class="cat-title text-brand-ink">SDM &amp; Karyawan</h3>
+                <p class="cat-desc">Layanan karyawan dan pengelolaan SDM.</p>
               </div>
             </div>
             <ul role="list" class="flex flex-col gap-4">
-              <li data-app="mysau" data-name="MySAU" data-order="1" data-pinned="true" data-keywords="hris sdm karyawan cuti absensi hr">
-                <a href="#" class="group flex items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3.5 py-3 transition-colors hover:bg-white">
-                  <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-brand-soft"><img src="assets/app-users.svg" width="20" height="20" alt=""></span>
-                  <span class="flex min-w-0 flex-1 flex-col gap-px leading-[normal]">
-                    <span class="text-[14px] font-extrabold text-heading">MySAU</span>
-                    <span class="text-[11px] text-muted">Sistem informasi SDM berbasis cloud</span>
-                  </span>
-                  <span class="flex size-[30px] shrink-0 items-center justify-center rounded-full bg-brand-soft"><img class="transition-transform group-hover:translate-x-0.5" src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
-                </a>
+              <li class="app-row group/row" data-app="mysau" data-name="MySAU" data-order="1" data-keywords="hris sdm karyawan cuti absensi hr"
+                  data-fav-desc="HRIS berbasis cloud untuk mengelola SDM" data-fav-icon="assets/fav-users.svg" data-fav-grad="grad-mysau" data-fav-variant="solid">
+                <span class="app-logo" data-app-icon><img class="h-5 w-11 object-cover" src="assets/logo-mysau.png" width="152" height="68" alt=""></span>
+                <span class="app-text">
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>MySAU</a><button type="button" class="pin-toggle" data-pin aria-pressed="true" aria-label="Sematkan MySAU" title="Lepas sematan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-desc">Sistem informasi SDM berbasis cloud</span>
+                </span>
+                <span class="app-go bg-brand-soft" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+              </li>
+              <li class="app-row group/row" data-app="payroll" data-name="Payroll Management" data-order="2" data-keywords="gaji payroll penggajian slip gaji upah">
+                <span class="app-tile bg-[#e0f2fe]" data-app-icon><img src="assets/app-payroll.svg" width="20" height="20" alt=""></span>
+                <span class="app-text">
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Payroll Management</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Payroll Management" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-desc">Sistem Pengelolaan Gaji Karyawan</span>
+                </span>
+                <span class="app-go bg-[#e0f2fe]" aria-hidden="true"><img src="assets/arrow-payroll.svg" width="14" height="14" alt=""></span>
+              </li>
+              <li class="app-row group/row" data-app="in-office" data-name="In Office" data-order="3" data-keywords="surat persuratan dokumen disposisi kantor arsip">
+                <span class="app-logo" data-app-icon><img class="h-3.5 w-11 object-cover" src="assets/logo-inoffice.png" width="240" height="77" alt=""></span>
+                <span class="app-text">
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>In Office</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan In Office" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-desc">Sistem Pengelolaan Surat</span>
+                </span>
+                <span class="app-go bg-[#dbeafe]" aria-hidden="true"><img src="assets/arrow-inoffice.svg" width="14" height="14" alt=""></span>
+              </li>
+              <li class="app-row group/row" data-app="pervoms" data-name="Pervoms" data-order="4" data-keywords="kinerja evaluasi performance penilaian kpi">
+                <span class="app-logo" data-app-icon><img class="h-[17px] w-11 object-cover" src="assets/logo-pervoms.png" width="240" height="90" alt=""></span>
+                <span class="app-text">
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Pervoms</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Pervoms" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-desc">Performance Evaluation System</span>
+                </span>
+                <span class="app-go bg-[#bfdbfe]" aria-hidden="true"><img src="assets/arrow-pervoms.svg" width="14" height="14" alt=""></span>
               </li>
             </ul>
           </section>
 
           <!-- Panel / Mobilitas & Operasional (64:1151) -->
-          <section data-category="mobilitas" aria-labelledby="cat-mobilitas"
-                   class="tint-panel--teal stroke-15 sb flex flex-col gap-4 rounded-[32px] p-[19.5px] sm:p-[23.5px]">
+          <section data-category="mobilitas" aria-labelledby="cat-mobilitas" class="cat-panel tint-panel tint--teal [--tint-angle:138.76deg]">
             <div class="flex items-center gap-3">
-              <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-white"><img src="assets/panel-car.svg" width="20" height="20" alt=""></span>
+              <span class="cat-icon"><img src="assets/panel-car.svg" width="20" height="20" alt=""></span>
               <div class="flex min-w-0 flex-1 flex-col gap-[2px]">
-                <h3 id="cat-mobilitas" class="text-[16px] font-extrabold leading-[normal] text-teal-ink">Mobilitas &amp; Operasional</h3>
-                <p class="text-[12px] leading-[18px] text-muted">Alat operasional, mobilitas, dan aktivitas lapangan.</p>
+                <h3 id="cat-mobilitas" class="cat-title text-teal-ink">Mobilitas &amp; Operasional</h3>
+                <p class="cat-desc">Alat operasional, mobilitas, dan aktivitas lapangan.</p>
               </div>
             </div>
             <ul role="list" class="flex flex-col gap-4">
-              <li data-app="moover" data-name="Moover" data-order="2" data-pinned="true" data-keywords="perjalanan pengemudi driver kendaraan mobil">
-                <a href="#" class="group flex items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3.5 py-3 transition-colors hover:bg-white">
-                  <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-tint-teal"><img src="assets/app-car.svg" width="20" height="20" alt=""></span>
-                  <span class="flex min-w-0 flex-1 flex-col gap-px leading-[normal]">
-                    <span class="text-[14px] font-extrabold text-heading">Moover</span>
-                    <span class="text-[11px] text-muted">Perjalanan &amp; operasional pengemudi</span>
-                  </span>
-                  <span class="flex size-[30px] shrink-0 items-center justify-center rounded-full bg-tint-teal"><img class="transition-transform group-hover:translate-x-0.5" src="assets/arrow-car.svg" width="14" height="14" alt=""></span>
-                </a>
+              <li class="app-row group/row" data-app="moover" data-name="Moover" data-order="5" data-keywords="perjalanan pengemudi driver kendaraan mobil operasional"
+                  data-fav-desc="Manajemen perjalanan dan operasional pengemudi" data-fav-icon="assets/fav-car.svg" data-fav-grad="grad-moover">
+                <span class="app-logo" data-app-icon><span class="relative block h-[9px] w-11 overflow-hidden"><img class="absolute left-[-2.69%] top-[-31.72%] h-[166.67%] w-[104.23%] max-w-none" src="assets/logo-moover.png" width="240" height="80" alt=""></span></span>
+                <span class="app-text">
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Moover</a><button type="button" class="pin-toggle" data-pin aria-pressed="true" aria-label="Sematkan Moover" title="Lepas sematan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-desc">Perjalanan &amp; operasional pengemudi</span>
+                </span>
+                <span class="app-go bg-tint-teal" aria-hidden="true"><img src="assets/arrow-car.svg" width="14" height="14" alt=""></span>
               </li>
-              <li data-app="digital-patrol" data-name="Digital Patrol" data-order="3" data-keywords="keamanan security satpam patroli petugas">
-                <a href="#" class="group flex items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3.5 py-3 transition-colors hover:bg-white">
-                  <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-tint-green"><img src="assets/app-shield.svg" width="20" height="20" alt=""></span>
-                  <span class="flex min-w-0 flex-1 flex-col gap-px leading-[normal]">
-                    <span class="text-[14px] font-extrabold text-heading">Digital Patrol</span>
-                    <span class="text-[11px] text-muted">Pemantauan petugas keamanan</span>
-                  </span>
-                  <span class="flex size-[30px] shrink-0 items-center justify-center rounded-full bg-tint-green"><img class="transition-transform group-hover:translate-x-0.5" src="assets/arrow-shield.svg" width="14" height="14" alt=""></span>
-                </a>
+              <li class="app-row group/row" data-app="digital-patrol" data-name="Digital Patrol" data-order="6" data-keywords="keamanan security satpam patroli petugas operasional"
+                  data-fav-icon="assets/orbit-shield.svg" data-fav-grad="grad-patrol">
+                <span class="app-logo gap-[5.15px]" data-app-icon>
+                  <span class="flex h-[21.25px] w-[16.9px] shrink-0 items-center justify-center"><img src="assets/logo-digital-patrol-mark.svg" width="17.5828" height="21.935" alt=""></span>
+                  <span class="dp-wordmark"><span class="text-[#095da1]">DIGITAL</span><span class="text-[#ffa21f]">PATROL</span></span>
+                </span>
+                <span class="app-text">
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Digital Patrol</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Digital Patrol" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-desc">Pemantauan petugas keamanan</span>
+                </span>
+                <span class="app-go bg-tint-green" aria-hidden="true"><img src="assets/arrow-shield.svg" width="14" height="14" alt=""></span>
               </li>
-              <li data-app="sau-travel" data-name="SAU Travel" data-order="4" data-keywords="travel perjalanan dinas tiket hotel">
-                <a href="#" class="group flex items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3.5 py-3 transition-colors hover:bg-white">
-                  <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-tint-sky"><img src="assets/app-plane.svg" width="20" height="20" alt=""></span>
-                  <span class="flex min-w-0 flex-1 flex-col gap-px leading-[normal]">
-                    <span class="text-[14px] font-extrabold text-heading">SAU Travel</span>
-                    <span class="text-[11px] text-muted">Layanan perjalanan dinas</span>
-                  </span>
-                  <span class="flex size-[30px] shrink-0 items-center justify-center rounded-full bg-tint-sky"><img class="transition-transform group-hover:translate-x-0.5" src="assets/arrow-plane.svg" width="14" height="14" alt=""></span>
-                </a>
+              <li class="app-row group/row" data-app="sau-travel" data-name="SAU Travel" data-order="7" data-keywords="travel perjalanan dinas tiket hotel"
+                  data-fav-icon="assets/orbit-plane.svg" data-fav-grad="grad-travel">
+                <span class="app-logo" data-app-icon><span class="relative block h-[19px] w-11 overflow-hidden"><img class="absolute left-[-1.85%] top-[-24.74%] h-[149.47%] w-[103.7%] max-w-none" src="assets/logo-sau-travel.png" width="240" height="149" alt=""></span></span>
+                <span class="app-text">
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>SAU Travel</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan SAU Travel" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-desc">Layanan perjalanan dinas</span>
+                </span>
+                <span class="app-go bg-[#dcfce7]" aria-hidden="true"><img src="assets/arrow-travel.svg" width="14" height="14" alt=""></span>
               </li>
             </ul>
           </section>
 
           <!-- Panel / Keuangan & Pembayaran (64:1199) -->
-          <section data-category="keuangan" aria-labelledby="cat-keuangan"
-                   class="tint-panel--orange stroke-15 sb flex flex-col gap-4 rounded-[32px] p-[19.5px] sm:p-[23.5px]">
+          <section data-category="keuangan" aria-labelledby="cat-keuangan" class="cat-panel tint-panel tint--orange [--tint-angle:146.6deg]">
             <div class="flex items-center gap-3">
-              <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-white"><img src="assets/panel-wallet.svg" width="20" height="20" alt=""></span>
+              <span class="cat-icon"><img src="assets/panel-wallet.svg" width="20" height="20" alt=""></span>
               <div class="flex min-w-0 flex-1 flex-col gap-[2px]">
-                <h3 id="cat-keuangan" class="text-[16px] font-extrabold leading-[normal] text-orange-ink">Keuangan &amp; Pembayaran</h3>
-                <p class="text-[12px] leading-[18px] text-muted">Transaksi, pembayaran, dan layanan keuangan.</p>
+                <h3 id="cat-keuangan" class="cat-title text-orange-ink">Keuangan &amp; Pembayaran</h3>
+                <p class="cat-desc">Transaksi, pembayaran, dan layanan keuangan.</p>
               </div>
             </div>
             <ul role="list" class="flex flex-col gap-4">
-              <li data-app="saupay" data-name="SAUpay" data-order="5" data-pinned="true" data-keywords="pembayaran payment qr transaksi">
-                <a href="#" class="group flex items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3.5 py-3 transition-colors hover:bg-white">
-                  <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-tint-orange"><img src="assets/app-wallet.svg" width="20" height="20" alt=""></span>
-                  <span class="flex min-w-0 flex-1 flex-col gap-px leading-[normal]">
-                    <span class="text-[14px] font-extrabold text-heading">SAUpay</span>
-                    <span class="text-[11px] text-muted">Pembayaran digital</span>
-                  </span>
-                  <span class="flex size-[30px] shrink-0 items-center justify-center rounded-full bg-tint-orange"><img class="transition-transform group-hover:translate-x-0.5" src="assets/arrow-wallet.svg" width="14" height="14" alt=""></span>
-                </a>
+              <li class="app-row group/row" data-app="fintera" data-name="Fintera" data-order="8" data-keywords="finance keuangan digital"
+                  data-fav-icon="assets/orbit-landmark.svg" data-fav-grad="grad-fintera">
+                <span class="app-tile bg-[#fff1e8]" data-app-icon><img src="assets/app-fintera.svg" width="20" height="20" alt=""></span>
+                <span class="app-text">
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Fintera</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Fintera" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-desc">Layanan keuangan digital</span>
+                </span>
+                <span class="app-go bg-[#fff1e8]" aria-hidden="true"><img src="assets/arrow-fintera.svg" width="14" height="14" alt=""></span>
               </li>
-              <li data-app="fintera" data-name="Fintera" data-order="6" data-keywords="finance keuangan digital">
-                <a href="#" class="group flex items-center gap-3 rounded-[20px] border border-white bg-white/92 px-3.5 py-3 transition-colors hover:bg-white">
-                  <span class="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-tint-violet"><img src="assets/app-landmark.svg" width="20" height="20" alt=""></span>
-                  <span class="flex min-w-0 flex-1 flex-col gap-px leading-[normal]">
-                    <span class="text-[14px] font-extrabold text-heading">Fintera</span>
-                    <span class="text-[11px] text-muted">Layanan keuangan digital</span>
-                  </span>
-                  <span class="flex size-[30px] shrink-0 items-center justify-center rounded-full bg-tint-violet"><img class="transition-transform group-hover:translate-x-0.5" src="assets/arrow-landmark.svg" width="14" height="14" alt=""></span>
-                </a>
+              <li class="app-row group/row" data-app="saupay" data-name="SAUpay" data-order="9" data-keywords="pembayaran payment qr transaksi"
+                  data-fav-desc="Pembayaran digital untuk transaksi lebih mudah" data-fav-icon="assets/fav-wallet.svg" data-fav-grad="grad-saupay">
+                <span class="app-logo" data-app-icon><span class="relative block h-3 w-11 overflow-hidden"><img class="absolute left-[-16.65%] top-[-81.14%] h-[265.43%] w-[132.37%] max-w-none" src="assets/logo-saupay.png" width="240" height="132" alt=""></span></span>
+                <span class="app-text">
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>SAUpay</a><button type="button" class="pin-toggle" data-pin aria-pressed="true" aria-label="Sematkan SAUpay" title="Lepas sematan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-desc">Pembayaran digital</span>
+                </span>
+                <span class="app-go bg-[#ffe9d8]" aria-hidden="true"><img src="assets/arrow-saupay.svg" width="14" height="14" alt=""></span>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Panel / Assessment (87:219) -->
+          <section data-category="assessment" aria-labelledby="cat-assessment" class="cat-panel cat-panel--pink tint-panel tint--pink [--tint-angle:130.6deg]">
+            <div class="flex items-center gap-3">
+              <span class="cat-icon"><img src="assets/panel-task.svg" width="18.001" height="22" alt=""></span>
+              <div class="flex min-w-0 flex-1 flex-col gap-[2px]">
+                <h3 id="cat-assessment" class="cat-title text-[#f472b6]">Assessment</h3>
+                <p class="cat-desc">Layanan asesmen untuk evaluasi kinerja</p>
+              </div>
+            </div>
+            <ul role="list" class="flex flex-col gap-4">
+              <li class="app-row group/row" data-app="evalio" data-name="Evalio" data-order="10" data-keywords="asesmen assessment evaluasi kinerja">
+                <span class="app-logo" data-app-icon><img class="h-[12.14px] w-11 object-cover" src="assets/logo-evalio.jpg" width="240" height="67" alt=""></span>
+                <span class="app-text">
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Evalio</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Evalio" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-desc">Sistem informasi asesmen kinerja</span>
+                </span>
+                <span class="app-go bg-[#fce7f3]" aria-hidden="true"><img src="assets/arrow-evalio.svg" width="14" height="14" alt=""></span>
+              </li>
+              <li class="app-row group/row" data-app="exam" data-name="Exam" data-order="11" data-keywords="ujian tes evaluasi diri">
+                <span class="app-tile bg-[#fadadd]" data-app-icon><img src="assets/app-task.svg" width="17.501" height="21.5" alt=""></span>
+                <span class="app-text">
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Exam</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Exam" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-desc">Platform ujian dan evaluasi diri</span>
+                </span>
+                <span class="app-go bg-[#fadadd]" aria-hidden="true"><img src="assets/arrow-exam.svg" width="14" height="14" alt=""></span>
+              </li>
+              <li class="app-row group/row" data-app="psikotest" data-name="Psikotest" data-order="12" data-keywords="psikotes psikologi tes">
+                <span class="app-tile bg-[#fbcfe8]" data-app-icon><img src="assets/app-task.svg" width="17.501" height="21.5" alt=""></span>
+                <span class="app-text">
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Psikotest</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Psikotest" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-desc">Pengelolaan ujian psikotes</span>
+                </span>
+                <span class="app-go bg-[#fbcfe8]" aria-hidden="true"><img src="assets/arrow-exam.svg" width="14" height="14" alt=""></span>
+              </li>
+              <li class="app-row group/row" data-app="smbc" data-name="Social Media Background Checking" data-order="13" data-keywords="background check media sosial rekam jejak kandidat candidate">
+                <span class="app-tile bg-[#fadadd]" data-app-icon><img src="assets/app-task.svg" width="17.501" height="21.5" alt=""></span>
+                <span class="app-text">
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Social Media Background Checking</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Social Media Background Checking" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-desc">Pemeriksaan rekam jejak media sosial candidate</span>
+                </span>
+                <span class="app-go bg-[#fadadd]" aria-hidden="true"><img src="assets/arrow-smbc.svg" width="14" height="14" alt=""></span>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Panel / Recruitment (87:286) -->
+          <section data-category="recruitment" aria-labelledby="cat-recruitment" class="cat-panel tint-panel tint--violet [--tint-angle:145.17deg]">
+            <div class="flex items-center gap-3">
+              <span class="cat-icon"><img src="assets/panel-building.svg" width="20" height="20" alt=""></span>
+              <div class="flex min-w-0 flex-1 flex-col gap-[2px]">
+                <h3 id="cat-recruitment" class="cat-title text-[#7c3aed]">Recruitment</h3>
+                <p class="cat-desc">Layanan pengelolaan dan pemantauan rekrutmen</p>
+              </div>
+            </div>
+            <ul role="list" class="flex flex-col gap-4">
+              <li class="app-row group/row" data-app="talenta-brilian" data-name="Talenta Brilian" data-order="14" data-keywords="rekrutmen lowongan kandidat pendaftaran seleksi karier">
+                <span class="app-logo" data-app-icon><img class="h-[13px] w-11 object-cover" src="assets/logo-talenta-brilian.png" width="240" height="73" alt=""></span>
+                <span class="app-text">
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Talenta Brilian</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Talenta Brilian" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-desc">Portal pendaftaran dan seleksi rekrutmen</span>
+                </span>
+                <span class="app-go bg-[#ddd6fe]" aria-hidden="true"><img src="assets/arrow-talenta.svg" width="14" height="14" alt=""></span>
+              </li>
+              <li class="app-row group/row" data-app="bflp" data-name="BFLP Monitoring" data-order="15" data-keywords="bflp program monitoring pemantauan">
+                <span class="app-tile bg-[#e9d5fa]" data-app-icon><img src="assets/panel-building.svg" width="20" height="20" alt=""></span>
+                <span class="app-text">
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>BFLP Monitoring</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan BFLP Monitoring" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-desc">Sistem pemantauan program BFLP</span>
+                </span>
+                <span class="app-go bg-[#e9d5fa]" aria-hidden="true"><img src="assets/arrow-bflp.svg" width="14" height="14" alt=""></span>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Panel / Others (87:334) -->
+          <section data-category="others" aria-labelledby="cat-others" class="cat-panel tint-panel tint--rose [--tint-angle:154.67deg]">
+            <div class="flex items-center gap-3">
+              <span class="cat-icon"><img src="assets/panel-wallet-others.svg" width="20" height="20" alt=""></span>
+              <div class="flex min-w-0 flex-1 flex-col gap-[2px]">
+                <h3 id="cat-others" class="cat-title text-[#8b1e2e]">Others</h3>
+                <p class="cat-desc">Layanan pendukung lainnya</p>
+              </div>
+            </div>
+            <ul role="list" class="flex flex-col gap-4">
+              <li class="app-row group/row" data-app="qa-uko" data-name="QA Uko" data-order="16" data-keywords="quality assurance mutu audit qa">
+                <span class="app-tile bg-[#f3d7e0]" data-app-icon><img src="assets/panel-wallet-others.svg" width="20" height="20" alt=""></span>
+                <span class="app-text">
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>QA Uko</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan QA Uko" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-desc">Sistem penjaminan mutu (Quality Assurance)</span>
+                </span>
+                <span class="app-go bg-[#f3d7e0]" aria-hidden="true"><img src="assets/arrow-others.svg" width="14" height="14" alt=""></span>
               </li>
             </ul>
           </section>
@@ -655,6 +760,15 @@
       </nav>
     </div>
   </footer>
+</div>
+
+<!-- Toast (pin / unpin feedback with undo) -->
+<div class="toast-region" aria-live="polite">
+  <div class="toast" data-toast hidden>
+    <img data-toast-icon src="assets/fav-pin.svg" width="14" height="14" alt="">
+    <span data-toast-text></span>
+    <button type="button" data-toast-action class="toast-action">Urungkan</button>
+  </div>
 </div>
 
 </body>
