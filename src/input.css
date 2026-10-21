@@ -54,6 +54,9 @@
   --color-dot: #2f86f0;
 
   --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-sine: cubic-bezier(0.37, 0, 0.63, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
 @layer components {
@@ -124,6 +127,7 @@
   .grad-patrol  { background-image: linear-gradient(135deg, #4ade80 14.644%, #16a34a 85.356%); }
   .grad-travel  { background-image: linear-gradient(135deg, #7fcdee 14.644%, #2a93d5 85.356%); }
   .grad-fintera { background-image: linear-gradient(135deg, #a78bfa 14.644%, #6d3fd9 85.356%); }
+  .grad-saupay  { background-image: linear-gradient(135deg, #fbbf24 14.644%, #f97316 85.356%); }
 
   /* ---------- Hero ---------- */
   .hero-card {
@@ -144,18 +148,10 @@
     height: 380px;
     transform-origin: 0 0;
     --orbit-scale: 1;
-    --px: 0;
-    --py: 0;
     scale: var(--orbit-scale);
   }
   @supports (scale: tan(atan2(1px, 1px))) {
     .orbit { --orbit-scale: min(1, tan(atan2(100cqw, 440px))); }
-  }
-  /* Pointer parallax: main.js sets --px/--py (−8…8); each layer moves by --depth. */
-  .orbit-layer,
-  .orbit-app {
-    translate: calc(var(--px) * var(--depth, 1) * 1px) calc(var(--py) * var(--depth, 1) * 1px);
-    transition: translate 0.45s var(--ease-out-soft);
   }
   .orbit-layer { position: absolute; inset: 0; pointer-events: none; }
 
@@ -170,6 +166,7 @@
     border: 1.5px solid rgb(79 124 217 / 0.32);
     background: radial-gradient(closest-side, rgb(187 211 250 / 0) 70%, rgb(187 211 250 / 0.3) 100%);
     opacity: 0;
+    will-change: transform, opacity;
   }
 
   /* "Sambutan Profesional dengan Blazer Biru" (107:957). Figma masks it with a
@@ -187,6 +184,7 @@
   }
   .hero-woman__float,
   .hero-woman__greet { position: absolute; inset: 0; }
+  .hero-woman__float { will-change: transform; }
   .hero-woman__greet { transform-origin: 50% 70%; }
   .hero-pose {
     position: absolute;
@@ -201,14 +199,21 @@
   .hero-pose--welcome { left: -7.2px; width: 232.38px; opacity: 0; }
 
   .orbit-app {
-    --depth: 1.3;
     position: absolute;
     width: 60px;
     height: 60px;
     border-radius: 20px;
     outline: none;
   }
-  .orbit-bob { position: relative; display: block; width: 60px; height: 60px; }
+  /* Slots, clockwise from the top-left; --i staggers the entrance clockwise
+   * from the top, as before. The Setting tile has the bottom place. */
+  .orbit-pos-0   { left: 60.1px;  top: 85px;  --i: 5; }
+  .orbit-pos-1   { left: 190px;   top: 10px;  --i: 0; }
+  .orbit-pos-2   { left: 319.9px; top: 85px;  --i: 1; }
+  .orbit-pos-3   { left: 319.9px; top: 235px; --i: 2; }
+  .orbit-pos-4   { left: 60.1px;  top: 235px; --i: 4; }
+  .orbit-pos-set { left: 190px;   top: 310px; --i: 3; }
+  .orbit-bob { position: relative; display: block; width: 60px; height: 60px; will-change: transform; }
   .orbit-tile {
     display: flex;
     align-items: center;
@@ -220,7 +225,7 @@
     box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.7);
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
-    transition: scale 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+    transition: scale 0.35s var(--ease-spring), box-shadow 0.3s ease;
   }
   .orbit-tile > span {
     display: flex;
@@ -228,8 +233,13 @@
     justify-content: center;
     width: 42px;
     height: 42px;
+    overflow: hidden;
     border-radius: 14px;
   }
+  /* Apps without a Figma orbit glyph show their list icon or logo on white */
+  .orbit-tile > .orbit-logo { background-color: #fff; }
+  .orbit-logo > .app-logo { scale: 0.7; }
+  .orbit-logo > .app-tile { flex-shrink: 0; scale: 0.955; }
   .orbit-app:hover .orbit-tile { scale: 1.08; box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.9), 0 10px 24px -8px rgb(51 77 140 / 0.35); }
   .orbit-app:focus-visible .orbit-tile { outline: 2px solid var(--color-brand); outline-offset: 3px; }
   /* Labels keep an 11px on-screen size however far the orbit is scaled. */
@@ -244,22 +254,40 @@
   }
   .orbit-app:hover .orbit-label,
   .orbit-app:focus-visible .orbit-label { color: var(--color-heading); }
-  .orbit-label--top    { left: 30px; top: -15px; translate: -50% -50%; }
-  .orbit-label--bottom { left: 30px; top: 71px;  translate: -50% -50%; }
-  .orbit-label--side   { left: 68px; top: 30px;  translate: 0 -50%; }
-  /* orbit/+ future (136:982): dashed slot for the next app */
+  :is(.orbit-pos-0, .orbit-pos-2) .orbit-label   { left: 30px; top: -15px; translate: -50% -50%; }
+  :is(.orbit-pos-3, .orbit-pos-4) .orbit-label   { left: 30px; top: 71px;  translate: -50% -50%; }
+  :is(.orbit-pos-1, .orbit-pos-set) .orbit-label { left: 68px; top: 30px;  translate: 0 -50%; }
+
+  /* orbit/Setting (154:385): dashed tile that opens "Atur Akses Cepat" */
   .orbit-tile > .orbit-add {
     width: 40px;
     height: 40px;
     border: 1px dashed rgb(26 111 219 / 0.45);
     border-radius: 13px;
     background-color: rgb(255 255 255 / 0.6);
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+    transition: background-color 0.25s ease, border-color 0.25s ease;
   }
-  .orbit-add img { transition: rotate 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
-  .orbit-app--add:hover .orbit-add,
-  .orbit-app--add:focus-visible .orbit-add { border-color: rgb(26 111 219 / 0.8); background-color: #fff; }
-  .orbit-app--add:hover .orbit-add img { rotate: 90deg; }
+  .orbit-add img { transition: rotate 0.7s var(--ease-out-quint); }
+  .orbit-app--setting:hover .orbit-add,
+  .orbit-app--setting:focus-visible .orbit-add { border-color: rgb(26 111 219 / 0.8); background-color: #fff; }
+  .orbit-app--setting:hover .orbit-add img { rotate: 90deg; }
+
+  /* orbit/Slot kosong (154:988): an empty place, drawn dashed over the whole tile */
+  .orbit-tile--empty {
+    border: 1.5px dashed #1a6fdb;
+    background-color: rgb(255 255 255 / 0.6);
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    transition: scale 0.35s var(--ease-spring), background-color 0.25s ease;
+  }
+  .orbit-tile--empty > span { width: 21.2px; height: 21.2px; overflow: visible; }
+  .orbit-tile--empty img { scale: 1.515; }
+  .orbit-app--empty .orbit-label { color: #1a6fdb; }
+  .orbit-app--empty:hover .orbit-tile { background-color: #fff; box-shadow: none; }
+
+  /* Pratinjau Lingkaran (154:950): the same orbit at 0.66 (its motion rules are under Motion) */
+  .orbit--preview .orbit-label { font-size: 11px; }
 
   /* ---------- Tinted glass panels ----------
    * The tint fades colour→white as it fades out (Figma interpolates
@@ -384,7 +412,7 @@
     background-color: var(--color-brand);
     box-shadow: 0 8px 18px -6px rgb(9 87 195 / 0.25);
     translate: calc(var(--sel, 0) * (100% + var(--gap))) 0;
-    transition: translate 0.5s cubic-bezier(0.34, 1.25, 0.64, 1);
+    transition: translate 0.45s var(--ease-out-quint);
     pointer-events: none;
   }
   .cal-day {
@@ -417,7 +445,7 @@
   .cal-day[aria-selected="true"] .cal-dots > i { background-color: #fff; transition-delay: 0.12s; }
   /* Week change: the day contents slide in from the side you're heading to */
   .cal-days[data-slide] .cal-day > * {
-    animation: cal-slide 0.42s var(--ease-out-soft) both;
+    animation: cal-slide 0.45s var(--ease-out-quint) both;
     animation-delay: calc(var(--i, 0) * 22ms);
   }
   .cal-days[data-slide="prev"] { --slide-x: -18px; }
@@ -556,11 +584,11 @@
 
   /* Rows that (re)appear: tasks of the picked day, filtered notifications */
   .list-enter {
-    animation: list-enter 0.45s var(--ease-out-soft) both;
+    animation: list-enter 0.5s var(--ease-out-quint) both;
     animation-delay: calc(var(--i, 0) * 50ms);
   }
   /* Text that changes with the selected date */
-  .text-swap { animation: text-swap 0.35s var(--ease-out-soft); }
+  .text-swap { animation: text-swap 0.4s var(--ease-out-quint); }
 
   /* Briefly ring a panel you jumped to (#notifikasi, #ajukan) */
   .target-ring { outline: 3px solid transparent; outline-offset: 4px; }
@@ -714,7 +742,7 @@
     visibility: hidden;
     translate: 0 -6px;
     scale: 0.98;
-    transition: opacity 0.16s ease, translate 0.16s ease, scale 0.16s ease, visibility 0s linear 0.16s;
+    transition: opacity 0.2s ease, translate 0.28s var(--ease-out-quint), scale 0.28s var(--ease-out-quint), visibility 0s linear 0.28s;
   }
   .menu-panel[data-open] {
     opacity: 1;
@@ -739,6 +767,694 @@
   }
   .menu-item:hover,
   .menu-item:focus-visible { background-color: rgb(220 232 255 / 0.55); outline: none; }
+
+  /* ---------- Buttons (modal footers, Tambah Tugas) ---------- */
+  .btn {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 16px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: normal;
+    white-space: nowrap;
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.25s ease, scale 0.15s ease;
+  }
+  .btn:active { scale: 0.97; }
+  .btn:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+  .btn--ghost { border: 1px solid var(--color-line); background-color: #fff; color: var(--color-heading); }
+  .btn--ghost:hover { border-color: #cfdcf2; background-color: #f8faff; }
+  .btn--primary {
+    background-color: var(--color-brand);
+    padding-right: 22px;
+    color: #fff;
+    box-shadow: 0 8px 18px -6px rgb(9 87 195 / 0.25);
+  }
+  .btn--primary:hover { background-color: #0849a6; box-shadow: 0 10px 22px -6px rgb(9 87 195 / 0.38); }
+  /* Tambah Tugas (154:417) */
+  .btn--add { padding: 12px 16px; background-color: var(--color-brand); color: #fff; }
+  .btn--add:hover { background-color: #0849a6; box-shadow: 0 8px 18px -6px rgb(9 87 195 / 0.35); }
+  .btn--add img { transition: rotate 0.5s var(--ease-out-quint); }
+  .btn--add:hover img { rotate: 90deg; }
+
+  /* Tugas Saya header: on phones the button gets its own full-width row */
+  @media (max-width: 639.98px) {
+    .panel-head--stack {
+      grid-template-columns: 44px minmax(0, 1fr);
+      grid-template-areas: "icon title" "icon desc" "aside aside";
+    }
+    .panel-head--stack .panel-head__aside { justify-self: stretch; margin-top: 12px; }
+  }
+
+  /* ---------- Modals (<dialog>) ----------
+   * Figma: white card, radius 32, 0 32 80 -16 shadow over a navy 42% overlay
+   * with a 3px blur. main.js adds data-shown a frame after showModal() and
+   * removes it before close(), so both directions animate. Phones get a
+   * bottom sheet. */
+  .modal {
+    --modal-w: 560px;
+    width: min(var(--modal-w), 100% - 48px);
+    max-width: none;
+    max-height: min(100% - 48px, 960px);
+    margin: auto;
+    border: 0;
+    border-radius: 32px;
+    background-color: #fff;
+    padding: 0;
+    color: var(--color-heading);
+    box-shadow: 0 32px 80px -16px rgb(10 20 51 / 0.28);
+    overflow: hidden;
+    opacity: 0;
+    translate: 0 18px;
+    scale: 0.97;
+    transition: opacity 0.28s ease, translate 0.5s var(--ease-out-quint), scale 0.5s var(--ease-out-quint);
+  }
+  .modal[open] { display: flex; flex-direction: column; }
+  .modal[data-shown] { opacity: 1; translate: 0 0; scale: 1; }
+  .modal--wide { --modal-w: 1040px; }
+  .modal::backdrop {
+    background-color: rgb(15 26 51 / 0);
+    -webkit-backdrop-filter: blur(0);
+    backdrop-filter: blur(0);
+    transition: background-color 0.35s ease, backdrop-filter 0.35s ease, -webkit-backdrop-filter 0.35s ease;
+  }
+  .modal[data-shown]::backdrop {
+    background-color: rgb(15 26 51 / 0.42);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+  }
+  @media (max-width: 639.98px) {
+    .modal {
+      width: 100%;
+      max-height: calc(100% - 12px);
+      margin: auto 0 0;
+      border-radius: 28px 28px 0 0;
+      translate: 0 100%;
+      scale: 1;
+    }
+  }
+  .modal-form { display: flex; min-height: 0; flex: 1; flex-direction: column; }
+  /* Header (155:1195) */
+  .modal-head {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid var(--color-line);
+    padding: 24px 28px 20px;
+  }
+  .modal-icon {
+    display: flex;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background-color: var(--color-brand-soft);
+  }
+  .modal-titles { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 4px; line-height: normal; }
+  .modal-title { font-size: 20px; font-weight: 800; color: var(--color-heading); outline: none; }
+  .modal-desc { font-size: 13px; color: var(--color-muted); }
+  .modal-close {
+    display: flex;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background-color: #f3f5fa;
+    transition: background-color 0.2s ease, rotate 0.4s var(--ease-out-quint);
+  }
+  .modal-close:hover { background-color: #e7ecf5; rotate: 90deg; }
+  .modal-close:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+  .modal-body { min-height: 0; flex: 1; overflow-y: auto; overscroll-behavior: contain; }
+  /* Footer (155:1285) */
+  .modal-foot {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid var(--color-line);
+    padding: 16px 28px calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+  @media (max-width: 639.98px) {
+    .modal-head { gap: 12px; padding: 20px 20px 16px; }
+    .modal-title { font-size: 18px; }
+    .modal-foot { padding-inline: 20px; }
+    .modal-foot > .btn { flex: 1; }
+  }
+
+  /* Icon boxes: the Figma icon frame size, with the exported glyph centred */
+  .ico { display: flex; flex-shrink: 0; align-items: center; justify-content: center; }
+  .ico-14 { width: 14px; height: 14px; }
+  .ico-16 { width: 16px; height: 16px; }
+  .ico-18 { width: 18px; height: 18px; }
+  .ico-20 { width: 20px; height: 20px; }
+
+  /* App mark on a white tile (the list logos are 44px wide; here they're 34) */
+  .logo-tile {
+    display: flex;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid var(--color-line);
+    border-radius: 14px;
+    background-color: #fff;
+  }
+  .logo-tile > .app-logo { scale: 0.7727; }
+  .logo-tile--bare { overflow: visible; border: 0; background: none; }
+  .logo-tile--sm { width: 32px; height: 32px; }
+  .logo-tile--sm > .app-logo { scale: 0.562; }
+  .logo-tile--sm > .app-tile { scale: 0.7273; }
+
+  /* ---------- Modal · Tambah Tugas (155:1194, 155:1929) ---------- */
+  .tf-body { display: flex; flex-direction: column; gap: 18px; padding: 22px 28px 24px; }
+  .tf-field { display: flex; min-width: 0; flex-direction: column; gap: 8px; }
+  .tf-label { font-size: 12px; font-weight: 700; line-height: normal; color: var(--color-heading); }
+  .tf-req { color: var(--color-urgent-ink); }
+  .tf-help { font-size: 11px; line-height: normal; color: var(--color-muted); }
+  .tf-error { font-size: 11px; font-weight: 600; line-height: normal; color: var(--color-urgent-ink); }
+  .tf-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 12px; }
+  @media (max-width: 639.98px) {
+    .tf-body { padding: 20px; }
+  }
+  @media (max-width: 479.98px) {
+    .tf-row { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  }
+
+  /* Segmented / Jenis Tugas (155:1215): two radio cards */
+  .seg {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    border: 1px solid var(--color-line);
+    border-radius: 18px;
+    background-color: #f6f8fc;
+    padding: 4px;
+  }
+  .seg-opt {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 10px;
+    border-radius: 14px;
+    padding: 11.5px 13.5px 11.5px 11.5px;
+    cursor: pointer;
+    transition: background-color 0.25s ease, box-shadow 0.3s ease;
+  }
+  .seg-opt:hover { background-color: rgb(255 255 255 / 0.65); }
+  .seg-opt:has(:checked) {
+    background-color: #fff;
+    box-shadow: inset 0 0 0 1.5px #1a6fdb, 0 6px 16px -6px rgb(51 77 140 / 0.1);
+  }
+  .seg-opt:has(:focus-visible) { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+  .seg-ico {
+    display: flex;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background-color: #fff;
+    transition: background-color 0.25s ease;
+  }
+  .seg-ico .is-on { display: none; }
+  .seg-opt:has(:checked) .seg-ico { background-color: var(--color-brand-soft); }
+  .seg-opt:has(:checked) .seg-ico .is-on { display: block; }
+  .seg-opt:has(:checked) .seg-ico .is-off { display: none; }
+  .seg-text { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 1px; line-height: normal; }
+  .seg-title,
+  .seg-sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .seg-title { font-size: 13px; font-weight: 800; color: var(--color-heading); transition: color 0.25s ease; }
+  .seg-opt:has(:checked) .seg-title { color: var(--color-brand); }
+  .seg-sub { font-size: 11px; color: var(--color-muted); }
+  .seg-radio {
+    display: flex;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background-color: #fff;
+    box-shadow: inset 0 0 0 1.5px #ccd5e2;
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .seg-radio img { opacity: 0; scale: 0.4; transition: opacity 0.2s ease, scale 0.35s var(--ease-spring); }
+  .seg-opt:has(:checked) .seg-radio { background-color: var(--color-brand); box-shadow: none; }
+  .seg-opt:has(:checked) .seg-radio img { opacity: 1; scale: 1; }
+  @media (max-width: 479.98px) {
+    .seg { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  /* Inputs (155:1253, 155:1259) */
+  .field-box {
+    position: relative;
+    display: flex;
+    height: 48px;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--color-line);
+    border-radius: 14px;
+    background-color: #fff;
+    padding: 0 14px 0 12px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .field-box:hover { border-color: #d3ddec; }
+  .field-box:focus-within,
+  .select-btn:focus-visible,
+  .select-btn[aria-expanded="true"] {
+    border-color: #1a6fdb;
+    outline: none;
+    box-shadow: inset 0 0 0 0.5px #1a6fdb, 0 0 0 4px rgb(26 111 219 / 0.14);
+  }
+  .field-box[data-invalid],
+  .select-btn[data-invalid] { border-color: var(--color-urgent-ink); box-shadow: 0 0 0 4px rgb(200 41 41 / 0.1); }
+  .field-input {
+    min-width: 0;
+    flex: 1;
+    height: 100%;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-heading);
+    outline: none;
+  }
+  .field-input::placeholder { font-weight: 400; color: var(--color-subtle); }
+  .field-count { flex-shrink: 0; font-size: 11px; font-weight: 600; line-height: normal; color: var(--color-subtle); }
+  .field-text {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: normal;
+    color: var(--color-heading);
+  }
+  .field-text[data-empty] { font-weight: 400; color: var(--color-subtle); }
+  /* The native date/time input covers the field, invisible, so a tap opens the
+   * system picker (and its picker button spans the whole field in Chrome). */
+  .field-native {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .field-native::-webkit-calendar-picker-indicator {
+    position: absolute;
+    inset: 0;
+    width: auto;
+    height: auto;
+    cursor: pointer;
+  }
+  .pill-due {
+    display: inline-flex;
+    align-self: flex-start;
+    border-radius: 9999px;
+    background-color: var(--color-urgent-soft);
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: normal;
+    white-space: nowrap;
+    color: var(--color-urgent-ink);
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+  .pill-due[data-tone="calm"] { background-color: var(--color-calm-soft); color: var(--color-muted); }
+  /* Info (155:1278) */
+  .tf-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border-radius: 14px;
+    background-color: #eef3fd;
+    padding: 12px 14px 12px 12px;
+  }
+  .tf-info p { min-width: 0; flex: 1; font-size: 12px; line-height: normal; color: var(--color-body); }
+
+  /* "Ditugaskan oleh" opens and closes smoothly (0fr → 1fr rows) */
+  .tf-reveal {
+    display: grid;
+    grid-template-rows: 0fr;
+    margin-top: -18px;
+    opacity: 0;
+    transition: grid-template-rows 0.45s var(--ease-out-quint), margin-top 0.45s var(--ease-out-quint), opacity 0.3s ease;
+  }
+  .tf-reveal > * { min-height: 0; overflow: hidden; }
+  .tf-reveal.is-open { grid-template-rows: 1fr; margin-top: 0; opacity: 1; }
+  .tf-reveal.is-open.is-settled > * { overflow: visible; }
+
+  /* Dropdowns: Aplikasi (155:1243) and Pemberi Tugas (155:1993) */
+  .select-btn {
+    display: flex;
+    width: 100%;
+    height: 52px;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--color-line);
+    border-radius: 14px;
+    background-color: #fff;
+    padding: 0 14px 0 10px;
+    text-align: left;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .select-btn:hover { border-color: #d3ddec; }
+  .select-btn--person { height: 56px; }
+  .select-value { display: flex; min-width: 0; flex: 1; align-items: center; gap: 10px; line-height: normal; }
+  .select-placeholder { padding-left: 4px; font-size: 14px; color: var(--color-subtle); }
+  .select-name { flex-shrink: 0; font-size: 14px; font-weight: 700; color: var(--color-heading); }
+  .select-sub { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; color: var(--color-muted); }
+  .select-person { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 1px; }
+  .select-person > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .select-person > :first-child { font-size: 14px; font-weight: 700; color: var(--color-heading); }
+  .select-person > :last-child { font-size: 11px; color: var(--color-muted); }
+  .select-chev { transition: rotate 0.35s var(--ease-out-quint); }
+  .select-btn[aria-expanded="true"] .select-chev { rotate: 180deg; }
+  .avatar {
+    display: flex;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background-image: linear-gradient(135deg, #dce8ff 14.644%, #c7d9fc 85.356%);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: normal;
+    color: var(--color-brand);
+  }
+  /* The option list sits in the top layer (popover), placed by main.js */
+  .select-pop {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    max-height: 320px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 1px solid #fff;
+    border-radius: 18px;
+    background-color: rgb(255 255 255 / 0.98);
+    padding: 6px;
+    color: var(--color-heading);
+    box-shadow: 0 24px 48px -16px rgb(51 77 140 / 0.32), 0 4px 12px -4px rgb(51 77 140 / 0.1);
+    opacity: 0;
+    translate: 0 -6px;
+    transition: opacity 0.18s ease, translate 0.3s var(--ease-out-quint), display 0.3s allow-discrete, overlay 0.3s allow-discrete;
+  }
+  .select-pop[data-side="top"] { translate: 0 6px; }
+  .select-pop:popover-open { opacity: 1; translate: 0 0; }
+  @starting-style {
+    .select-pop:popover-open { opacity: 0; translate: 0 -6px; }
+  }
+  .select-list { outline: none; }
+  .select-group {
+    padding: 10px 10px 4px;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: normal;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--color-subtle);
+  }
+  .select-opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 12px;
+    padding: 7px 10px 7px 8px;
+    cursor: pointer;
+    line-height: normal;
+    transition: background-color 0.12s ease;
+  }
+  .select-opt.is-active { background-color: rgb(220 232 255 / 0.6); }
+  .select-opt[aria-selected="true"] { background-color: rgb(220 232 255 / 0.9); }
+  .select-opt__text { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 1px; }
+  .select-opt__text > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .select-opt__text > :first-child { font-size: 13px; font-weight: 700; color: var(--color-heading); }
+  .select-opt__text > :last-child { font-size: 11px; color: var(--color-muted); }
+
+  /* ---------- Modal · Atur Akses Cepat (154:926) ---------- */
+  .os-body { display: flex; flex-direction: column; gap: 24px; padding: 20px; }
+  .os-col { display: flex; min-width: 0; flex-direction: column; }
+  .os-col--circle { gap: 16px; }
+  .os-col--apps { gap: 14px; }
+  @media (min-width: 1024px) {
+    /* Figma's 909.8px card; the app list scrolls inside it */
+    .modal--wide { height: min(100% - 48px, 910px); }
+    .os-body {
+      display: grid;
+      grid-template-columns: 340px minmax(0, 1fr);
+      overflow: hidden;
+      padding: 24px 28px;
+    }
+    .os-col { min-height: 0; }
+    .os-col--circle { overflow-y: auto; margin: -4px; padding: 4px; }
+    .os-list-wrap { min-height: 0; flex: 1; }
+    .os-list { height: 100%; overflow-y: auto; overscroll-behavior: contain; padding: 4px 4px 32px; margin: -4px; }
+    .os-list-wrap::after { opacity: 1; }
+    .os-list-wrap[data-at-end]::after { opacity: 0; }
+  }
+  /* Pratinjau Lingkaran (154:946) */
+  .os-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid var(--color-line);
+    border-radius: 24px;
+    background-image: linear-gradient(137.39deg, rgb(255 255 255 / 0.92) 14.644%, #eef3fd 85.356%);
+    padding: 16px 16px 8px;
+  }
+  .os-preview__orbit { width: 100%; max-width: 290.4px; }
+  /* Aplikasi di Lingkaran (154:1002) */
+  .os-slots { position: relative; display: flex; flex-direction: column; gap: 8px; }
+  .os-slot {
+    display: flex;
+    height: 56px;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--color-line);
+    border-radius: 16px;
+    background-color: #fff;
+    padding: 6px 8px;
+    transition: box-shadow 0.25s ease, border-color 0.25s ease, scale 0.25s var(--ease-out-quint);
+  }
+  .os-slot.is-dragging {
+    position: relative;
+    z-index: 2;
+    border-color: #c9d8f3;
+    box-shadow: 0 18px 36px -14px rgb(51 77 140 / 0.4);
+    scale: 1.02;
+    cursor: grabbing;
+  }
+  .os-slot.is-shifting { transition: translate 0.25s var(--ease-out-quint); }
+  .os-grip {
+    display: flex;
+    width: 24px;
+    height: 36px;
+    margin-inline: -4px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: grab;
+    touch-action: none;
+    transition: background-color 0.15s ease;
+  }
+  .os-grip:hover { background-color: #f3f5fa; }
+  .os-grip:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 0; }
+  .os-slot__name {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: normal;
+    color: var(--color-heading);
+  }
+  .os-remove {
+    display: flex;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background-color: #f3f5fa;
+    transition: background-color 0.2s ease, scale 0.15s ease;
+  }
+  .os-remove:hover { background-color: var(--color-urgent-soft); }
+  .os-remove:active { scale: 0.9; }
+  .os-remove:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 1px; }
+  /* Slot kosong (154:1090) */
+  .os-empty {
+    display: flex;
+    width: 100%;
+    height: 56px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px dashed #1a6fdb;
+    border-radius: 16px;
+    background-color: rgb(239 244 255 / 0.6);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: normal;
+    color: #1a6fdb;
+    transition: background-color 0.2s ease;
+  }
+  .os-empty:hover { background-color: rgb(220 232 255 / 0.75); }
+  .os-empty:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+  .os-hint { font-size: 11px; line-height: normal; color: var(--color-muted); transition: color 0.2s ease; }
+  .os-hint[data-warn] { font-weight: 600; color: var(--color-urgent-ink); }
+  .is-nudging { animation: nudge 0.45s ease; }
+  /* Cari Aplikasi (154:1097) */
+  .os-search {
+    display: flex;
+    height: 42px;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--color-line);
+    border-radius: 14px;
+    background-color: #f6f8fc;
+    padding: 0 14px;
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .os-search:focus-within {
+    border-color: #1a6fdb;
+    background-color: #fff;
+    box-shadow: inset 0 0 0 0.5px #1a6fdb, 0 0 0 4px rgb(26 111 219 / 0.14);
+  }
+  .os-search input { min-width: 0; flex: 1; background: transparent; font-size: 13px; line-height: normal; color: var(--color-heading); outline: none; }
+  .os-search input::placeholder { color: var(--color-subtle); }
+  /* Filter Kategori (154:1103) */
+  .chip-sm {
+    flex-shrink: 0;
+    border: 1px solid var(--color-line);
+    border-radius: 9999px;
+    background-color: #fff;
+    padding: 7px 13px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: normal;
+    white-space: nowrap;
+    color: var(--color-muted);
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+  .chip-sm:hover { border-color: #cfdcf2; color: var(--color-heading); }
+  .chip-sm[aria-pressed="true"] { border-color: var(--color-brand); background-color: var(--color-brand); font-weight: 700; color: #fff; }
+  .chip-sm:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+  /* Daftar Aplikasi (154:1118) with Fade scroll (154:1379) */
+  .os-list-wrap { position: relative; }
+  .os-list-wrap::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 48px;
+    background-image: linear-gradient(to bottom, rgb(255 255 255 / 0), #fff);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .os-list { display: flex; flex-direction: column; gap: 18px; }
+  .os-group { display: flex; flex-direction: column; gap: 10px; }
+  .os-group__title { font-size: 11px; font-weight: 800; line-height: normal; letter-spacing: 0.6px; text-transform: uppercase; color: var(--color-subtle); }
+  .os-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
+  @media (max-width: 559.98px) {
+    .os-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+  /* Kartu (153:363) */
+  .os-card {
+    display: flex;
+    height: 64px;
+    min-width: 0;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--color-line);
+    border-radius: 18px;
+    background-color: #fff;
+    padding: 10px 12px 10px 10px;
+    text-align: left;
+    transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .os-card:hover { border-color: #c9d8f3; box-shadow: 0 8px 20px -12px rgb(51 77 140 / 0.3); }
+  .os-card:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+  .os-card[aria-pressed="true"] { border-color: #1a6fdb; background-color: #eff4ff; box-shadow: inset 0 0 0 0.5px #1a6fdb; }
+  .os-card__text { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 2px; line-height: normal; }
+  .os-card__text > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .os-card__text > :first-child { font-size: 14px; font-weight: 800; color: var(--color-heading); }
+  .os-card__text > :last-child { font-size: 11px; color: var(--color-muted); }
+  .os-card__act {
+    position: relative;
+    display: flex;
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background-color: var(--color-brand-soft);
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .os-card__act > img { position: absolute; transition: opacity 0.2s ease, scale 0.35s var(--ease-spring), rotate 0.35s var(--ease-out-quint); }
+  .os-card__act > .is-check { opacity: 0; scale: 0.4; }
+  .os-card[aria-pressed="true"] .os-card__act { background-color: var(--color-brand); box-shadow: 0 6px 14px -4px rgb(9 87 195 / 0.25); }
+  .os-card[aria-pressed="true"] .os-card__act > .is-check { opacity: 1; scale: 1; }
+  .os-card[aria-pressed="true"] .os-card__act > .is-plus { opacity: 0; scale: 0.4; rotate: 90deg; }
+  .os-card:hover:not([aria-pressed="true"]) .os-card__act > .is-plus { rotate: 90deg; }
+  /* All five places taken: the add buttons go quiet */
+  [data-full] .os-card:not([aria-pressed="true"]) .os-card__act { background-color: var(--color-calm-soft); }
+  [data-full] .os-card:not([aria-pressed="true"]) .os-card__act > .is-plus { opacity: 0.45; }
+  .os-none { border: 1px dashed #c9d6ea; border-radius: 20px; padding: 22px 20px; text-align: center; font-size: 13px; font-weight: 600; color: var(--color-muted); }
+  .os-reset {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: -6px -8px;
+    border-radius: 10px;
+    padding: 6px 8px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: normal;
+    color: var(--color-muted);
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+  .os-reset:hover { background-color: #f3f5fa; color: var(--color-heading); }
+  .os-reset img { transition: rotate 0.6s var(--ease-out-quint); }
+  .os-reset:hover img { rotate: -180deg; }
+  .os-reset:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 1px; }
+  @media (max-width: 639.98px) {
+    .os-reset__text { display: none; }
+  }
+
+  /* A task just added: a short brand glow */
+  .task-row.is-new::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: 20px;
+    box-shadow: 0 0 0 3px rgb(26 111 219 / 0.35), 0 10px 26px -10px rgb(26 111 219 / 0.45);
+    pointer-events: none;
+    animation: task-glow 1.8s ease-out 0.4s both;
+  }
 
   /* ---------- Toast ---------- */
   .toast-region {
@@ -767,7 +1483,7 @@
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     pointer-events: auto;
-    animation: toast-in 0.3s var(--ease-out-soft);
+    animation: toast-in 0.4s var(--ease-out-quint);
   }
   .toast-action {
     flex-shrink: 0;
@@ -784,6 +1500,8 @@
 }
 
 @layer base {
+  html { scrollbar-gutter: stable; }
+  html:has(dialog[open]) { overflow: hidden; }
   @media (prefers-reduced-motion: no-preference) {
     html { scroll-behavior: smooth; }
   }
@@ -800,30 +1518,33 @@
 /* List view for "Jelajahi Semua Aplikasi" (unlayered so it beats the grid utilities) */
 #app-panels[data-view="list"] { grid-template-columns: minmax(0, 1fr); }
 
-/* ---------- Motion ---------- */
-@keyframes hero-rise   { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+/* ---------- Motion ----------
+ * Long, eased loops (sine in-out) and quint ease-outs; everything that loops
+ * moves on transform/opacity only so it stays on the compositor. */
+@keyframes hero-rise   { from { opacity: 0; transform: translate3d(0, 14px, 0); } to { opacity: 1; transform: none; } }
 @keyframes orbit-in    { from { opacity: 0; } to { opacity: 1; } }
 @keyframes orbit-spin  { to { rotate: 360deg; } }
-@keyframes orbit-pop   { from { opacity: 0; scale: 0.55; } to { opacity: 1; scale: 1; } }
-@keyframes orbit-bob   { from { transform: translateY(0); } to { transform: translateY(-7px); } }
-@keyframes disc-in     { from { opacity: 0; scale: 0.8; } to { opacity: 1; scale: 1; } }
-@keyframes disc-pulse  { 0%, 100% { scale: 1; } 16% { scale: 1.03; } 40% { scale: 0.995; } }
-@keyframes orbit-wave  { 0% { opacity: 0; scale: 1; } 12% { opacity: 1; } 100% { opacity: 0; scale: 1.85; } }
-@keyframes woman-rise  { from { transform: translateY(36px); } to { transform: none; } }
-@keyframes woman-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -4px; } }
+@keyframes orbit-pop   { from { opacity: 0; scale: 0.6; } to { opacity: 1; scale: 1; } }
+@keyframes orbit-bob   { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(0, -6px, 0); } }
+@keyframes disc-in     { from { opacity: 0; scale: 0.85; } to { opacity: 1; scale: 1; } }
+/* a slow breath, one per resonance wave */
+@keyframes disc-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.018); } }
+@keyframes orbit-wave  { 0% { opacity: 0; transform: scale(1); } 18% { opacity: 0.85; } 100% { opacity: 0; transform: scale(1.8); } }
+@keyframes woman-rise  { from { transform: translate3d(0, 36px, 0); } to { transform: none; } }
+@keyframes woman-float { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -4px, 0); } }
 /* single pose: a small bow with the salam */
 @keyframes salam-nod {
-  0%, 52%, 100% { transform: none; }
-  64% { transform: translateY(3px) rotate(-1deg); }
-  78% { transform: translateY(1px) rotate(0.3deg); }
+  0%, 50%, 100% { transform: none; }
+  66% { transform: translateY(2.5px) rotate(-0.8deg); }
+  82% { transform: translateY(0.8px) rotate(0.2deg); }
 }
-/* two poses: salam → open-hand welcome → salam, with a lift on each change */
-@keyframes pose-salam   { 0%, 42% { opacity: 1; } 49%, 91% { opacity: 0; } 98%, 100% { opacity: 1; } }
-@keyframes pose-welcome { 0%, 42% { opacity: 0; } 49%, 91% { opacity: 1; } 98%, 100% { opacity: 0; } }
+/* two poses: salam → open-hand welcome → salam, each change a one-second crossfade */
+@keyframes pose-salam   { 0%, 40% { opacity: 1; } 50%, 90% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes pose-welcome { 0%, 40% { opacity: 0; } 50%, 90% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes pose-lift {
-  0%, 40%, 56%, 89%, 100% { transform: none; }
-  46% { transform: translateY(-3px) scale(1.015); }
-  95% { transform: translateY(-2px) scale(1.01); }
+  0%, 36%, 58%, 86%, 100% { transform: none; }
+  45% { transform: translateY(-2px) scale(1.01); }
+  95% { transform: translateY(-1.5px) scale(1.006); }
 }
 @keyframes wave {
   0%, 60%, 100% { rotate: 0deg; }
@@ -838,37 +1559,51 @@
 @keyframes target-ring { 15%, 50% { outline-color: rgb(9 87 195 / 0.3); } }
 @keyframes pin-pop { 0% { scale: 1; } 40% { scale: 1.45; rotate: -14deg; } 100% { scale: 1; rotate: 0deg; } }
 @keyframes toast-in { from { opacity: 0; translate: 0 12px; } to { opacity: 1; translate: 0 0; } }
+@keyframes task-glow { from { opacity: 1; } to { opacity: 0; } }
+@keyframes nudge {
+  0%, 100% { translate: 0 0; }
+  20% { translate: -4px 0; }
+  40% { translate: 4px 0; }
+  60% { translate: -2px 0; }
+  80% { translate: 2px 0; }
+}
 
 .hero-rise {
-  animation: hero-rise 0.75s var(--ease-out-soft) both;
+  animation: hero-rise 0.9s var(--ease-out-quint) both;
   animation-delay: calc(0.08s + var(--d, 0) * 90ms);
 }
-.orbit-ring { animation: orbit-in 0.9s ease 0.1s both, orbit-spin 90s linear infinite; }
-.orbit-disc { animation: disc-in 0.8s var(--ease-out-soft) 0.15s both, disc-pulse 1.5s ease-out 1.2s infinite; }
+.orbit-ring { animation: orbit-in 1.2s ease 0.1s both, orbit-spin 120s linear infinite; will-change: rotate; }
+.orbit-disc { animation: disc-in 1s var(--ease-out-quint) 0.15s both, disc-breathe 4s var(--ease-in-out-sine) 1.2s infinite; }
 .orbit-wave {
-  animation: orbit-wave 4.5s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
-  animation-delay: calc(1.2s + var(--w, 0) * 1.5s);
+  animation: orbit-wave 6s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+  animation-delay: calc(1.2s + var(--w, 0) * 2s);
 }
-.hero-woman { animation: orbit-in 0.9s ease 0.25s both; }
+.hero-woman { animation: orbit-in 1s ease 0.25s both; }
 .hero-woman__float {
   animation:
-    woman-rise 0.9s var(--ease-out-soft) 0.25s both,
-    woman-float 6s ease-in-out 1.2s infinite;
+    woman-rise 1.1s var(--ease-out-quint) 0.25s both,
+    woman-float 7s var(--ease-in-out-sine) 1.35s infinite;
 }
-.hero-woman__greet { animation: salam-nod 4.5s ease-in-out 1.6s infinite; }
+.hero-woman__greet { animation: salam-nod 5s var(--ease-in-out-sine) 1.6s infinite; }
 /* No delay or fill-mode here: Chrome can keep a composited opacity animation
  * with a backwards fill stuck at its first frame. The cycle opens on salam. */
-.hero-woman[data-poses="2"] .hero-woman__greet { animation: pose-lift 9s ease-in-out infinite; }
-.hero-woman[data-poses="2"] .hero-pose--salam { animation: pose-salam 9s ease-in-out infinite; }
-.hero-woman[data-poses="2"] .hero-pose--welcome { animation: pose-welcome 9s ease-in-out infinite; }
+.hero-woman[data-poses="2"] .hero-woman__greet { animation: pose-lift 10s var(--ease-in-out-sine) infinite; }
+.hero-woman[data-poses="2"] .hero-pose--salam { animation: pose-salam 10s var(--ease-in-out-sine) infinite; }
+.hero-woman[data-poses="2"] .hero-pose--welcome { animation: pose-welcome 10s var(--ease-in-out-sine) infinite; }
 .orbit-app {
-  animation: orbit-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation: orbit-pop 0.7s var(--ease-spring) both;
   animation-delay: calc(0.45s + var(--i, 0) * 90ms);
 }
 .orbit-bob {
-  animation: orbit-bob 2.8s ease-in-out infinite alternate;
-  animation-delay: calc(var(--i, 0) * -0.47s);
+  animation: orbit-bob 3.4s var(--ease-in-out-sine) infinite alternate;
+  animation-delay: calc(var(--i, 0) * -0.57s);
 }
+/* A slot whose app changed pops in again (home and preview) */
+.orbit-app.is-swapping { animation: orbit-pop 0.6s var(--ease-spring) both; animation-delay: calc(var(--k, 0) * 70ms); }
+/* The preview in "Atur Akses Cepat" holds still */
+.orbit--preview .orbit-app:not(.is-swapping),
+.orbit--preview .orbit-bob,
+.orbit--preview .hero-woman { animation: none; }
 .wave {
   display: inline-block;
   transform-origin: 70% 80%;
@@ -882,8 +1617,8 @@
   .hero-woman[data-poses="2"] .hero-woman__greet,
   .hero-woman[data-poses="2"] .hero-pose--salam,
   .cal-days[data-slide] .cal-day > *, .list-enter, .text-swap, .target-ring:target,
-  .pin-toggle.is-popping img, .toast { animation: none !important; }
+  .pin-toggle.is-popping img, .toast, .task-row.is-new::before, .is-nudging { animation: none !important; }
   .hero-woman[data-poses="2"] .hero-pose--welcome { animation: none !important; opacity: 0; }
   .orbit-wave { display: none; }
-  .orbit-layer, .orbit-app, .menu-panel, .cal-indicator, .notif-dot { transition: none; }
+  .menu-panel, .cal-indicator, .notif-dot, .modal, .modal::backdrop, .select-pop, .tf-reveal { transition: none !important; }
 }

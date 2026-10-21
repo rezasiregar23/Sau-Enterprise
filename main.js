@@ -24,6 +24,8 @@
   };
   const KEY_PINS = "sau-portal:pins";
   const KEY_OPENED = "sau-portal:last-opened";
+  const KEY_ORBIT = "sau-portal:orbit";
+  const KEY_TASKS = "sau-portal:tasks";
 
   const el = (tag, className, text) => {
     const node = document.createElement(tag);
@@ -31,6 +33,35 @@
     if (text != null) node.textContent = text;
     return node;
   };
+  // Figma exports have fractional sizes; set them as attributes (the properties round).
+  const img = (src, w, h) => {
+    const node = el("img");
+    node.src = src;
+    node.alt = "";
+    node.setAttribute("width", String(w));
+    node.setAttribute("height", String(h));
+    return node;
+  };
+
+  // Dates (local time; keys are YYYY-MM-DD)
+  const DAY_NAMES = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  const DAY_SHORT = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+  const MONTHS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+  const pad = (n) => String(n).padStart(2, "0");
+  const toKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const fromKey = (key) => {
+    const [y, m, d] = key.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  };
+  const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+  const mondayOf = (d) => addDays(d, -((d.getDay() + 6) % 7));
+  const weekIndex = (d) => (d.getDay() + 6) % 7;
+  const daysBetween = (a, b) => Math.round((startOfDay(b) - startOfDay(a)) / 864e5);
+  const longDate = (d) => `${DAY_NAMES[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  const shortDate = (d) => `${DAY_SHORT[d.getDay()]}, ${d.getDate()} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`;
+  const clock = (d) => `${pad(d.getHours())}.${pad(d.getMinutes())}`;
 
   // Run `done` once el's own animation ends, or after `ms` if it never does
   // (animation skipped, element hidden, tab in the background…).
@@ -102,6 +133,51 @@
   });
 
   /* ------------------------------------------------------------------
+   * Modals: <dialog> that slides/fades in and out (a sheet on phones)
+   * ------------------------------------------------------------------ */
+  let escapeHandledAt = 0; // an open option list used this Escape; keep the dialog open
+  const closeTimers = new WeakMap();
+
+  function openModal(dialog) {
+    window.clearTimeout(closeTimers.get(dialog));
+    if (!dialog.open) {
+      closeAllMenus();
+      dialog.showModal();
+      $("[data-modal-start]", dialog)?.focus();
+    }
+    requestAnimationFrame(() => requestAnimationFrame(() => dialog.toggleAttribute("data-shown", true)));
+  }
+  function closeModal(dialog) {
+    if (!dialog.open) return;
+    dialog.removeAttribute("data-shown");
+    dialog.dispatchEvent(new Event("modalclosing"));
+    if (reduceMotion.matches) return dialog.close();
+    window.clearTimeout(closeTimers.get(dialog));
+    closeTimers.set(dialog, window.setTimeout(() => dialog.close(), 320));
+  }
+
+  $$("dialog.modal").forEach((dialog) => {
+    dialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      if (Date.now() - escapeHandledAt < 250) return;
+      closeModal(dialog);
+    });
+    dialog.addEventListener("close", () => dialog.removeAttribute("data-shown"));
+    // Press and release on the backdrop (outside the card) closes it.
+    const outside = (event) => {
+      const r = dialog.getBoundingClientRect();
+      return event.target === dialog && (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom);
+    };
+    let downOutside = false;
+    dialog.addEventListener("pointerdown", (event) => (downOutside = outside(event)));
+    dialog.addEventListener("click", (event) => {
+      if (downOutside && outside(event)) closeModal(dialog);
+      downOutside = false;
+    });
+    $$("[data-modal-close]", dialog).forEach((button) => button.addEventListener("click", () => closeModal(dialog)));
+  });
+
+  /* ------------------------------------------------------------------
    * Toast (feedback with undo)
    * ------------------------------------------------------------------ */
   const toast = $("[data-toast]");
@@ -143,8 +219,45 @@
   const panels = $$("#app-panels > [data-category]");
   const rows = $$("#app-panels [data-app]");
   const apps = new Map(
-    rows.map((row) => [row.dataset.app, { id: row.dataset.app, row, name: row.dataset.name, pinButton: $("[data-pin]", row) }])
+    rows.map((row) => {
+      const panel = row.closest("[data-category]");
+      const app = {
+        id: row.dataset.app,
+        row,
+        name: row.dataset.name,
+        order: Number(row.dataset.order),
+        category: panel.dataset.category,
+        categoryLabel: $("h3", panel).textContent.trim(),
+        desc: $(".app-desc", row).textContent.trim(),
+        href: $("[data-app-link]", row).getAttribute("href"),
+        pinButton: $("[data-pin]", row),
+      };
+      return [app.id, app];
+    })
   );
+  const byOrder = (a, b) => apps.get(a).order - apps.get(b).order;
+  // Categories in the list's own order, each with its apps in the default order.
+  const categories = panels.map((panel) => ({
+    id: panel.dataset.category,
+    label: $("h3", panel).textContent.trim(),
+    ids: $$("[data-app]", panel).map((row) => row.dataset.app).sort(byOrder),
+  }));
+
+  // A copy of an app's list icon: its logo, or its coloured tile.
+  const appIcon = (id) => {
+    const icon = $("[data-app-icon]", apps.get(id).row).cloneNode(true);
+    icon.removeAttribute("data-app-icon");
+    return icon;
+  };
+  // The icon on a white tile (Figma "Logo Aplikasi"), or the coloured tile itself.
+  function logoTile(id, small = false) {
+    const icon = appIcon(id);
+    const tile = el("span", "logo-tile");
+    if (small) tile.classList.add("logo-tile--sm");
+    if (icon.classList.contains("app-tile")) tile.classList.add("logo-tile--bare");
+    tile.append(icon);
+    return tile;
+  }
 
   /* ------------------------------------------------------------------
    * "Terakhir dibuka": remember when each app was opened
@@ -164,8 +277,8 @@
    * Pin / unpin (the "Disematkan" filter)
    * ------------------------------------------------------------------ */
   const DEFAULT_PINS = ["mysau", "moover", "saupay"];
-  const stored = store.get(KEY_PINS, DEFAULT_PINS);
-  let pins = (Array.isArray(stored) ? stored : DEFAULT_PINS).filter((id, i, all) => apps.has(id) && all.indexOf(id) === i);
+  const storedPins = store.get(KEY_PINS, DEFAULT_PINS);
+  let pins = (Array.isArray(storedPins) ? storedPins : DEFAULT_PINS).filter((id, i, all) => apps.has(id) && all.indexOf(id) === i);
 
   function syncPinButtons() {
     apps.forEach((app) => {
@@ -224,6 +337,7 @@
       [row.dataset.name, row.textContent, row.dataset.keywords || "", $("h3", panel)?.textContent || ""].join(" ")
     );
   });
+  const matchesQuery = (id, words) => words.every((w) => apps.get(id).row.dataset.haystack.includes(w));
 
   function updateCounts() {
     const count = (filter) =>
@@ -241,8 +355,7 @@
         const inFilter =
           state.filter === "all" ||
           (state.filter === "pinned" ? pins.includes(row.dataset.app) : panel.dataset.category === state.filter);
-        const inQuery = words.every((w) => row.dataset.haystack.includes(w));
-        row.hidden = !(inFilter && inQuery);
+        row.hidden = !(inFilter && matchesQuery(row.dataset.app, words));
         if (!row.hidden) visible += 1;
       });
       panel.hidden = visible === 0;
@@ -364,39 +477,481 @@
   applyList();
 
   /* ------------------------------------------------------------------
-   * Tugas Saya: week calendar (Monday–Sunday)
-   * Task rows carry data-date; the strip shows one dot per task (max 3).
+   * Hero orbit: the five app slots (chosen in "Atur Akses Cepat")
+   * ------------------------------------------------------------------ */
+  const ORBIT_SIZE = 5;
+  const DEFAULT_ORBIT = ["mysau", "moover", "digital-patrol", "sau-travel", "fintera"];
+  // Apps with an orbit glyph in Figma; the rest show their list icon on white.
+  const ORBIT_GLYPHS = {
+    mysau: ["grad-mysau", "assets/orbit-users.svg"],
+    moover: ["grad-moover", "assets/orbit-car.svg"],
+    "digital-patrol": ["grad-patrol", "assets/orbit-shield.svg"],
+    "sau-travel": ["grad-travel", "assets/orbit-plane.svg"],
+    fintera: ["grad-fintera", "assets/orbit-landmark.svg"],
+    saupay: ["grad-saupay", "assets/orbit-wallet.svg"],
+  };
+  const cleanOrbit = (list) =>
+    (Array.isArray(list) ? list : DEFAULT_ORBIT).filter((id, i, all) => apps.has(id) && all.indexOf(id) === i).slice(0, ORBIT_SIZE);
+  let orbitApps = cleanOrbit(store.get(KEY_ORBIT, DEFAULT_ORBIT));
+  const homeOrbit = $("[data-orbit-apps]");
+
+  function orbitSlot(id, pos, preview) {
+    const app = id ? apps.get(id) : null;
+    const node = el(preview ? "span" : app ? "a" : "button", `orbit-app orbit-pos-${pos}`);
+    node.dataset.slotApp = id;
+    if (!app) node.classList.add("orbit-app--empty");
+    if (!preview && app) {
+      node.href = app.href;
+      node.dataset.appLink = id;
+    }
+    if (!preview && !app) {
+      node.type = "button";
+      node.dataset.openOrbitSettings = "";
+      node.setAttribute("aria-haspopup", "dialog");
+    }
+    const tile = el("span", app ? "orbit-tile" : "orbit-tile orbit-tile--empty");
+    if (!app) {
+      const plus = el("span");
+      plus.append(img("assets/orbit-slot-plus.svg", 10.1667, 10.1667));
+      tile.append(plus);
+    } else if (ORBIT_GLYPHS[id]) {
+      const [grad, glyph] = ORBIT_GLYPHS[id];
+      const inner = el("span", grad);
+      inner.append(img(glyph, 22, 22));
+      tile.append(inner);
+    } else {
+      const inner = el("span", "orbit-logo");
+      inner.append(appIcon(id));
+      tile.append(inner);
+    }
+    const label = el("span", "orbit-label", app ? app.name : "Kosong");
+    if (!preview && !app) label.append(el("span", "sr-only", ": tambah aplikasi ke lingkaran"));
+    const bob = el("span", "orbit-bob");
+    bob.append(tile, label);
+    node.append(bob);
+    return node;
+  }
+
+  // Replace only the slots whose app changed; those pop in, one after another.
+  function renderOrbit(container, list, { preview = false, animate = false } = {}) {
+    let k = 0;
+    for (let pos = 0; pos < ORBIT_SIZE; pos++) {
+      const id = list[pos] || "";
+      const current = container.querySelector(`:scope > .orbit-pos-${pos}`);
+      if (current && current.dataset.slotApp === id) continue;
+      const node = orbitSlot(id, pos, preview);
+      if (animate && !reduceMotion.matches) {
+        node.classList.add("is-swapping");
+        node.style.setProperty("--k", String(k++));
+      }
+      if (current) current.replaceWith(node);
+      else container.append(node);
+    }
+  }
+  if (homeOrbit) renderOrbit(homeOrbit, orbitApps);
+
+  /* ------------------------------------------------------------------
+   * Atur Akses Cepat: choose and order the apps on the circle
+   * ------------------------------------------------------------------ */
+  let openOrbitSettings = () => {};
+  const osDialog = $("[data-orbit-settings]");
+  if (osDialog && homeOrbit) {
+    const preview = $("[data-os-preview]", osDialog);
+    const slotList = $("[data-os-slots]", osDialog);
+    const emptyButton = $("[data-os-empty]", osDialog);
+    const countPill = $("[data-os-count]", osDialog);
+    const hint = $("[data-os-hint]", osDialog);
+    const live = $("[data-os-live]", osDialog);
+    const search = $("[data-os-search]", osDialog);
+    const filterBar = $("[data-os-filters]", osDialog);
+    const listWrap = $("[data-os-list-wrap]", osDialog);
+    const list = $("[data-os-list]", osDialog);
+    const HINT = hint.textContent;
+    const GAP = 8; // between slot rows
+    let draft = [];
+    let filter = "all";
+    let hintTimer = 0;
+
+    const announce = (text) => {
+      live.textContent = "";
+      window.setTimeout(() => (live.textContent = text), 30);
+    };
+
+    // Cards, grouped by category (Daftar Aplikasi 154:1118)
+    const cards = new Map();
+    function buildCard(id) {
+      const app = apps.get(id);
+      const card = el("button", "os-card");
+      card.type = "button";
+      card.dataset.app = id;
+      card.setAttribute("aria-pressed", "false");
+      const text = el("span", "os-card__text");
+      text.append(el("span", "", app.name), el("span", "", app.desc));
+      const act = el("span", "os-card__act");
+      act.setAttribute("aria-hidden", "true");
+      const plus = img("assets/icon-plus-brand.svg", 11.3333, 11.3333);
+      plus.className = "is-plus";
+      const check = img("assets/icon-check-white.svg", 12.6667, 9.33333);
+      check.className = "is-check";
+      act.append(plus, check);
+      card.append(logoTile(id), text, act);
+      card.addEventListener("click", () => toggle(id));
+      return card;
+    }
+    const groupNodes = categories.map((group) => {
+      const section = el("section", "os-group");
+      const title = el("h4", "os-group__title", `${group.label} · ${group.ids.length}`);
+      const grid = el("div", "os-grid");
+      group.ids.forEach((id) => {
+        const card = buildCard(id);
+        cards.set(id, card);
+        grid.append(card);
+      });
+      section.append(title, grid);
+      return section;
+    });
+    const none = el("p", "os-none", "Aplikasi tidak ditemukan. Coba kata kunci lain.");
+    none.hidden = true;
+    list.append(...groupNodes, none);
+
+    // Filter Kategori (154:1103)
+    const chips = [{ id: "all", label: "Semua", n: apps.size }, ...categories.map((c) => ({ id: c.id, label: c.label, n: c.ids.length }))].map(
+      (f) => {
+        const chip = el("button", "chip-sm", `${f.label} · ${f.n}`);
+        chip.type = "button";
+        chip.dataset.osFilter = f.id;
+        chip.setAttribute("aria-pressed", String(f.id === "all"));
+        chip.addEventListener("click", () => {
+          filter = f.id;
+          chips.forEach((c) => c.setAttribute("aria-pressed", String(c === chip)));
+          applyFilter(true);
+        });
+        return chip;
+      }
+    );
+    filterBar.append(...chips);
+
+    const updateFade = () =>
+      listWrap.toggleAttribute("data-at-end", list.scrollTop + list.clientHeight >= list.scrollHeight - 4);
+    list.addEventListener("scroll", updateFade, { passive: true });
+
+    function applyFilter(animate) {
+      const words = normalize(search.value).split(" ").filter(Boolean);
+      let any = false;
+      groupNodes.forEach((section, gi) => {
+        const group = categories[gi];
+        const inGroup = filter === "all" || filter === group.id;
+        let visible = 0;
+        group.ids.forEach((id) => {
+          const show = inGroup && matchesQuery(id, words);
+          cards.get(id).hidden = !show;
+          if (show) visible += 1;
+        });
+        section.hidden = visible === 0;
+        if (visible) any = true;
+        if (visible && animate && !reduceMotion.matches) replay(section, "list-enter", 800);
+      });
+      none.hidden = any;
+      list.scrollTop = 0;
+      updateFade();
+    }
+    search.addEventListener("input", () => applyFilter(false));
+
+    // Aplikasi di Lingkaran (154:1002): keyed rows, moved with FLIP
+    const slotNodes = new Map();
+    function slotItem(id) {
+      const app = apps.get(id);
+      const li = el("li", "os-slot");
+      li.dataset.app = id;
+      const grip = el("button", "os-grip");
+      grip.type = "button";
+      grip.setAttribute("aria-label", `Ubah urutan ${app.name} (panah atas/bawah)`);
+      grip.append(img("assets/icon-grip.svg", 6.13333, 11.4667));
+      const remove = el("button", "os-remove");
+      remove.type = "button";
+      remove.setAttribute("aria-label", `Hapus ${app.name} dari lingkaran`);
+      const x = el("span", "ico ico-14");
+      x.append(img("assets/icon-x-sm.svg", 9, 9));
+      remove.append(x);
+      remove.addEventListener("click", () => {
+        const at = draft.indexOf(id);
+        toggle(id);
+        // keep keyboard focus nearby
+        const next = slotNodes.get(draft[Math.min(at, draft.length - 1)]);
+        (next ? $(".os-remove", next) : emptyButton).focus();
+      });
+      li.append(grip, logoTile(id), el("span", "os-slot__name", app.name), remove);
+      return li;
+    }
+
+    function syncSlots(animate) {
+      const motion = animate && !reduceMotion.matches;
+      const focused = slotList.contains(document.activeElement) ? document.activeElement : null;
+      const before = new Map();
+      if (motion) slotNodes.forEach((li, id) => before.set(id, li.getBoundingClientRect().top));
+      // Rows that left fade out where they were, out of the flow.
+      slotNodes.forEach((li, id) => {
+        if (draft.includes(id)) return;
+        slotNodes.delete(id);
+        if (!motion) return li.remove();
+        const top = li.offsetTop;
+        Object.assign(li.style, { position: "absolute", left: "0", right: "0", top: `${top}px`, pointerEvents: "none" });
+        li.animate([{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(0.96)" }], {
+          duration: 220,
+          easing: "ease",
+        }).onfinish = () => li.remove();
+      });
+      slotNodes.forEach((li) => {
+        li.classList.remove("is-shifting");
+        li.style.translate = "";
+      });
+      const added = [];
+      draft.forEach((id) => {
+        let li = slotNodes.get(id);
+        if (!li) {
+          li = slotItem(id);
+          slotNodes.set(id, li);
+          added.push(li);
+        }
+        slotList.append(li);
+      });
+      if (focused?.isConnected && document.activeElement !== focused) focused.focus({ preventScroll: true });
+      if (!motion) return;
+      slotNodes.forEach((li, id) => {
+        const old = before.get(id);
+        if (old === undefined) return;
+        const dy = old - li.getBoundingClientRect().top;
+        if (Math.abs(dy) > 0.5) {
+          li.animate([{ transform: `translateY(${dy}px)` }, { transform: "none" }], {
+            duration: 380,
+            easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+          });
+        }
+      });
+      added.forEach((li, i) => {
+        li.style.setProperty("--i", String(i));
+        replay(li, "list-enter", 800);
+      });
+    }
+
+    function syncAll({ animate = true } = {}) {
+      syncSlots(animate);
+      renderOrbit(preview, draft, { preview: true, animate });
+      cards.forEach((card, id) => card.setAttribute("aria-pressed", String(draft.includes(id))));
+      list.toggleAttribute("data-full", draft.length >= ORBIT_SIZE);
+      countPill.textContent = `${draft.length}/${ORBIT_SIZE} slot`;
+      emptyButton.hidden = draft.length >= ORBIT_SIZE;
+    }
+
+    function warnFull() {
+      hint.textContent = "Lingkaran sudah penuh. Hapus satu aplikasi dulu untuk menambah yang lain.";
+      hint.dataset.warn = "";
+      if (!reduceMotion.matches) replay(countPill, "is-nudging", 600);
+      announce(hint.textContent);
+      window.clearTimeout(hintTimer);
+      hintTimer = window.setTimeout(() => {
+        hint.textContent = HINT;
+        delete hint.dataset.warn;
+      }, 2800);
+    }
+
+    function toggle(id) {
+      const at = draft.indexOf(id);
+      const name = apps.get(id).name;
+      if (at > -1) {
+        draft.splice(at, 1);
+        announce(`${name} dihapus dari lingkaran.`);
+      } else if (draft.length < ORBIT_SIZE) {
+        draft.push(id);
+        announce(`${name} ditambahkan ke lingkaran, posisi ${draft.length}.`);
+      } else {
+        return warnFull();
+      }
+      syncAll();
+    }
+
+    function move(from, to) {
+      const [id] = draft.splice(from, 1);
+      draft.splice(to, 0, id);
+      announce(`${apps.get(id).name} dipindah ke posisi ${to + 1} dari ${draft.length}.`);
+      syncAll();
+    }
+
+    // Drag a row by its grip (mouse, touch or pen); the others make room.
+    let drag = null;
+    slotList.addEventListener("pointerdown", (event) => {
+      const grip = event.target.closest(".os-grip");
+      if (!grip || event.button !== 0) return;
+      const li = grip.closest(".os-slot");
+      const items = draft.map((id) => slotNodes.get(id));
+      event.preventDefault();
+      grip.setPointerCapture(event.pointerId);
+      const from = items.indexOf(li);
+      drag = { li, items, from, to: from, y: event.clientY, id: event.pointerId, step: li.offsetHeight + GAP, moved: false };
+    });
+    slotList.addEventListener("pointermove", (event) => {
+      if (!drag || event.pointerId !== drag.id) return;
+      const { li, items, from, step } = drag;
+      let dy = event.clientY - drag.y;
+      if (!drag.moved) {
+        if (Math.abs(dy) < 4) return;
+        drag.moved = true;
+        li.classList.add("is-dragging");
+        items.forEach((n) => n !== li && n.classList.add("is-shifting"));
+      }
+      dy = Math.max(-from * step - 10, Math.min((items.length - 1 - from) * step + 10, dy));
+      li.style.translate = `0 ${dy}px`;
+      const to = Math.max(0, Math.min(items.length - 1, from + Math.round(dy / step)));
+      if (to === drag.to) return;
+      drag.to = to;
+      items.forEach((n, i) => {
+        if (n === li) return;
+        const shift = from < to && i > from && i <= to ? -step : from > to && i >= to && i < from ? step : 0;
+        n.style.translate = shift ? `0 ${shift}px` : "";
+      });
+    });
+    const endDrag = (event) => {
+      if (!drag || event.pointerId !== drag.id) return;
+      const { li, from, to, moved } = drag;
+      drag = null;
+      if (!moved) return;
+      li.classList.remove("is-dragging");
+      if (to !== from) move(from, to);
+      else syncSlots(true); // glide back into place
+    };
+    slotList.addEventListener("pointerup", endDrag);
+    slotList.addEventListener("pointercancel", endDrag);
+
+    // Keyboard: ↑/↓ on a grip moves that app.
+    slotList.addEventListener("keydown", (event) => {
+      const grip = event.target.closest(".os-grip");
+      const step = { ArrowUp: -1, ArrowDown: 1 }[event.key];
+      if (!grip || !step) return;
+      event.preventDefault();
+      const id = grip.closest(".os-slot").dataset.app;
+      const from = draft.indexOf(id);
+      const to = from + step;
+      if (to < 0 || to >= draft.length) return;
+      move(from, to);
+      $(".os-grip", slotNodes.get(id)).focus({ preventScroll: true });
+    });
+
+    emptyButton.addEventListener("click", () => {
+      search.focus({ preventScroll: true });
+      search.scrollIntoView({ block: "nearest", behavior: reduceMotion.matches ? "auto" : "smooth" });
+    });
+
+    $("[data-os-reset]", osDialog).addEventListener("click", () => {
+      draft = [...DEFAULT_ORBIT];
+      announce("Lingkaran dikembalikan ke aplikasi default.");
+      syncAll();
+    });
+
+    $("[data-os-save]", osDialog).addEventListener("click", () => {
+      const before = [...orbitApps];
+      const next = [...draft];
+      closeModal(osDialog);
+      if (before.join() === next.join()) return;
+      const apply = (list) => {
+        orbitApps = list;
+        store.set(KEY_ORBIT, orbitApps);
+        renderOrbit(homeOrbit, orbitApps, { animate: true });
+      };
+      // Let the modal fade first, so the new tiles pop in where you can see them.
+      window.setTimeout(() => {
+        apply(next);
+        showToast("Lingkaran beranda diperbarui", {
+          icon: "assets/orbit-setting.svg",
+          light: true,
+          undo: () => apply(before),
+        });
+      }, 240);
+    });
+
+    openOrbitSettings = () => {
+      draft = [...orbitApps];
+      filter = "all";
+      search.value = "";
+      chips.forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.osFilter === "all")));
+      window.clearTimeout(hintTimer);
+      hint.textContent = HINT;
+      delete hint.dataset.warn;
+      slotNodes.forEach((li) => li.remove());
+      slotNodes.clear();
+      preview.replaceChildren();
+      syncAll({ animate: false });
+      applyFilter(false);
+      openModal(osDialog);
+      requestAnimationFrame(updateFade);
+    };
+  }
+  document.addEventListener("click", (event) => {
+    if (event.target.closest("[data-open-orbit-settings]")) openOrbitSettings();
+  });
+
+  /* ------------------------------------------------------------------
+   * Tasks: the demo's "today", people who hand out tasks, saved tasks
    * ------------------------------------------------------------------ */
   const cal = $("[data-calendar]");
-  if (cal) {
-    const DAY_NAMES = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-    const MONTHS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-    const pad = (n) => String(n).padStart(2, "0");
-    const toKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-    const fromKey = (key) => {
-      const [y, m, d] = key.split("-").map(Number);
-      return new Date(y, m - 1, d);
-    };
-    const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
-    const mondayOf = (d) => addDays(d, -((d.getDay() + 6) % 7));
-    const weekIndex = (d) => (d.getDay() + 6) % 7;
-    const longDate = (d) => `${DAY_NAMES[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  // data-today pins the demo to the Figma date; without it, the real date is used.
+  const today = cal?.dataset.today ? fromKey(cal.dataset.today) : startOfDay(new Date());
+  const people = new Map(
+    $$("#tf-by-list [role='option']").map((o) => [o.dataset.value, { name: o.dataset.name, role: o.dataset.role, initials: o.dataset.initials }])
+  );
+  const storedTasks = store.get(KEY_TASKS, []);
+  let customTasks = (Array.isArray(storedTasks) ? storedTasks : []).filter(
+    (t) =>
+      t && apps.has(t.app) && typeof t.title === "string" && /^\d{4}-\d{2}-\d{2}$/.test(t.start) && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(t.due)
+  );
 
-    // data-today pins the demo to the Figma date; without it, the real date is used.
-    const now = new Date();
-    const today = cal.dataset.today ? fromKey(cal.dataset.today) : new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  // Same markup as the task rows in index.html.
+  function taskRow(task) {
+    const app = apps.get(task.app);
+    const due = new Date(task.due);
+    const dueKey = task.due.slice(0, 10);
+    const li = el("li", "task-row");
+    Object.assign(li.dataset, { task: "", date: task.start, due: dueKey, custom: task.id });
+    const text = el("span", "task-text");
+    const link = el("a", "task-link", task.title);
+    link.href = app.href;
+    link.dataset.appLink = app.id;
+    const by = task.kind === "assigned" ? people.get(task.by) : null;
+    text.append(link, el("span", "task-meta", `${app.name} · ${by ? `Dari ${by.name}` : "Tugas pribadi"}`));
+    const left = daysBetween(today, due);
+    const tone = left <= 0 ? "urgent" : left <= 2 ? "soon" : "later";
+    const label = task.start === dueKey ? `Batas ${clock(due)}` : `Batas ${due.getDate()} ${MONTHS_SHORT[due.getMonth()]} · ${clock(due)}`;
+    const pill = el("span", `task-due task-due--${tone}`, label);
+    pill.title = `Deadline ${shortDate(due)} · ${clock(due)}`;
+    const go = el("span", "task-go");
+    go.setAttribute("aria-hidden", "true");
+    go.append(img("assets/arrow-users.svg", 14, 14));
+    li.append(appIcon(app.id), text, pill, go);
+    return li;
+  }
+
+  /* ------------------------------------------------------------------
+   * Tugas Saya: week calendar (Monday–Sunday)
+   * A task shows on every day from data-date to data-due; the strip shows
+   * one dot per task (max 3).
+   * ------------------------------------------------------------------ */
+  let calendar = null;
+  if (cal) {
     const strip = $("[data-cal-days]", cal);
     const days = $$("[data-cal-day]", cal);
-    const tasks = $$("[data-task]", cal);
+    const taskList = $("[data-task-list]", cal);
     const taskPanel = $("[data-task-panel]", cal);
     const taskEmpty = $("[data-task-empty]", cal);
     const monthLabel = $("[data-cal-month]", cal);
     const dateLabel = $("[data-cal-label]", cal);
     const countLabel = $("[data-cal-count]", cal);
-    const weekTotal = $("[data-week-total]", cal);
 
-    const perDay = new Map();
-    tasks.forEach((task) => perDay.set(task.dataset.date, (perDay.get(task.dataset.date) || 0) + 1));
+    customTasks.forEach((task) => {
+      const row = taskRow(task);
+      row.hidden = true;
+      taskList.append(row);
+    });
+    let tasks = $$("[data-task]", cal);
+    const isOn = (task, key) => task.dataset.date <= key && key <= (task.dataset.due || task.dataset.date);
     days.forEach((day, i) => day.style.setProperty("--i", String(i)));
 
     let weekStart = mondayOf(today);
@@ -410,22 +965,16 @@
     };
 
     function renderWeek(slide) {
-      let total = 0;
       days.forEach((day, i) => {
         const date = addDays(weekStart, i);
         const key = toKey(date);
-        const n = perDay.get(key) || 0;
-        total += n;
+        const n = tasks.filter((task) => isOn(task, key)).length;
         day.dataset.date = key;
         $(".cal-day__date", day).textContent = String(date.getDate());
         $(".cal-dots", day).replaceChildren(...Array.from({ length: Math.min(n, 3) }, () => el("i")));
         day.setAttribute("aria-label", `${longDate(date)}, ${n ? `${n} tugas` : "tidak ada tugas"}`);
         day.toggleAttribute("data-today", key === toKey(today));
       });
-      const offset = Math.round((weekStart - mondayOf(today)) / (7 * 864e5));
-      const when = { "-1": "minggu lalu", 0: "minggu ini", 1: "minggu depan" }[offset] || "tugas";
-      setText(weekTotal, `${total} ${when}`, Boolean(slide));
-
       if (!slide || reduceMotion.matches) return;
       window.clearTimeout(slideTimer);
       strip.removeAttribute("data-slide");
@@ -438,10 +987,10 @@
     // direction of travel and its height eases to the new size.
     function showTasks(direction) {
       const key = toKey(selected);
-      const list = tasks.filter((task) => task.dataset.date === key);
+      const list = tasks.filter((task) => isOn(task, key));
       setText(countLabel, list.length ? `${list.length} tugas` : "Tidak ada tugas", direction !== 0);
       const update = () => {
-        tasks.forEach((task) => (task.hidden = task.dataset.date !== key));
+        tasks.forEach((task) => (task.hidden = !isOn(task, key)));
         taskEmpty.hidden = list.length > 0;
       };
       if (direction === 0 || reduceMotion.matches) return update();
@@ -457,8 +1006,8 @@
       if (from !== to) {
         taskPanel.style.overflowY = "clip";
         const anim = taskPanel.animate([{ height: `${from}px` }, { height: `${to}px` }], {
-          duration: 380,
-          easing: "cubic-bezier(0.2, 0.7, 0.2, 1)",
+          duration: 420,
+          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
         });
         anim.onfinish = anim.oncancel = () => (taskPanel.style.overflowY = "");
       }
@@ -519,6 +1068,380 @@
 
     renderWeek(null);
     select(today, { animate: false });
+
+    calendar = {
+      get selected() {
+        return selected;
+      },
+      // Add a row and bring it into view: on the open day if it shows there,
+      // otherwise on its first day.
+      add(row) {
+        row.hidden = true;
+        taskList.append(row);
+        tasks = $$("[data-task]", cal);
+        renderWeek(null);
+        if (isOn(row, toKey(selected))) {
+          showTasks(0);
+          if (!reduceMotion.matches) {
+            row.style.setProperty("--i", "0");
+            replay(row, "list-enter", 900);
+          }
+        } else {
+          select(fromKey(row.dataset.date));
+        }
+        if (!reduceMotion.matches) replay(row, "is-new", 2600);
+        row.scrollIntoView({ block: "nearest", behavior: reduceMotion.matches ? "auto" : "smooth" });
+      },
+      remove(row) {
+        row.remove();
+        tasks = $$("[data-task]", cal);
+        renderWeek(null);
+        showTasks(0);
+      },
+    };
+  }
+
+  /* ------------------------------------------------------------------
+   * Dropdown (listbox in a popover): "Aplikasi" and "Ditugaskan oleh"
+   * ------------------------------------------------------------------ */
+  function createSelect(root, { onChange }) {
+    const button = $(".select-btn", root);
+    const pop = $(".select-pop", root);
+    const list = $("[data-select-list]", root);
+    const options = () => $$('[role="option"]', list);
+    const isShown = () => pop.matches(":popover-open");
+    let active = -1;
+
+    // The list lives in the top layer, so it's placed against the viewport.
+    function place() {
+      const r = button.getBoundingClientRect();
+      const below = window.innerHeight - r.bottom - 12;
+      const above = r.top - 12;
+      const up = below < 240 && above > below;
+      pop.style.left = `${r.left}px`;
+      pop.style.width = `${r.width}px`;
+      pop.style.maxHeight = `${Math.min(320, Math.max(160, up ? above : below))}px`;
+      pop.style.top = up ? "auto" : `${r.bottom + 6}px`;
+      pop.style.bottom = up ? `${window.innerHeight - r.top + 6}px` : "auto";
+      pop.dataset.side = up ? "top" : "bottom";
+    }
+    function setActive(i, scroll = true) {
+      const opts = options();
+      if (!opts.length) return;
+      active = Math.max(0, Math.min(opts.length - 1, i));
+      opts.forEach((o, j) => o.classList.toggle("is-active", j === active));
+      list.setAttribute("aria-activedescendant", opts[active].id);
+      if (scroll) opts[active].scrollIntoView({ block: "nearest" });
+    }
+    function open() {
+      if (isShown()) return;
+      pop.showPopover();
+      place();
+      button.setAttribute("aria-expanded", "true");
+      const chosen = options().findIndex((o) => o.getAttribute("aria-selected") === "true");
+      setActive(chosen > -1 ? chosen : 0);
+      list.focus({ preventScroll: true });
+    }
+    function close(focusButton = true) {
+      if (!isShown()) return;
+      pop.hidePopover();
+      button.setAttribute("aria-expanded", "false");
+      list.removeAttribute("aria-activedescendant");
+      if (focusButton) button.focus({ preventScroll: true });
+    }
+    function choose(i) {
+      const opt = options()[i];
+      if (!opt) return;
+      options().forEach((o) => o.setAttribute("aria-selected", String(o === opt)));
+      close();
+      onChange(opt.dataset.value);
+    }
+
+    button.addEventListener("click", () => (isShown() ? close() : open()));
+    button.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+      event.preventDefault();
+      open();
+    });
+    list.addEventListener("keydown", (event) => {
+      const n = options().length;
+      switch (event.key) {
+        case "ArrowDown": setActive(active + 1); break;
+        case "ArrowUp": setActive(active - 1); break;
+        case "Home": setActive(0); break;
+        case "End": setActive(n - 1); break;
+        case "Enter":
+        case " ": choose(active); break;
+        case "Escape": escapeHandledAt = Date.now(); close(); break;
+        case "Tab": close(false); return;
+        default: {
+          // Type-ahead: jump to the next option starting with that letter.
+          if (event.key.length !== 1) return;
+          const key = event.key.toLowerCase();
+          const opts = options();
+          for (let k = 1; k <= opts.length; k++) {
+            const j = (active + k) % opts.length;
+            if ($(".select-opt__text", opts[j]).textContent.trim().toLowerCase().startsWith(key)) {
+              setActive(j);
+              break;
+            }
+          }
+        }
+      }
+      event.preventDefault();
+      event.stopPropagation();
+    });
+    list.addEventListener("click", (event) => {
+      const opt = event.target.closest('[role="option"]');
+      if (opt) choose(options().indexOf(opt));
+    });
+    list.addEventListener("pointermove", (event) => {
+      const opt = event.target.closest('[role="option"]');
+      if (opt) setActive(options().indexOf(opt), false);
+    });
+    document.addEventListener("pointerdown", (event) => isShown() && !root.contains(event.target) && close(false), true);
+    window.addEventListener("resize", () => isShown() && place());
+    root.closest(".modal-body")?.addEventListener("scroll", () => isShown() && place(), { passive: true });
+    root.closest("dialog")?.addEventListener("modalclosing", () => close(false));
+
+    return {
+      close,
+      reset() {
+        options().forEach((o) => o.setAttribute("aria-selected", "false"));
+      },
+    };
+  }
+
+  /* ------------------------------------------------------------------
+   * Tambah Tugas: a task of your own, or one handed to you
+   * ------------------------------------------------------------------ */
+  const taskDialog = $("[data-task-dialog]");
+  if (taskDialog && calendar) {
+    const form = $("[data-task-form]", taskDialog);
+    const titleInput = $("#tf-name", form);
+    const titleCount = $("[data-title-count]", form);
+    const dateInput = $("#tf-date", form);
+    const dueInput = $("#tf-due", form);
+    const dateText = $("[data-date-text]", form);
+    const dueText = $("[data-due-text]", form);
+    const dueLeft = $("[data-due-left]", form);
+    const assignedBlock = $("[data-assigned-only]", form);
+    const infoText = $("[data-info-text]", form);
+    const infoIcons = $$("[data-info-icon]", form);
+    const INFO_SELF = infoText.textContent;
+    const MAX_TITLE = Number(titleInput.maxLength) || 100;
+    const picked = { app: "", by: "" };
+    let settleTimer = 0;
+
+    const kind = () => form.elements.kind.value;
+
+    // Aplikasi options, grouped like Jelajahi
+    const appList = $('[data-select="app"] [data-select-list]', form);
+    categories.forEach((group) => {
+      const head = el("li", "select-group", group.label);
+      head.setAttribute("role", "presentation");
+      head.setAttribute("aria-hidden", "true");
+      appList.append(head);
+      group.ids.forEach((id) => {
+        const app = apps.get(id);
+        const opt = el("li", "select-opt");
+        opt.id = `tf-app-${id}`;
+        opt.setAttribute("role", "option");
+        opt.setAttribute("aria-selected", "false");
+        opt.dataset.value = id;
+        const text = el("span", "select-opt__text");
+        text.append(el("span", "", app.name), el("span", "", app.categoryLabel));
+        opt.append(logoTile(id, true), text);
+        appList.append(opt);
+      });
+    });
+
+    function renderApp() {
+      const value = $('[data-select="app"] [data-select-value]', form);
+      if (!picked.app) return value.replaceChildren(el("span", "select-placeholder", "Pilih aplikasi"));
+      const app = apps.get(picked.app);
+      value.replaceChildren(logoTile(app.id, true), el("span", "select-name", app.name), el("span", "select-sub", `· ${app.categoryLabel}`));
+    }
+    function renderBy() {
+      const value = $('[data-select="by"] [data-select-value]', form);
+      const person = people.get(picked.by);
+      if (!person) return value.replaceChildren(el("span", "select-placeholder", "Pilih pemberi tugas"));
+      const text = el("span", "select-person");
+      text.append(el("span", "", person.name), el("span", "", person.role));
+      value.replaceChildren(el("span", "avatar", person.initials), text);
+    }
+
+    const appSelect = createSelect($('[data-select="app"]', form), {
+      onChange(id) {
+        picked.app = id;
+        renderApp();
+        clearError("app");
+      },
+    });
+    const bySelect = createSelect($('[data-select="by"]', form), {
+      onChange(id) {
+        picked.by = id;
+        renderBy();
+        clearError("by");
+        updateInfo();
+      },
+    });
+
+    // Errors under each field
+    const fieldOf = {
+      app: () => $("#tf-app", form),
+      title: () => titleInput.closest(".field-box"),
+      by: () => $("#tf-by", form),
+      date: () => dateInput.closest(".field-box"),
+      due: () => dueInput.closest(".field-box"),
+    };
+    const focusOf = { app: () => $("#tf-app", form), title: () => titleInput, by: () => $("#tf-by", form), date: () => dateInput, due: () => dueInput };
+    function setError(name, message) {
+      const node = $(`[data-error="${name}"]`, form);
+      node.textContent = message;
+      node.hidden = false;
+      fieldOf[name]().toggleAttribute("data-invalid", true);
+    }
+    function clearError(name) {
+      const node = $(`[data-error="${name}"]`, form);
+      node.textContent = "";
+      node.hidden = true;
+      fieldOf[name]().removeAttribute("data-invalid");
+    }
+
+    function updateInfo() {
+      const assigned = kind() === "assigned";
+      infoIcons.forEach((icon) => (icon.hidden = icon.dataset.infoIcon !== (assigned ? "assigned" : "self")));
+      const person = people.get(picked.by);
+      infoText.textContent = assigned
+        ? `Tugas akan tampil di Tugas Saya dengan label “Dari ${person ? person.name : "pemberi tugas"}” dan pengingat sebelum deadline.`
+        : INFO_SELF;
+    }
+    // "Ditugaskan oleh" opens only for assigned tasks.
+    function updateKind() {
+      const assigned = kind() === "assigned";
+      window.clearTimeout(settleTimer);
+      assignedBlock.inert = !assigned;
+      assignedBlock.classList.remove("is-settled");
+      assignedBlock.classList.toggle("is-open", assigned);
+      if (assigned) {
+        settleTimer = window.setTimeout(() => assignedBlock.classList.add("is-settled"), reduceMotion.matches ? 0 : 460);
+      } else {
+        bySelect.close(false);
+        clearError("by");
+      }
+      updateInfo();
+    }
+    $$('input[name="kind"]', form).forEach((input) => input.addEventListener("change", updateKind));
+
+    titleInput.addEventListener("input", () => {
+      titleCount.textContent = `${titleInput.value.length}/${MAX_TITLE}`;
+      if (titleInput.value.trim()) clearError("title");
+    });
+
+    // Tanggal & Deadline: native pickers under formatted text
+    function updateDates() {
+      const start = dateInput.value ? fromKey(dateInput.value) : null;
+      dateText.textContent = start ? shortDate(start) : "Pilih tanggal";
+      dateText.toggleAttribute("data-empty", !start);
+      dueInput.min = dateInput.value ? `${dateInput.value}T00:00` : "";
+      const due = dueInput.value ? new Date(dueInput.value) : null;
+      dueText.textContent = due ? `${shortDate(due)} · ${clock(due)}` : "Pilih deadline";
+      dueText.toggleAttribute("data-empty", !due);
+      dueLeft.hidden = !due;
+      if (due) {
+        const left = daysBetween(today, due);
+        dueLeft.textContent = left < 0 ? `Lewat ${-left} hari` : left === 0 ? "Hari ini" : left === 1 ? "Besok" : `${left} hari lagi`;
+        dueLeft.dataset.tone = left <= 7 ? "urgent" : "calm";
+      }
+    }
+    dateInput.addEventListener("input", () => {
+      // Keep the deadline on or after the new date, at the same time of day.
+      if (dateInput.value && dueInput.value && dueInput.value.slice(0, 10) < dateInput.value) {
+        dueInput.value = `${dateInput.value}T${dueInput.value.slice(11, 16)}`;
+      }
+      if (dateInput.value) clearError("date");
+      clearError("due");
+      updateDates();
+    });
+    dueInput.addEventListener("input", () => {
+      clearError("due");
+      updateDates();
+    });
+    // Desktop browsers open the picker on a click anywhere in the field.
+    [dateInput, dueInput].forEach((input) =>
+      input.addEventListener("click", () => {
+        try {
+          input.showPicker();
+        } catch {
+          /* the browser opens it itself, or can't */
+        }
+      })
+    );
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const errors = [];
+      if (!picked.app) errors.push(["app", "Pilih aplikasi tempat tugas ini berada."]);
+      if (!titleInput.value.trim()) errors.push(["title", "Judul tugas wajib diisi."]);
+      if (kind() === "assigned" && !picked.by) errors.push(["by", "Pilih siapa yang memberikan tugas ini."]);
+      if (!dateInput.value) errors.push(["date", "Pilih tanggal tugas."]);
+      if (!dueInput.value) errors.push(["due", "Tentukan deadline tugas."]);
+      else if (dateInput.value && dueInput.value.slice(0, 10) < dateInput.value) errors.push(["due", "Deadline tidak boleh sebelum tanggal."]);
+      Object.keys(fieldOf).forEach(clearError);
+      if (errors.length) {
+        errors.forEach(([name, message]) => setError(name, message));
+        focusOf[errors[0][0]]().focus();
+        return;
+      }
+
+      const task = {
+        id: `t${Date.now().toString(36)}`,
+        kind: kind(),
+        app: picked.app,
+        title: titleInput.value.trim().slice(0, MAX_TITLE),
+        by: kind() === "assigned" ? picked.by : "",
+        start: dateInput.value,
+        due: dueInput.value.slice(0, 16),
+      };
+      customTasks = [...customTasks, task];
+      store.set(KEY_TASKS, customTasks);
+      const row = taskRow(task);
+      closeModal(taskDialog);
+      window.setTimeout(() => {
+        calendar.add(row);
+        showToast("Tugas ditambahkan ke Tugas Saya", {
+          icon: "assets/notif-check.svg",
+          light: true,
+          undo: () => {
+            customTasks = customTasks.filter((t) => t.id !== task.id);
+            store.set(KEY_TASKS, customTasks);
+            calendar.remove(row);
+          },
+        });
+      }, 240);
+    });
+
+    function openTaskForm() {
+      form.reset();
+      picked.app = "";
+      picked.by = "";
+      appSelect.reset();
+      bySelect.reset();
+      renderApp();
+      renderBy();
+      Object.keys(fieldOf).forEach(clearError);
+      const start = toKey(calendar.selected);
+      dateInput.value = start;
+      dueInput.value = `${start}T17:00`;
+      titleCount.textContent = `0/${MAX_TITLE}`;
+      updateKind();
+      updateDates();
+      openModal(taskDialog);
+    }
+    document.addEventListener("click", (event) => {
+      if (event.target.closest("[data-open-task-form]")) openTaskForm();
+    });
   }
 
   /* ------------------------------------------------------------------
@@ -558,7 +1481,7 @@
           { opacity: 1, height: `${row.offsetHeight}px` },
           { opacity: 0, height: "0px", paddingTop: "0px", paddingBottom: "0px", borderWidth: "0px", marginBottom: "-10px" },
         ],
-        { duration: 320, easing: "cubic-bezier(0.4, 0, 0.2, 1)", fill: "forwards" }
+        { duration: 340, easing: "cubic-bezier(0.4, 0, 0.2, 1)", fill: "forwards" }
       );
       leaving.set(row, anim);
       anim.onfinish = () => {
@@ -667,37 +1590,10 @@
   }
 
   /* ------------------------------------------------------------------
-   * Hero: pointer parallax + greeting poses
+   * Hero greeting: salam → open-hand welcome, once the second pose has
+   * loaded (if it's missing, the salam pose simply stays). The orbit
+   * itself stays put; it no longer follows the pointer.
    * ------------------------------------------------------------------ */
-  const hero = $(".hero-card");
-  const orbit = $("[data-orbit]");
-  const finePointer = window.matchMedia("(pointer: fine)");
-  if (hero && orbit) {
-    let frame = 0;
-    let nx = 0;
-    let ny = 0;
-    const setVars = () => {
-      frame = 0;
-      orbit.style.setProperty("--px", (nx * 8).toFixed(2));
-      orbit.style.setProperty("--py", (ny * 8).toFixed(2));
-    };
-    hero.addEventListener("pointermove", (event) => {
-      if (event.pointerType !== "mouse" || !finePointer.matches || reduceMotion.matches) return;
-      const r = orbit.getBoundingClientRect();
-      const clamp = (v) => Math.max(-1, Math.min(1, v));
-      nx = clamp((event.clientX - (r.left + r.width / 2)) / (r.width / 2));
-      ny = clamp((event.clientY - (r.top + r.height / 2)) / (r.height / 2));
-      if (!frame) frame = requestAnimationFrame(setVars);
-    });
-    hero.addEventListener("pointerleave", () => {
-      nx = 0;
-      ny = 0;
-      if (!frame) frame = requestAnimationFrame(setVars);
-    });
-  }
-
-  // Salam → open-hand welcome: switched on once the second pose image has
-  // loaded (if it's missing, the salam pose simply stays).
   const woman = $("[data-hero-woman]");
   const welcome = woman && $("[data-welcome]", woman);
   if (welcome) {

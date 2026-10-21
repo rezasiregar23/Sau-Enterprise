@@ -158,15 +158,15 @@
           </div>
         </div>
 
-        <!-- Orbit Ekosistem (64:973): scales to fit, every app tile is a link -->
+        <!-- Orbit Ekosistem (64:973): scales to fit and stays put; every app tile is a link -->
         <nav aria-label="Ekosistem aplikasi" class="orbit-fit w-full max-w-[440px] shrink-0 lg:w-[42%] xl:w-[440px]">
           <div class="orbit" data-orbit>
-            <div class="orbit-layer [--depth:0.25]" aria-hidden="true">
+            <div class="orbit-layer" aria-hidden="true">
               <img class="orbit-ring absolute left-[70px] top-[40px]" src="assets/orbit-ring.png" width="300" height="300" alt="">
             </div>
 
             <!-- Disc kaca + resonance waves + "Sambutan Profesional" (107:955, masked to the disc) -->
-            <div class="orbit-layer [--depth:0.5]">
+            <div class="orbit-layer">
               <span class="orbit-wave [--w:0]" aria-hidden="true"></span>
               <span class="orbit-wave [--w:1]" aria-hidden="true"></span>
               <span class="orbit-wave [--w:2]" aria-hidden="true"></span>
@@ -182,43 +182,48 @@
               </div>
             </div>
 
-            <a href="#" data-app-link="moover" class="orbit-app left-[190px] top-[10px] [--i:0]">
+            <!-- Five app slots, clockwise from the top-left (orbit-pos-0…4). main.js renders the
+                 apps chosen in "Atur Akses Cepat"; this markup is the default set. -->
+            <div class="contents" data-orbit-apps>
+              <a href="#" data-app-link="mysau" data-slot-app="mysau" class="orbit-app orbit-pos-0">
+                <span class="orbit-bob">
+                  <span class="orbit-tile"><span class="grad-mysau"><img src="assets/orbit-users.svg" width="22" height="22" alt=""></span></span>
+                  <span class="orbit-label">MySAU</span>
+                </span>
+              </a>
+              <a href="#" data-app-link="moover" data-slot-app="moover" class="orbit-app orbit-pos-1">
+                <span class="orbit-bob">
+                  <span class="orbit-tile"><span class="grad-moover"><img src="assets/orbit-car.svg" width="22" height="22" alt=""></span></span>
+                  <span class="orbit-label">Moover</span>
+                </span>
+              </a>
+              <a href="#" data-app-link="digital-patrol" data-slot-app="digital-patrol" class="orbit-app orbit-pos-2">
+                <span class="orbit-bob">
+                  <span class="orbit-tile"><span class="grad-patrol"><img src="assets/orbit-shield.svg" width="22" height="22" alt=""></span></span>
+                  <span class="orbit-label">Digital Patrol</span>
+                </span>
+              </a>
+              <a href="#" data-app-link="sau-travel" data-slot-app="sau-travel" class="orbit-app orbit-pos-3">
+                <span class="orbit-bob">
+                  <span class="orbit-tile"><span class="grad-travel"><img src="assets/orbit-plane.svg" width="22" height="22" alt=""></span></span>
+                  <span class="orbit-label">SAU Travel</span>
+                </span>
+              </a>
+              <a href="#" data-app-link="fintera" data-slot-app="fintera" class="orbit-app orbit-pos-4">
+                <span class="orbit-bob">
+                  <span class="orbit-tile"><span class="grad-fintera"><img src="assets/orbit-landmark.svg" width="22" height="22" alt=""></span></span>
+                  <span class="orbit-label">Fintera</span>
+                </span>
+              </a>
+            </div>
+
+            <!-- orbit/Setting (154:385): opens "Atur Akses Cepat" -->
+            <button type="button" class="orbit-app orbit-app--setting orbit-pos-set" data-open-orbit-settings aria-haspopup="dialog">
               <span class="orbit-bob">
-                <span class="orbit-tile"><span class="grad-moover"><img src="assets/orbit-car.svg" width="22" height="22" alt=""></span></span>
-                <span class="orbit-label orbit-label--side">Moover</span>
+                <span class="orbit-tile"><span class="orbit-add"><img src="assets/orbit-setting.svg" width="16" height="16" alt=""></span></span>
+                <span class="orbit-label">Setting<span class="sr-only">: atur aplikasi di lingkaran</span></span>
               </span>
-            </a>
-            <a href="#" data-app-link="digital-patrol" class="orbit-app left-[319.9px] top-[85px] [--i:1]">
-              <span class="orbit-bob">
-                <span class="orbit-tile"><span class="grad-patrol"><img src="assets/orbit-shield.svg" width="22" height="22" alt=""></span></span>
-                <span class="orbit-label orbit-label--top">Digital Patrol</span>
-              </span>
-            </a>
-            <a href="#" data-app-link="sau-travel" class="orbit-app left-[319.9px] top-[235px] [--i:2]">
-              <span class="orbit-bob">
-                <span class="orbit-tile"><span class="grad-travel"><img src="assets/orbit-plane.svg" width="22" height="22" alt=""></span></span>
-                <span class="orbit-label orbit-label--bottom">SAU Travel</span>
-              </span>
-            </a>
-            <!-- orbit/+ future (136:982): placeholder for more apps, leads to "Ajukan akses" -->
-            <a href="#ajukan" class="orbit-app orbit-app--add left-[190px] top-[310px] [--i:3]">
-              <span class="orbit-bob">
-                <span class="orbit-tile"><span class="orbit-add"><img src="assets/orbit-plus.svg" width="16" height="16" alt=""></span></span>
-                <span class="orbit-label orbit-label--side">Add<span class="sr-only">: ajukan akses aplikasi lain</span></span>
-              </span>
-            </a>
-            <a href="#" data-app-link="fintera" class="orbit-app left-[60.1px] top-[235px] [--i:4]">
-              <span class="orbit-bob">
-                <span class="orbit-tile"><span class="grad-fintera"><img src="assets/orbit-landmark.svg" width="22" height="22" alt=""></span></span>
-                <span class="orbit-label orbit-label--bottom">Fintera</span>
-              </span>
-            </a>
-            <a href="#" data-app-link="mysau" class="orbit-app left-[60.1px] top-[85px] [--i:5]">
-              <span class="orbit-bob">
-                <span class="orbit-tile"><span class="grad-mysau"><img src="assets/orbit-users.svg" width="22" height="22" alt=""></span></span>
-                <span class="orbit-label orbit-label--top">MySAU</span>
-              </span>
-            </a>
+            </button>
           </div>
         </nav>
       </div>
@@ -236,13 +241,18 @@
         <div class="grid items-stretch gap-5 lg:grid-cols-[minmax(0,700fr)_minmax(0,480fr)]">
 
           <!-- Panel / Tugas Saya (132:124). data-today is the demo's "today" (the Figma date);
-               remove it to use the real date. Each task row's data-date puts it on the calendar. -->
+               remove it to use the real date. A task row shows from data-date to data-due
+               (or on data-date only); tasks added with "Tambah Tugas" are appended by main.js. -->
           <section class="cat-panel tint-panel tint--blue [--tint-angle:141.54deg]" aria-labelledby="tugas-saya-title" data-calendar data-today="2026-10-19">
-            <div class="panel-head">
+            <div class="panel-head panel-head--stack">
               <span class="cat-icon"><img src="assets/panel-clipboard.svg" width="20" height="20" alt=""></span>
               <h3 id="tugas-saya-title" class="panel-head__title cat-title text-brand-ink">Tugas Saya</h3>
               <p class="panel-head__desc cat-desc">Tugas yang menunggu tindakan Anda dari seluruh aplikasi.</p>
-              <span class="panel-head__aside pill bg-warn-soft text-warn-ink" data-week-total>10 minggu ini</span>
+              <!-- Tombol Tambah Tugas (154:417) -->
+              <button type="button" class="panel-head__aside btn btn--add" data-open-task-form aria-haspopup="dialog">
+                <img src="assets/icon-cplus-white.svg" width="16" height="16" alt="">
+                Tambah Tugas
+              </button>
             </div>
 
             <!-- Kalender 7 hari (135:123) -->
@@ -288,7 +298,7 @@
 
             <!-- Daftar tugas (132:136): main.js shows the rows of the selected date -->
             <div id="task-panel" role="tabpanel" aria-labelledby="task-date" class="task-panel" data-task-panel>
-              <ul role="list" class="flex flex-col gap-2.5">
+              <ul role="list" class="flex flex-col gap-2.5" data-task-list>
                 <!-- Minggu lalu (12–18 Okt) -->
                 <li class="task-row" data-task data-date="2026-10-14" data-done hidden>
                   <span class="app-logo"><img class="h-3.5 w-11 object-cover" src="assets/logo-inoffice.png" width="240" height="77" alt=""></span>
@@ -877,7 +887,224 @@
   </footer>
 </div>
 
-<!-- Toast (pin / unpin feedback with undo) -->
+<!-- Modal · Atur Akses Cepat (154:926): pick up to five apps for the hero circle -->
+<dialog id="orbit-settings" class="modal modal--wide" aria-labelledby="os-title" aria-describedby="os-desc" data-orbit-settings>
+  <header class="modal-head">
+    <span class="modal-icon"><span class="ico ico-20"><img src="assets/icon-sliders.svg" width="15.3333" height="15.3333" alt=""></span></span>
+    <div class="modal-titles">
+      <h2 id="os-title" class="modal-title" tabindex="-1" data-modal-start>Atur Akses Cepat</h2>
+      <p id="os-desc" class="modal-desc">Pilih aplikasi dari Jelajahi Semua Aplikasi untuk ditampilkan di lingkaran beranda.</p>
+    </div>
+    <button type="button" class="modal-close" data-modal-close aria-label="Tutup"><span class="ico ico-18"><img src="assets/icon-close.svg" width="11" height="11" alt=""></span></button>
+  </header>
+
+  <div class="modal-body os-body">
+    <!-- Kolom / Lingkaran (154:945) -->
+    <div class="os-col os-col--circle">
+      <section class="os-preview" aria-labelledby="os-preview-title">
+        <div class="flex flex-col gap-[2px] self-stretch leading-[normal]">
+          <h3 id="os-preview-title" class="text-[13px] font-extrabold text-brand-ink">Pratinjau Lingkaran</h3>
+          <p class="text-[11px] text-muted">Tampilan yang akan muncul di beranda Anda.</p>
+        </div>
+        <!-- Orbit Ekosistem · Pratinjau (154:950): the home orbit at 0.66 -->
+        <div class="orbit-fit os-preview__orbit" aria-hidden="true">
+          <div class="orbit orbit--preview">
+            <img class="absolute left-[70px] top-[40px]" src="assets/orbit-ring.png" width="300" height="300" alt="">
+            <img class="absolute left-[120px] top-[90px]" src="assets/orbit-disc.svg" width="200" height="200" alt="">
+            <div class="hero-woman"><img class="hero-pose" src="assets/hero-woman-salam.png" width="512" height="768" alt=""></div>
+            <div class="contents" data-os-preview></div>
+            <span class="orbit-app orbit-pos-set">
+              <span class="orbit-bob">
+                <span class="orbit-tile"><span class="orbit-add"><img src="assets/orbit-setting.svg" width="16" height="16" alt=""></span></span>
+                <span class="orbit-label">Setting</span>
+              </span>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Aplikasi di Lingkaran (154:1002) -->
+      <section class="flex flex-col gap-2" aria-labelledby="os-slots-title">
+        <div class="flex items-center gap-2">
+          <h3 id="os-slots-title" class="min-w-0 flex-1 text-[13px] font-extrabold leading-[normal] text-heading">Aplikasi di Lingkaran</h3>
+          <span class="pill bg-brand-soft px-2.5 py-[3px] text-brand" data-os-count>5/5 slot</span>
+        </div>
+        <p class="os-hint" id="os-hint" data-os-hint>Seret untuk mengubah urutan · maksimal 5 aplikasi.</p>
+        <ol class="os-slots" aria-labelledby="os-slots-title" data-os-slots></ol>
+        <button type="button" class="os-empty" data-os-empty hidden>
+          <span class="ico ico-16"><img src="assets/icon-plus-brand2.svg" width="11.3333" height="11.3333" alt=""></span>
+          Slot kosong — pilih aplikasi dari daftar
+        </button>
+        <p class="sr-only" aria-live="polite" data-os-live></p>
+      </section>
+    </div>
+
+    <!-- Kolom / Jelajahi Semua Aplikasi (154:1096) -->
+    <div class="os-col os-col--apps">
+      <label class="os-search">
+        <img src="assets/icon-search-sm.svg" width="16" height="16" alt="">
+        <span class="sr-only">Cari aplikasi</span>
+        <input type="search" autocomplete="off" enterkeyhint="search" placeholder="Cari dari Jelajahi Semua Aplikasi…" data-os-search>
+      </label>
+      <div class="flex flex-wrap gap-2" role="toolbar" aria-label="Filter kategori" data-os-filters></div>
+      <div class="os-list-wrap" data-os-list-wrap>
+        <div class="os-list" data-os-list></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="modal-foot">
+    <button type="button" class="os-reset mr-auto" data-os-reset aria-label="Atur ulang ke default" title="Atur ulang ke default">
+      <span class="ico ico-16"><img src="assets/icon-rotate.svg" width="14" height="14" alt=""></span>
+      <span class="os-reset__text">Atur ulang ke default</span>
+    </button>
+    <button type="button" class="btn btn--ghost" data-modal-close>Batal</button>
+    <button type="button" class="btn btn--primary" data-os-save>
+      <span class="ico ico-16"><img src="assets/icon-check-white.svg" width="12.6667" height="9.33333" alt=""></span>
+      <span>Simpan<span class="max-[399.98px]:hidden"> Perubahan</span></span>
+    </button>
+  </footer>
+</dialog>
+
+<!-- Modal · Tambah Tugas (155:1194 Tugas Sendiri, 155:1929 Ditugaskan) -->
+<dialog id="task-form" class="modal" aria-labelledby="tf-title" aria-describedby="tf-desc" data-task-dialog>
+  <form class="modal-form" novalidate data-task-form>
+    <header class="modal-head">
+      <span class="modal-icon"><span class="ico ico-20"><img src="assets/icon-clipboard-plus.svg" width="15.3333" height="18.6667" alt=""></span></span>
+      <div class="modal-titles">
+        <h2 id="tf-title" class="modal-title" tabindex="-1" data-modal-start>Tambah Tugas</h2>
+        <p id="tf-desc" class="modal-desc">Catat tugas pribadi atau tugas dari orang lain.</p>
+      </div>
+      <button type="button" class="modal-close" data-modal-close aria-label="Tutup"><span class="ico ico-18"><img src="assets/icon-close.svg" width="11" height="11" alt=""></span></button>
+    </header>
+
+    <div class="modal-body tf-body">
+      <!-- Field / Jenis Tugas (155:1213) -->
+      <div class="tf-field" role="radiogroup" aria-labelledby="tf-kind-label">
+        <p class="tf-label" id="tf-kind-label">Jenis Tugas <span class="tf-req" aria-hidden="true">*</span></p>
+        <div class="seg">
+          <label class="seg-opt">
+            <input type="radio" name="kind" value="self" class="sr-only" checked>
+            <span class="seg-ico"><span class="ico ico-16"><img class="is-on" src="assets/icon-user-brand.svg" width="11.3333" height="14" alt=""><img class="is-off" src="assets/icon-user.svg" width="11.3333" height="14" alt=""></span></span>
+            <span class="seg-text"><span class="seg-title">Tugas Sendiri</span><span class="seg-sub">Tugas pribadi untuk saya</span></span>
+            <span class="seg-radio" aria-hidden="true"><span class="ico w-[11px] h-[11px]"><img src="assets/icon-check-xs-white.svg" width="9.33333" height="7.04167" alt=""></span></span>
+          </label>
+          <label class="seg-opt">
+            <input type="radio" name="kind" value="assigned" class="sr-only">
+            <span class="seg-ico"><span class="ico ico-16"><img class="is-on" src="assets/icon-users-brand.svg" width="15.3333" height="14" alt=""><img class="is-off" src="assets/icon-users-muted.svg" width="15.3333" height="14" alt=""></span></span>
+            <span class="seg-text"><span class="seg-title">Ditugaskan</span><span class="seg-sub">Diberikan oleh atasan/rekan</span></span>
+            <span class="seg-radio" aria-hidden="true"><span class="ico w-[11px] h-[11px]"><img src="assets/icon-check-xs-white.svg" width="9.33333" height="7.04167" alt=""></span></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Field / Aplikasi (155:1241) -->
+      <div class="tf-field">
+        <p class="tf-label" id="tf-app-label">Aplikasi <span class="tf-req" aria-hidden="true">*</span></p>
+        <div class="select" data-select="app">
+          <button type="button" class="select-btn" id="tf-app" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="tf-app-label tf-app" aria-describedby="tf-app-error" aria-required="true">
+            <span class="select-value" data-select-value><span class="select-placeholder">Pilih aplikasi</span></span>
+            <span class="ico ico-18 select-chev"><img src="assets/icon-chevron-down-muted.svg" width="11" height="6.5" alt=""></span>
+          </button>
+          <div class="select-pop" popover="manual">
+            <ul class="select-list" role="listbox" id="tf-app-list" aria-labelledby="tf-app-label" tabindex="-1" data-select-list></ul>
+          </div>
+        </div>
+        <p class="tf-error" id="tf-app-error" data-error="app" hidden></p>
+      </div>
+
+      <!-- Field / Judul Tugas (155:1251) -->
+      <div class="tf-field">
+        <label class="tf-label" for="tf-name">Judul Tugas <span class="tf-req" aria-hidden="true">*</span></label>
+        <div class="field-box">
+          <input id="tf-name" name="title" class="field-input" maxlength="100" autocomplete="off" required
+                 placeholder="Contoh: Lengkapi data keluarga di profil MySAU" aria-describedby="tf-name-count tf-name-error">
+          <span class="field-count" id="tf-name-count" data-title-count>0/100</span>
+        </div>
+        <p class="tf-error" id="tf-name-error" data-error="title" hidden></p>
+      </div>
+
+      <!-- Field / Ditugaskan oleh (155:1991): only for "Ditugaskan" -->
+      <div class="tf-reveal" data-assigned-only inert>
+        <div>
+          <div class="tf-field">
+            <p class="tf-label" id="tf-by-label">Ditugaskan oleh <span class="tf-req" aria-hidden="true">*</span></p>
+            <div class="select" data-select="by">
+              <button type="button" class="select-btn select-btn--person" id="tf-by" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="tf-by-label tf-by" aria-describedby="tf-by-help tf-by-error" aria-required="true">
+                <span class="select-value" data-select-value><span class="select-placeholder">Pilih pemberi tugas</span></span>
+                <span class="ico ico-18 select-chev"><img src="assets/icon-chevron-down-muted.svg" width="11" height="6.5" alt=""></span>
+              </button>
+              <div class="select-pop" popover="manual">
+                <ul class="select-list" role="listbox" id="tf-by-list" aria-labelledby="tf-by-label" tabindex="-1" data-select-list>
+                  <li role="option" class="select-opt" id="tf-by-dimas" data-value="dimas" data-name="Dimas Prasetyo" data-role="Manajer SDM · Human Capital" data-initials="DP" aria-selected="false">
+                    <span class="avatar">DP</span><span class="select-opt__text"><span>Dimas Prasetyo</span><span>Manajer SDM · Human Capital</span></span>
+                  </li>
+                  <li role="option" class="select-opt" id="tf-by-rina" data-value="rina" data-name="Rina Wulandari" data-role="Supervisor Perjalanan · General Affairs" data-initials="RW" aria-selected="false">
+                    <span class="avatar">RW</span><span class="select-opt__text"><span>Rina Wulandari</span><span>Supervisor Perjalanan · General Affairs</span></span>
+                  </li>
+                  <li role="option" class="select-opt" id="tf-by-andi" data-value="andi" data-name="Andi Saputra" data-role="Kepala Operasional · Operasional" data-initials="AS" aria-selected="false">
+                    <span class="avatar">AS</span><span class="select-opt__text"><span>Andi Saputra</span><span>Kepala Operasional · Operasional</span></span>
+                  </li>
+                  <li role="option" class="select-opt" id="tf-by-budi" data-value="budi" data-name="Budi Santoso" data-role="Manajer Keuangan · Finance" data-initials="BS" aria-selected="false">
+                    <span class="avatar">BS</span><span class="select-opt__text"><span>Budi Santoso</span><span>Manajer Keuangan · Finance</span></span>
+                  </li>
+                  <li role="option" class="select-opt" id="tf-by-sari" data-value="sari" data-name="Sari Lestari" data-role="Team Lead Rekrutmen · Human Capital" data-initials="SL" aria-selected="false">
+                    <span class="avatar">SL</span><span class="select-opt__text"><span>Sari Lestari</span><span>Team Lead Rekrutmen · Human Capital</span></span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <p class="tf-help" id="tf-by-help">Pilih atasan atau rekan kerja yang memberikan tugas ini.</p>
+            <p class="tf-error" id="tf-by-error" data-error="by" hidden></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Baris / Tanggal & Deadline (155:1256) -->
+      <div class="tf-row">
+        <div class="tf-field">
+          <label class="tf-label" for="tf-date">Tanggal <span class="tf-req" aria-hidden="true">*</span></label>
+          <div class="field-box">
+            <span class="ico ico-18"><img src="assets/icon-calendar-brand.svg" width="15.5" height="17" alt=""></span>
+            <span class="field-text" data-date-text aria-hidden="true">Pilih tanggal</span>
+            <input id="tf-date" name="date" type="date" class="field-native" required aria-describedby="tf-date-help tf-date-error">
+          </div>
+          <p class="tf-help" id="tf-date-help">Tugas tampil di kalender mulai tanggal ini.</p>
+          <p class="tf-error" id="tf-date-error" data-error="date" hidden></p>
+        </div>
+        <div class="tf-field">
+          <label class="tf-label" for="tf-due">Deadline <span class="tf-req" aria-hidden="true">*</span></label>
+          <div class="field-box">
+            <span class="ico ico-18"><img src="assets/icon-clock-red.svg" width="17" height="17" alt=""></span>
+            <span class="field-text" data-due-text aria-hidden="true">Pilih deadline</span>
+            <input id="tf-due" name="due" type="datetime-local" class="field-native" required aria-describedby="tf-due-left tf-due-error">
+          </div>
+          <span class="pill-due" id="tf-due-left" data-due-left hidden></span>
+          <p class="tf-error" id="tf-due-error" data-error="due" hidden></p>
+        </div>
+      </div>
+
+      <!-- Info (155:1278 / 155:2025) -->
+      <div class="tf-info">
+        <span class="ico ico-16">
+          <img data-info-icon="self" src="assets/icon-lock.svg" width="14" height="15.3333" alt="">
+          <img data-info-icon="assigned" src="assets/icon-info.svg" width="15.3333" height="15.3333" alt="" hidden>
+        </span>
+        <p data-info-text>Tugas pribadi hanya terlihat oleh Anda dan tampil di Tugas Saya pada tanggal yang dipilih.</p>
+      </div>
+    </div>
+
+    <footer class="modal-foot">
+      <button type="button" class="btn btn--ghost" data-modal-close>Batal</button>
+      <button type="submit" class="btn btn--primary">
+        <span class="ico ico-16"><img src="assets/icon-check-white.svg" width="12.6667" height="9.33333" alt=""></span>
+        Simpan Tugas
+      </button>
+    </footer>
+  </form>
+</dialog>
+
+<!-- Toast (feedback with undo) -->
 <div class="toast-region" aria-live="polite">
   <div class="toast" data-toast hidden>
     <img data-toast-icon src="assets/fav-pin.svg" width="14" height="14" alt="">
