@@ -51,7 +51,16 @@ npm run build   # or: npm run dev  (watch mode)
   - The new task shows in Tugas Saya on every day from Tanggal to the deadline day, with "Tugas pribadi" or
     "Untuk <name>" and its deadline, on a clipboard tile (the form has no Aplikasi field; Figma does); the calendar jumps to it and it glows briefly. **Urungkan** in the toast
     removes it. Saved in `localStorage` (`sau-portal:tasks`).
-  - Both modals are `<dialog>`s: focus stays inside, Escape closes (an open option list first), the page
+- **Detail Tugas** (no Figma frame; built from the Tambah Tugas parts): click a task you added to see
+  its status, type, Tanggal, Deadline (with days left) and colleague, then:
+  - **Tandai Selesai**: the row greys out with a "Selesai" badge; on a done task the button is **Buka
+    Kembali**.
+  - **Edit**: the Tambah Tugas form opens filled in ("Edit Tugas" / "Simpan Perubahan"); the calendar
+    jumps to the task's new first day.
+  - **Hapus**: the row folds away.
+  - Each action shows a toast with **Urungkan** (undo). The sample tasks in `index.html` keep linking to
+    their apps.
+  - The modals are `<dialog>`s: focus stays inside, Escape closes (an open option list first), the page
     behind doesn't scroll. On phones they slide up as full-width sheets.
 - **Tugas Saya: week calendar** (Monday–Sunday):
   - Click a day to see its tasks. The blue tile slides to that day, the list slides in from the direction

@@ -1442,6 +1442,57 @@
     animation: task-glow 1.8s ease-out 0.4s both;
   }
 
+  /* ---------- Modal · Detail Tugas (no Figma frame; Tambah Tugas parts) ---------- */
+  /* Rows of tasks you added open the detail: their title is a button */
+  button.task-link { cursor: pointer; text-align: left; }
+  .td-body { display: flex; flex-direction: column; gap: 14px; padding: 22px 28px 24px; }
+  .td-status { background-color: var(--color-warn-soft); color: var(--color-warn-ink); }
+  .td-status[data-state="done"] { background-color: var(--color-success-soft); color: var(--color-success-ink); }
+  .td-title {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 26px;
+    overflow-wrap: anywhere;
+    color: var(--color-heading);
+  }
+  .td-body[data-done] .td-title {
+    color: var(--color-muted);
+    text-decoration: line-through 1.5px rgb(102 117 143 / 0.45);
+  }
+  .td-facts {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-line);
+    border-radius: 18px;
+    background-color: #f6f8fc;
+    padding: 2px 14px;
+  }
+  .td-fact { display: flex; align-items: center; gap: 12px; padding: 12px 0; }
+  .td-fact + .td-fact { border-top: 1px solid var(--color-line); }
+  .td-fact__icon {
+    display: flex;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background-color: #fff;
+  }
+  .td-fact__text { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 2px; line-height: normal; }
+  .td-fact__label { font-size: 11px; font-weight: 600; color: var(--color-muted); }
+  .td-fact__value { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 14px; font-weight: 700; color: var(--color-heading); }
+  .td-fact__sub { font-size: 11px; color: var(--color-muted); }
+  .btn--danger { border: 1px solid #f3cccc; background-color: #fff; color: var(--color-urgent-ink); }
+  .btn--danger:hover { border-color: #ecb3b3; background-color: var(--color-urgent-soft); }
+  /* Phones: Hapus and Edit keep only their icons so the main action fits */
+  @media (max-width: 639.98px) {
+    .td-body { padding: 20px; }
+    .btn--compact { padding-inline: 13px; }
+    .btn--compact .btn__label { display: none; }
+    .modal-foot > .btn--compact { flex: 0 0 auto; }
+  }
+
   /* ---------- Toast ---------- */
   .toast-region {
     position: fixed;

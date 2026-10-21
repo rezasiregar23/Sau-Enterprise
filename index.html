@@ -1083,10 +1083,67 @@
       <button type="button" class="btn btn--ghost" data-modal-close>Batal</button>
       <button type="submit" class="btn btn--primary">
         <span class="ico ico-16"><img src="assets/icon-check-white.svg" width="12.6667" height="9.33333" alt=""></span>
-        Simpan Tugas
+        <span data-submit-label>Simpan Tugas</span>
       </button>
     </footer>
   </form>
+</dialog>
+
+<!-- Modal · Detail Tugas: opens from a task added with "Tambah Tugas" to mark it done, edit or
+     delete it. No Figma frame; built from the Tambah Tugas modal's parts. -->
+<dialog id="task-detail" class="modal" aria-labelledby="td-heading" aria-describedby="td-desc" data-task-detail>
+  <header class="modal-head">
+    <span class="modal-icon"><span class="ico ico-20"><img src="assets/panel-clipboard.svg" width="20" height="20" alt=""></span></span>
+    <div class="modal-titles">
+      <h2 id="td-heading" class="modal-title" tabindex="-1" data-modal-start>Detail Tugas</h2>
+      <p id="td-desc" class="modal-desc">Tandai selesai, ubah, atau hapus tugas ini.</p>
+    </div>
+    <button type="button" class="modal-close" data-modal-close aria-label="Tutup"><span class="ico ico-18"><img src="assets/icon-close.svg" width="11" height="11" alt=""></span></button>
+  </header>
+
+  <div class="modal-body td-body" data-td-body>
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="pill td-status" data-td-status>Belum selesai</span>
+      <span class="pill bg-brand-soft text-brand" data-td-kind>Tugas Sendiri</span>
+    </div>
+    <p class="td-title" data-td-title></p>
+    <ul class="td-facts" role="list">
+      <li class="td-fact">
+        <span class="td-fact__icon"><span class="ico ico-18"><img src="assets/icon-calendar-brand.svg" width="15.5" height="17" alt=""></span></span>
+        <span class="td-fact__text"><span class="td-fact__label">Tanggal</span><span class="td-fact__value" data-td-date></span></span>
+      </li>
+      <li class="td-fact">
+        <span class="td-fact__icon"><span class="ico ico-18"><img src="assets/icon-clock-red.svg" width="17" height="17" alt=""></span></span>
+        <span class="td-fact__text">
+          <span class="td-fact__label">Deadline</span>
+          <span class="td-fact__value"><span data-td-due></span><span class="pill-due" data-td-left></span></span>
+        </span>
+      </li>
+      <li class="td-fact" data-td-person hidden>
+        <span class="avatar" data-td-avatar></span>
+        <span class="td-fact__text">
+          <span class="td-fact__label" data-td-person-label>Ditugaskan kepada</span>
+          <span class="td-fact__value" data-td-name></span>
+          <span class="td-fact__sub" data-td-role></span>
+        </span>
+      </li>
+    </ul>
+  </div>
+
+  <footer class="modal-foot">
+    <button type="button" class="btn btn--danger btn--compact mr-auto" data-td-delete aria-label="Hapus tugas">
+      <span class="ico ico-16"><img src="assets/icon-trash.svg" width="16" height="16" alt=""></span>
+      <span class="btn__label">Hapus</span>
+    </button>
+    <button type="button" class="btn btn--ghost btn--compact" data-td-edit aria-label="Edit tugas">
+      <span class="ico ico-16"><img src="assets/icon-edit.svg" width="16" height="16" alt=""></span>
+      <span class="btn__label">Edit</span>
+    </button>
+    <button type="button" class="btn btn--primary" data-td-done>
+      <span class="ico ico-16"><img data-td-done-icon src="assets/icon-check-white.svg" width="12.6667" height="9.33333" alt=""></span>
+      <span data-td-done-label>Tandai Selesai</span>
+    </button>
+  </footer>
 </dialog>
 
 <!-- Toast (feedback with undo) -->

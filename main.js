@@ -147,13 +147,20 @@
     }
     requestAnimationFrame(() => requestAnimationFrame(() => dialog.toggleAttribute("data-shown", true)));
   }
+  // Resolves once the dialog has closed (and the page behind is usable again).
   function closeModal(dialog) {
-    if (!dialog.open) return;
+    if (!dialog.open) return Promise.resolve();
     dialog.removeAttribute("data-shown");
     dialog.dispatchEvent(new Event("modalclosing"));
-    if (reduceMotion.matches) return dialog.close();
     window.clearTimeout(closeTimers.get(dialog));
-    closeTimers.set(dialog, window.setTimeout(() => dialog.close(), 320));
+    return new Promise((resolve) => {
+      const finish = () => {
+        if (dialog.open) dialog.close();
+        resolve();
+      };
+      if (reduceMotion.matches) return finish();
+      closeTimers.set(dialog, window.setTimeout(finish, 320));
+    });
   }
 
   $$("dialog.modal").forEach((dialog) => {
@@ -903,26 +910,42 @@
       t && (!t.app || apps.has(t.app)) && typeof t.title === "string" && /^\d{4}-\d{2}-\d{2}$/.test(t.start) && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(t.due)
   );
 
-  // Same markup as the task rows in index.html. New tasks have no app (the form
-  // has no Aplikasi field); ones saved by an earlier version may still name one.
+  // Who a task is with: "given" = handed to a colleague (Beri Tugas);
+  // "assigned" = received from someone (saved by an earlier version).
+  function whoOf(task) {
+    const person = people.get(task.by);
+    if (person && task.kind === "given") return `Untuk ${person.name}`;
+    if (person && task.kind === "assigned") return `Dari ${person.name}`;
+    return "Tugas pribadi";
+  }
+  const daysLeftLabel = (left) => (left < 0 ? `Lewat ${-left} hari` : left === 0 ? "Hari ini" : left === 1 ? "Besok" : `${left} hari lagi`);
+  const saveTasks = () => store.set(KEY_TASKS, customTasks);
+
+  // Same look as the task rows in index.html. A task you added opens "Detail
+  // Tugas" (mark done, edit, delete) from its title. New tasks have no app;
+  // ones saved by an earlier version may still name one.
   function taskRow(task) {
     const app = task.app ? apps.get(task.app) : null;
     const due = new Date(task.due);
     const dueKey = task.due.slice(0, 10);
     const li = el("li", "task-row");
     Object.assign(li.dataset, { task: "", date: task.start, due: dueKey, custom: task.id });
+    if (task.done) li.dataset.done = "";
     const text = el("span", "task-text");
-    const link = el("a", "task-link", task.title);
-    link.href = app ? app.href : "#";
-    if (app) link.dataset.appLink = app.id;
-    // "given": handed to a colleague (Beri Tugas); "assigned": received (saved by an earlier version)
-    const person = people.get(task.by);
-    const who = person && task.kind === "given" ? `Untuk ${person.name}` : person && task.kind === "assigned" ? `Dari ${person.name}` : "Tugas pribadi";
-    text.append(link, el("span", "task-meta", app ? `${app.name} · ${who}` : who));
-    const left = daysBetween(today, due);
-    const tone = left <= 0 ? "urgent" : left <= 2 ? "soon" : "later";
-    const label = task.start === dueKey ? `Batas ${clock(due)}` : `Batas ${due.getDate()} ${MONTHS_SHORT[due.getMonth()]} · ${clock(due)}`;
-    const pill = el("span", `task-due task-due--${tone}`, label);
+    const open = el("button", "task-link", task.title);
+    open.type = "button";
+    open.dataset.taskOpen = "";
+    open.setAttribute("aria-haspopup", "dialog");
+    text.append(open, el("span", "task-meta", app ? `${app.name} · ${whoOf(task)}` : whoOf(task)));
+    let pill;
+    if (task.done) {
+      pill = el("span", "task-due task-due--done", "Selesai");
+    } else {
+      const left = daysBetween(today, due);
+      const tone = left <= 0 ? "urgent" : left <= 2 ? "soon" : "later";
+      const label = task.start === dueKey ? `Batas ${clock(due)}` : `Batas ${due.getDate()} ${MONTHS_SHORT[due.getMonth()]} · ${clock(due)}`;
+      pill = el("span", `task-due task-due--${tone}`, label);
+    }
     pill.title = `Deadline ${shortDate(due)} · ${clock(due)}`;
     const go = el("span", "task-go");
     go.setAttribute("aria-hidden", "true");
@@ -1078,34 +1101,57 @@
     renderWeek(null);
     select(today, { animate: false });
 
+    // Show a row that was just added or changed: on the open day if it falls
+    // there, otherwise on its first day. A short glow marks it.
+    function reveal(row, { enter = true } = {}) {
+      if (isOn(row, toKey(selected))) {
+        showTasks(0);
+        if (enter && !reduceMotion.matches) {
+          row.style.setProperty("--i", "0");
+          replay(row, "list-enter", 900);
+        }
+      } else {
+        select(fromKey(row.dataset.date));
+      }
+      if (!reduceMotion.matches) replay(row, "is-new", 2600);
+      row.scrollIntoView({ block: "nearest", behavior: reduceMotion.matches ? "auto" : "smooth" });
+    }
+    const refresh = () => {
+      tasks = $$("[data-task]", cal);
+      renderWeek(null);
+    };
+
     calendar = {
       get selected() {
         return selected;
       },
-      // Add a row and bring it into view: on the open day if it shows there,
-      // otherwise on its first day.
-      add(row) {
+      add(row, { before = null } = {}) {
         row.hidden = true;
-        taskList.append(row);
-        tasks = $$("[data-task]", cal);
-        renderWeek(null);
-        if (isOn(row, toKey(selected))) {
-          showTasks(0);
-          if (!reduceMotion.matches) {
-            row.style.setProperty("--i", "0");
-            replay(row, "list-enter", 900);
-          }
-        } else {
-          select(fromKey(row.dataset.date));
-        }
-        if (!reduceMotion.matches) replay(row, "is-new", 2600);
-        row.scrollIntoView({ block: "nearest", behavior: reduceMotion.matches ? "auto" : "smooth" });
+        taskList.insertBefore(row, before && before.parentNode === taskList ? before : null);
+        refresh();
+        reveal(row);
       },
-      remove(row) {
-        row.remove();
-        tasks = $$("[data-task]", cal);
-        renderWeek(null);
-        showTasks(0);
+      replace(oldRow, row) {
+        row.hidden = oldRow.hidden;
+        oldRow.replaceWith(row);
+        refresh();
+        reveal(row, { enter: false });
+      },
+      remove(row, { animate = false } = {}) {
+        const done = () => {
+          row.remove();
+          refresh();
+          showTasks(0);
+        };
+        if (!animate || reduceMotion.matches || row.hidden) return done();
+        row.style.overflow = "hidden";
+        row.animate(
+          [
+            { opacity: 1, height: `${row.offsetHeight}px` },
+            { opacity: 0, height: "0px", paddingTop: "0px", paddingBottom: "0px", borderWidth: "0px", marginBottom: "-10px" },
+          ],
+          { duration: 340, easing: "cubic-bezier(0.4, 0, 0.2, 1)", fill: "forwards" }
+        ).onfinish = done;
       },
     };
   }
@@ -1218,15 +1264,38 @@
       reset() {
         options().forEach((o) => o.setAttribute("aria-selected", "false"));
       },
+      set(value) {
+        options().forEach((o) => o.setAttribute("aria-selected", String(o.dataset.value === value)));
+      },
     };
   }
 
   /* ------------------------------------------------------------------
-   * Tambah Tugas: a task of your own, or one you give to a colleague
+   * Tambah Tugas: a task of your own, or one you give to a colleague.
+   * The same form edits a task (from Detail Tugas).
    * ------------------------------------------------------------------ */
   const taskDialog = $("[data-task-dialog]");
   if (taskDialog && calendar) {
     const form = $("[data-task-form]", taskDialog);
+    const heading = $("#tf-title", taskDialog);
+    const headDesc = $("#tf-desc", taskDialog);
+    const submitLabel = $("[data-submit-label]", form);
+    const TEXT_ADD = { heading: heading.textContent, desc: headDesc.textContent, submit: submitLabel.textContent };
+    const TEXT_EDIT = { heading: "Edit Tugas", desc: "Ubah detail tugas Anda.", submit: "Simpan Perubahan" };
+    let editing = null; // the task being edited, or null when adding
+
+    const rowOf = (id) => cal.querySelector(`[data-custom="${id}"]`);
+    const focusRow = (row) => $("[data-task-open]", row)?.focus({ preventScroll: true });
+    // Save a changed task and swap its row for a fresh one.
+    function commitTask(task) {
+      customTasks = customTasks.map((t) => (t.id === task.id ? task : t));
+      saveTasks();
+      const row = taskRow(task);
+      const old = rowOf(task.id);
+      if (old) calendar.replace(old, row);
+      else calendar.add(row);
+      return row;
+    }
     const titleInput = $("#tf-name", form);
     const titleCount = $("[data-title-count]", form);
     const dateInput = $("#tf-date", form);
@@ -1323,7 +1392,7 @@
       dueLeft.hidden = !due;
       if (due) {
         const left = daysBetween(today, due);
-        dueLeft.textContent = left < 0 ? `Lewat ${-left} hari` : left === 0 ? "Hari ini" : left === 1 ? "Besok" : `${left} hari lagi`;
+        dueLeft.textContent = daysLeftLabel(left);
         dueLeft.dataset.tone = left <= 7 ? "urgent" : "calm";
       }
     }
@@ -1366,16 +1435,32 @@
         return;
       }
 
-      const task = {
-        id: `t${Date.now().toString(36)}`,
+      const fields = {
         kind: kind(),
         title: titleInput.value.trim().slice(0, MAX_TITLE),
         by: kind() === "given" ? picked.by : "",
         start: dateInput.value,
         due: dueInput.value.slice(0, 16),
       };
+
+      if (editing) {
+        const before = editing;
+        const updated = { ...before, ...fields };
+        editing = null;
+        closeModal(taskDialog).then(() => {
+          focusRow(commitTask(updated));
+          showToast("Perubahan tugas disimpan", {
+            icon: "assets/notif-check.svg",
+            light: true,
+            undo: () => focusRow(commitTask(before)),
+          });
+        });
+        return;
+      }
+
+      const task = { id: `t${Date.now().toString(36)}`, ...fields, done: false };
       customTasks = [...customTasks, task];
-      store.set(KEY_TASKS, customTasks);
+      saveTasks();
       const row = taskRow(task);
       closeModal(taskDialog);
       window.setTimeout(() => {
@@ -1385,28 +1470,139 @@
           light: true,
           undo: () => {
             customTasks = customTasks.filter((t) => t.id !== task.id);
-            store.set(KEY_TASKS, customTasks);
-            calendar.remove(row);
+            saveTasks();
+            calendar.remove(row, { animate: true });
           },
         });
       }, 240);
     });
 
-    function openTaskForm() {
+    // Empty for a new task (dated on the open calendar day), or filled with `task` to edit it.
+    function openTaskForm(task = null) {
+      editing = task;
+      const text = task ? TEXT_EDIT : TEXT_ADD;
+      heading.textContent = text.heading;
+      headDesc.textContent = text.desc;
+      submitLabel.textContent = text.submit;
       form.reset();
-      picked.by = "";
+      picked.by = task && people.has(task.by) ? task.by : "";
       bySelect.reset();
+      if (picked.by) bySelect.set(picked.by);
       renderBy();
       Object.keys(fieldOf).forEach(clearError);
-      const start = toKey(calendar.selected);
-      dateInput.value = start;
-      dueInput.value = `${start}T17:00`;
-      titleCount.textContent = `0/${MAX_TITLE}`;
+      if (task) {
+        form.elements.kind.value = task.kind === "self" ? "self" : "given";
+        titleInput.value = task.title;
+        dateInput.value = task.start;
+        dueInput.value = task.due;
+      } else {
+        const start = toKey(calendar.selected);
+        dateInput.value = start;
+        dueInput.value = `${start}T17:00`;
+      }
+      titleCount.textContent = `${titleInput.value.length}/${MAX_TITLE}`;
       updateKind();
       updateDates();
       openModal(taskDialog);
     }
     document.addEventListener("click", (event) => {
+      if (event.target.closest("[data-open-task-form]")) openTaskForm();
+    });
+
+    /* Detail Tugas: mark a task you added as done, edit it, or delete it */
+    const detail = $("[data-task-detail]");
+    if (detail) {
+      const body = $("[data-td-body]", detail);
+      const statusPill = $("[data-td-status]", detail);
+      const kindPill = $("[data-td-kind]", detail);
+      const titleText = $("[data-td-title]", detail);
+      const leftPill = $("[data-td-left]", detail);
+      const personRow = $("[data-td-person]", detail);
+      const doneButton = $("[data-td-done]", detail);
+      const doneIcon = $("[data-td-done-icon]", detail);
+      const doneLabel = $("[data-td-done-label]", detail);
+      let current = null;
+
+      function fill(task) {
+        const due = new Date(task.due);
+        const left = daysBetween(today, due);
+        const person = people.get(task.by);
+        statusPill.textContent = task.done ? "Selesai" : "Belum selesai";
+        statusPill.dataset.state = task.done ? "done" : "open";
+        kindPill.textContent = task.kind === "self" ? "Tugas Sendiri" : task.kind === "given" ? "Beri Tugas" : "Ditugaskan";
+        titleText.textContent = task.title;
+        body.toggleAttribute("data-done", Boolean(task.done));
+        $("[data-td-date]", detail).textContent = shortDate(fromKey(task.start));
+        $("[data-td-due]", detail).textContent = `${shortDate(due)} · ${clock(due)}`;
+        leftPill.hidden = Boolean(task.done);
+        leftPill.textContent = daysLeftLabel(left);
+        leftPill.dataset.tone = left <= 7 ? "urgent" : "calm";
+        personRow.hidden = !person;
+        if (person) {
+          $("[data-td-avatar]", detail).textContent = person.initials;
+          $("[data-td-person-label]", detail).textContent = task.kind === "assigned" ? "Ditugaskan oleh" : "Ditugaskan kepada";
+          $("[data-td-name]", detail).textContent = person.name;
+          $("[data-td-role]", detail).textContent = person.role;
+        }
+        // Done tasks offer "Buka Kembali" instead
+        doneButton.classList.toggle("btn--primary", !task.done);
+        doneButton.classList.toggle("btn--ghost", Boolean(task.done));
+        doneLabel.textContent = task.done ? "Buka Kembali" : "Tandai Selesai";
+        doneIcon.src = task.done ? "assets/icon-rotate.svg" : "assets/icon-check-white.svg";
+        doneIcon.setAttribute("width", task.done ? "14" : "12.6667");
+        doneIcon.setAttribute("height", task.done ? "14" : "9.33333");
+      }
+
+      $("[data-task-list]", cal).addEventListener("click", (event) => {
+        const open = event.target.closest("[data-task-open]");
+        if (!open) return;
+        current = customTasks.find((t) => t.id === open.closest("[data-custom]").dataset.custom);
+        if (!current) return;
+        fill(current);
+        openModal(detail);
+      });
+
+      doneButton.addEventListener("click", () => {
+        const before = current;
+        const updated = { ...before, done: !before.done };
+        closeModal(detail).then(() => {
+          focusRow(commitTask(updated));
+          showToast(updated.done ? "Tugas ditandai selesai" : "Tugas dibuka kembali", {
+            icon: "assets/notif-check.svg",
+            light: true,
+            undo: () => focusRow(commitTask(before)),
+          });
+        });
+      });
+
+      $("[data-td-edit]", detail).addEventListener("click", () => {
+        const task = current;
+        closeModal(detail).then(() => openTaskForm(task));
+      });
+
+      $("[data-td-delete]", detail).addEventListener("click", () => {
+        const task = current;
+        const row = rowOf(task.id);
+        closeModal(detail).then(() => {
+          const index = customTasks.findIndex((t) => t.id === task.id);
+          const next = row?.nextElementSibling;
+          customTasks = customTasks.filter((t) => t.id !== task.id);
+          saveTasks();
+          if (row) calendar.remove(row, { animate: true });
+          showToast("Tugas dihapus", {
+            icon: "assets/icon-trash.svg",
+            light: true,
+            undo: () => {
+              customTasks = [...customTasks.slice(0, index), task, ...customTasks.slice(index)];
+              saveTasks();
+              const restored = taskRow(task);
+              calendar.add(restored, { before: next?.isConnected ? next : null });
+              focusRow(restored);
+            },
+          });
+        });
+      });
+    }    document.addEventListener("click", (event) => {
       if (event.target.closest("[data-open-task-form]")) openTaskForm();
     });
   }
