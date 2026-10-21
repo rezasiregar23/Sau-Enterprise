@@ -43,13 +43,13 @@ npm run build   # or: npm run dev  (watch mode)
     have no orbit glyph in Figma show their list logo or icon on a white tile. An empty place shows a dashed
     "Kosong" tile that opens the modal.
 - **Tambah Tugas** (Figma 155:558 Tugas Sendiri, 155:1293 Beri Tugas): the button in the Tugas Saya header.
-  - Jenis Tugas (Tugas Sendiri / Beri Tugas: given to a colleague), Aplikasi (all apps, grouped), Judul Tugas (max 100, with a
+  - Jenis Tugas (Tugas Sendiri / Beri Tugas: given to a colleague), Judul Tugas (max 100, with a
     counter), the person (only for Beri Tugas; "Ditugaskan kepada" (Figma still says "Ditugaskan oleh"); the people are the options in `#tf-by-list`), Tanggal and
     Deadline (the phone's or browser's date picker, shown formatted) with "N hari lagi" counted from today.
   - Required fields are checked on save; errors show under each field and focus the first one. A deadline
     before the date isn't accepted (changing the date moves an earlier deadline along).
   - The new task shows in Tugas Saya on every day from Tanggal to the deadline day, with "Tugas pribadi" or
-    "Untuk <name>" and its deadline; the calendar jumps to it and it glows briefly. **Urungkan** in the toast
+    "Untuk <name>" and its deadline, on a clipboard tile (the form has no Aplikasi field; Figma does); the calendar jumps to it and it glows briefly. **Urungkan** in the toast
     removes it. Saved in `localStorage` (`sau-portal:tasks`).
   - Both modals are `<dialog>`s: focus stays inside, Escape closes (an open option list first), the page
     behind doesn't scroll. On phones they slide up as full-width sheets.

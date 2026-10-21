@@ -250,10 +250,9 @@
     return icon;
   };
   // The icon on a white tile (Figma "Logo Aplikasi"), or the coloured tile itself.
-  function logoTile(id, small = false) {
+  function logoTile(id) {
     const icon = appIcon(id);
     const tile = el("span", "logo-tile");
-    if (small) tile.classList.add("logo-tile--sm");
     if (icon.classList.contains("app-tile")) tile.classList.add("logo-tile--bare");
     tile.append(icon);
     return tile;
@@ -901,24 +900,25 @@
   const storedTasks = store.get(KEY_TASKS, []);
   let customTasks = (Array.isArray(storedTasks) ? storedTasks : []).filter(
     (t) =>
-      t && apps.has(t.app) && typeof t.title === "string" && /^\d{4}-\d{2}-\d{2}$/.test(t.start) && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(t.due)
+      t && (!t.app || apps.has(t.app)) && typeof t.title === "string" && /^\d{4}-\d{2}-\d{2}$/.test(t.start) && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(t.due)
   );
 
-  // Same markup as the task rows in index.html.
+  // Same markup as the task rows in index.html. New tasks have no app (the form
+  // has no Aplikasi field); ones saved by an earlier version may still name one.
   function taskRow(task) {
-    const app = apps.get(task.app);
+    const app = task.app ? apps.get(task.app) : null;
     const due = new Date(task.due);
     const dueKey = task.due.slice(0, 10);
     const li = el("li", "task-row");
     Object.assign(li.dataset, { task: "", date: task.start, due: dueKey, custom: task.id });
     const text = el("span", "task-text");
     const link = el("a", "task-link", task.title);
-    link.href = app.href;
-    link.dataset.appLink = app.id;
+    link.href = app ? app.href : "#";
+    if (app) link.dataset.appLink = app.id;
     // "given": handed to a colleague (Beri Tugas); "assigned": received (saved by an earlier version)
     const person = people.get(task.by);
     const who = person && task.kind === "given" ? `Untuk ${person.name}` : person && task.kind === "assigned" ? `Dari ${person.name}` : "Tugas pribadi";
-    text.append(link, el("span", "task-meta", `${app.name} · ${who}`));
+    text.append(link, el("span", "task-meta", app ? `${app.name} · ${who}` : who));
     const left = daysBetween(today, due);
     const tone = left <= 0 ? "urgent" : left <= 2 ? "soon" : "later";
     const label = task.start === dueKey ? `Batas ${clock(due)}` : `Batas ${due.getDate()} ${MONTHS_SHORT[due.getMonth()]} · ${clock(due)}`;
@@ -927,7 +927,14 @@
     const go = el("span", "task-go");
     go.setAttribute("aria-hidden", "true");
     go.append(img("assets/arrow-users.svg", 14, 14));
-    li.append(appIcon(app.id), text, pill, go);
+    let icon;
+    if (app) {
+      icon = appIcon(app.id);
+    } else {
+      icon = el("span", "app-tile bg-brand-soft");
+      icon.append(img("assets/panel-clipboard.svg", 20, 20));
+    }
+    li.append(icon, text, pill, go);
     return li;
   }
 
@@ -1104,7 +1111,7 @@
   }
 
   /* ------------------------------------------------------------------
-   * Dropdown (listbox in a popover): "Aplikasi" and "Ditugaskan kepada"
+   * Dropdown (listbox in a popover): "Ditugaskan kepada"
    * ------------------------------------------------------------------ */
   function createSelect(root, { onChange }) {
     const button = $(".select-btn", root);
@@ -1233,38 +1240,11 @@
     const INFO_SELF = infoText.textContent;
     const INFO_GIVEN = infoText.dataset.infoGiven;
     const MAX_TITLE = Number(titleInput.maxLength) || 100;
-    const picked = { app: "", by: "" };
+    const picked = { by: "" };
     let settleTimer = 0;
 
     const kind = () => form.elements.kind.value;
 
-    // Aplikasi options, grouped like Jelajahi
-    const appList = $('[data-select="app"] [data-select-list]', form);
-    categories.forEach((group) => {
-      const head = el("li", "select-group", group.label);
-      head.setAttribute("role", "presentation");
-      head.setAttribute("aria-hidden", "true");
-      appList.append(head);
-      group.ids.forEach((id) => {
-        const app = apps.get(id);
-        const opt = el("li", "select-opt");
-        opt.id = `tf-app-${id}`;
-        opt.setAttribute("role", "option");
-        opt.setAttribute("aria-selected", "false");
-        opt.dataset.value = id;
-        const text = el("span", "select-opt__text");
-        text.append(el("span", "", app.name), el("span", "", app.categoryLabel));
-        opt.append(logoTile(id, true), text);
-        appList.append(opt);
-      });
-    });
-
-    function renderApp() {
-      const value = $('[data-select="app"] [data-select-value]', form);
-      if (!picked.app) return value.replaceChildren(el("span", "select-placeholder", "Pilih aplikasi"));
-      const app = apps.get(picked.app);
-      value.replaceChildren(logoTile(app.id, true), el("span", "select-name", app.name), el("span", "select-sub", `· ${app.categoryLabel}`));
-    }
     function renderBy() {
       const value = $('[data-select="by"] [data-select-value]', form);
       const person = people.get(picked.by);
@@ -1274,13 +1254,6 @@
       value.replaceChildren(el("span", "avatar", person.initials), text);
     }
 
-    const appSelect = createSelect($('[data-select="app"]', form), {
-      onChange(id) {
-        picked.app = id;
-        renderApp();
-        clearError("app");
-      },
-    });
     const bySelect = createSelect($('[data-select="by"]', form), {
       onChange(id) {
         picked.by = id;
@@ -1292,13 +1265,12 @@
 
     // Errors under each field
     const fieldOf = {
-      app: () => $("#tf-app", form),
       title: () => titleInput.closest(".field-box"),
       by: () => $("#tf-by", form),
       date: () => dateInput.closest(".field-box"),
       due: () => dueInput.closest(".field-box"),
     };
-    const focusOf = { app: () => $("#tf-app", form), title: () => titleInput, by: () => $("#tf-by", form), date: () => dateInput, due: () => dueInput };
+    const focusOf = { title: () => titleInput, by: () => $("#tf-by", form), date: () => dateInput, due: () => dueInput };
     function setError(name, message) {
       const node = $(`[data-error="${name}"]`, form);
       node.textContent = message;
@@ -1382,7 +1354,6 @@
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       const errors = [];
-      if (!picked.app) errors.push(["app", "Pilih aplikasi tempat tugas ini berada."]);
       if (!titleInput.value.trim()) errors.push(["title", "Judul tugas wajib diisi."]);
       if (kind() === "given" && !picked.by) errors.push(["by", "Pilih rekan kerja untuk tugas ini."]);
       if (!dateInput.value) errors.push(["date", "Pilih tanggal tugas."]);
@@ -1398,7 +1369,6 @@
       const task = {
         id: `t${Date.now().toString(36)}`,
         kind: kind(),
-        app: picked.app,
         title: titleInput.value.trim().slice(0, MAX_TITLE),
         by: kind() === "given" ? picked.by : "",
         start: dateInput.value,
@@ -1424,11 +1394,8 @@
 
     function openTaskForm() {
       form.reset();
-      picked.app = "";
       picked.by = "";
-      appSelect.reset();
       bySelect.reset();
-      renderApp();
       renderBy();
       Object.keys(fieldOf).forEach(clearError);
       const start = toKey(calendar.selected);

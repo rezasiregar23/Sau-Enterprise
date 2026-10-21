@@ -932,9 +932,6 @@
   }
   .logo-tile > .app-logo { scale: 0.7727; }
   .logo-tile--bare { overflow: visible; border: 0; background: none; }
-  .logo-tile--sm { width: 32px; height: 32px; }
-  .logo-tile--sm > .app-logo { scale: 0.562; }
-  .logo-tile--sm > .app-tile { scale: 0.7273; }
 
   /* ---------- Modal · Tambah Tugas (155:1194, 155:1929) ---------- */
   .tf-body { display: flex; flex-direction: column; gap: 18px; padding: 22px 28px 24px; }
@@ -1118,7 +1115,7 @@
   .tf-reveal.is-open { grid-template-rows: 1fr; margin-top: 0; opacity: 1; }
   .tf-reveal.is-open.is-settled > * { overflow: visible; }
 
-  /* Dropdowns: Aplikasi (155:1243) and Pemberi Tugas (155:1993) */
+  /* Dropdown: Pemberi Tugas (155:1993) */
   .select-btn {
     display: flex;
     width: 100%;
@@ -1136,8 +1133,6 @@
   .select-btn--person { height: 56px; }
   .select-value { display: flex; min-width: 0; flex: 1; align-items: center; gap: 10px; line-height: normal; }
   .select-placeholder { padding-left: 4px; font-size: 14px; color: var(--color-subtle); }
-  .select-name { flex-shrink: 0; font-size: 14px; font-weight: 700; color: var(--color-heading); }
-  .select-sub { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; color: var(--color-muted); }
   .select-person { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 1px; }
   .select-person > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .select-person > :first-child { font-size: 14px; font-weight: 700; color: var(--color-heading); }
@@ -1182,15 +1177,6 @@
     .select-pop:popover-open { opacity: 0; translate: 0 -6px; }
   }
   .select-list { outline: none; }
-  .select-group {
-    padding: 10px 10px 4px;
-    font-size: 10px;
-    font-weight: 800;
-    line-height: normal;
-    letter-spacing: 0.6px;
-    text-transform: uppercase;
-    color: var(--color-subtle);
-  }
   .select-opt {
     display: flex;
     align-items: center;
