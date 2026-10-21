@@ -443,7 +443,7 @@
                   <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
                 </li>
                 <li class="task-row" data-task data-date="2026-10-28" hidden>
-                  <span class="app-tile bg-[#f3d7e0]"><img src="assets/panel-wallet-others.svg" width="20" height="20" alt=""></span>
+                  <span class="app-tile bg-[#f3d7e0]"><img src="assets/app-others.svg" width="24" height="24" alt=""></span>
                   <span class="task-text">
                     <a href="#" class="task-link" data-app-link="qa-uko">Isi survei mutu layanan</a>
                     <span class="task-meta">QA Uko · Kuartal IV 2026</span>
@@ -825,7 +825,7 @@
           <!-- Panel / Others (87:334) -->
           <section data-category="others" aria-labelledby="cat-others" class="cat-panel tint-panel tint--rose [--tint-angle:154.67deg]">
             <div class="flex items-center gap-3">
-              <span class="cat-icon"><img src="assets/panel-wallet-others.svg" width="20" height="20" alt=""></span>
+              <span class="cat-icon"><img src="assets/panel-others.svg" width="20" height="20" alt=""></span>
               <div class="flex min-w-0 flex-1 flex-col gap-[2px]">
                 <h3 id="cat-others" class="cat-title text-[#8b1e2e]">Others</h3>
                 <p class="cat-desc">Layanan pendukung lainnya</p>
@@ -833,7 +833,7 @@
             </div>
             <ul role="list" class="flex flex-col gap-4">
               <li class="app-row group/row" data-app="qa-uko" data-name="QA Uko" data-order="16" data-keywords="quality assurance mutu audit qa">
-                <span class="app-tile bg-[#f3d7e0]" data-app-icon><img src="assets/panel-wallet-others.svg" width="20" height="20" alt=""></span>
+                <span class="app-tile bg-[#f3d7e0]" data-app-icon><img src="assets/app-others.svg" width="24" height="24" alt=""></span>
                 <span class="app-text">
                   <span class="app-name"><a href="#" class="app-link" data-app-link>QA Uko</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan QA Uko" title="Sematkan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
                   <span class="app-desc">Sistem penjaminan mutu (Quality Assurance)</span>
@@ -966,7 +966,7 @@
   </footer>
 </dialog>
 
-<!-- Modal · Tambah Tugas (155:1194 Tugas Sendiri, 155:1929 Ditugaskan) -->
+<!-- Modal · Tambah Tugas (155:1194 Tugas Sendiri, 155:1929 Beri Tugas) -->
 <dialog id="task-form" class="modal" aria-labelledby="tf-title" aria-describedby="tf-desc" data-task-dialog>
   <form class="modal-form" novalidate data-task-form>
     <header class="modal-head">
@@ -990,9 +990,9 @@
             <span class="seg-radio" aria-hidden="true"><span class="ico w-[11px] h-[11px]"><img src="assets/icon-check-xs-white.svg" width="9.33333" height="7.04167" alt=""></span></span>
           </label>
           <label class="seg-opt">
-            <input type="radio" name="kind" value="assigned" class="sr-only">
+            <input type="radio" name="kind" value="given" class="sr-only">
             <span class="seg-ico"><span class="ico ico-16"><img class="is-on" src="assets/icon-users-brand.svg" width="15.3333" height="14" alt=""><img class="is-off" src="assets/icon-users-muted.svg" width="15.3333" height="14" alt=""></span></span>
-            <span class="seg-text"><span class="seg-title">Ditugaskan</span><span class="seg-sub">Diberikan oleh atasan/rekan</span></span>
+            <span class="seg-text"><span class="seg-title">Beri Tugas</span><span class="seg-sub">Diberikan kepada rekan kerja</span></span>
             <span class="seg-radio" aria-hidden="true"><span class="ico w-[11px] h-[11px]"><img src="assets/icon-check-xs-white.svg" width="9.33333" height="7.04167" alt=""></span></span>
           </label>
         </div>
@@ -1024,14 +1024,14 @@
         <p class="tf-error" id="tf-name-error" data-error="title" hidden></p>
       </div>
 
-      <!-- Field / Ditugaskan oleh (155:1991): only for "Ditugaskan" -->
+      <!-- Field / Ditugaskan oleh (155:1991), worded as "Ditugaskan kepada" to fit "Beri Tugas"; only for "Beri Tugas" -->
       <div class="tf-reveal" data-assigned-only inert>
         <div>
           <div class="tf-field">
-            <p class="tf-label" id="tf-by-label">Ditugaskan oleh <span class="tf-req" aria-hidden="true">*</span></p>
+            <p class="tf-label" id="tf-by-label">Ditugaskan kepada <span class="tf-req" aria-hidden="true">*</span></p>
             <div class="select" data-select="by">
               <button type="button" class="select-btn select-btn--person" id="tf-by" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="tf-by-label tf-by" aria-describedby="tf-by-help tf-by-error" aria-required="true">
-                <span class="select-value" data-select-value><span class="select-placeholder">Pilih pemberi tugas</span></span>
+                <span class="select-value" data-select-value><span class="select-placeholder">Pilih rekan kerja</span></span>
                 <span class="ico ico-18 select-chev"><img src="assets/icon-chevron-down-muted.svg" width="11" height="6.5" alt=""></span>
               </button>
               <div class="select-pop" popover="manual">
@@ -1054,7 +1054,7 @@
                 </ul>
               </div>
             </div>
-            <p class="tf-help" id="tf-by-help">Pilih atasan atau rekan kerja yang memberikan tugas ini.</p>
+            <p class="tf-help" id="tf-by-help">Pilih rekan kerja yang akan menerima tugas ini.</p>
             <p class="tf-error" id="tf-by-error" data-error="by" hidden></p>
           </div>
         </div>
@@ -1088,9 +1088,9 @@
       <div class="tf-info">
         <span class="ico ico-16">
           <img data-info-icon="self" src="assets/icon-lock.svg" width="14" height="15.3333" alt="">
-          <img data-info-icon="assigned" src="assets/icon-info.svg" width="15.3333" height="15.3333" alt="" hidden>
+          <img data-info-icon="given" src="assets/icon-info.svg" width="15.3333" height="15.3333" alt="" hidden>
         </span>
-        <p data-info-text>Tugas pribadi hanya terlihat oleh Anda dan tampil di Tugas Saya pada tanggal yang dipilih.</p>
+        <p data-info-text data-info-given="Tugas sedang diberikan akan muncul di Daftar Tugas dengan label “Dari Anda”. Pengingat akan dikirim sebelum deadline.">Tugas pribadi hanya terlihat oleh Anda dan tampil di Tugas Saya pada tanggal yang dipilih.</p>
       </div>
     </div>
 

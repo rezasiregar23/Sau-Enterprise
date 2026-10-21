@@ -915,8 +915,10 @@
     const link = el("a", "task-link", task.title);
     link.href = app.href;
     link.dataset.appLink = app.id;
-    const by = task.kind === "assigned" ? people.get(task.by) : null;
-    text.append(link, el("span", "task-meta", `${app.name} · ${by ? `Dari ${by.name}` : "Tugas pribadi"}`));
+    // "given": handed to a colleague (Beri Tugas); "assigned": received (saved by an earlier version)
+    const person = people.get(task.by);
+    const who = person && task.kind === "given" ? `Untuk ${person.name}` : person && task.kind === "assigned" ? `Dari ${person.name}` : "Tugas pribadi";
+    text.append(link, el("span", "task-meta", `${app.name} · ${who}`));
     const left = daysBetween(today, due);
     const tone = left <= 0 ? "urgent" : left <= 2 ? "soon" : "later";
     const label = task.start === dueKey ? `Batas ${clock(due)}` : `Batas ${due.getDate()} ${MONTHS_SHORT[due.getMonth()]} · ${clock(due)}`;
@@ -1102,7 +1104,7 @@
   }
 
   /* ------------------------------------------------------------------
-   * Dropdown (listbox in a popover): "Aplikasi" and "Ditugaskan oleh"
+   * Dropdown (listbox in a popover): "Aplikasi" and "Ditugaskan kepada"
    * ------------------------------------------------------------------ */
   function createSelect(root, { onChange }) {
     const button = $(".select-btn", root);
@@ -1213,7 +1215,7 @@
   }
 
   /* ------------------------------------------------------------------
-   * Tambah Tugas: a task of your own, or one handed to you
+   * Tambah Tugas: a task of your own, or one you give to a colleague
    * ------------------------------------------------------------------ */
   const taskDialog = $("[data-task-dialog]");
   if (taskDialog && calendar) {
@@ -1229,6 +1231,7 @@
     const infoText = $("[data-info-text]", form);
     const infoIcons = $$("[data-info-icon]", form);
     const INFO_SELF = infoText.textContent;
+    const INFO_GIVEN = infoText.dataset.infoGiven;
     const MAX_TITLE = Number(titleInput.maxLength) || 100;
     const picked = { app: "", by: "" };
     let settleTimer = 0;
@@ -1265,7 +1268,7 @@
     function renderBy() {
       const value = $('[data-select="by"] [data-select-value]', form);
       const person = people.get(picked.by);
-      if (!person) return value.replaceChildren(el("span", "select-placeholder", "Pilih pemberi tugas"));
+      if (!person) return value.replaceChildren(el("span", "select-placeholder", "Pilih rekan kerja"));
       const text = el("span", "select-person");
       text.append(el("span", "", person.name), el("span", "", person.role));
       value.replaceChildren(el("span", "avatar", person.initials), text);
@@ -1310,16 +1313,13 @@
     }
 
     function updateInfo() {
-      const assigned = kind() === "assigned";
-      infoIcons.forEach((icon) => (icon.hidden = icon.dataset.infoIcon !== (assigned ? "assigned" : "self")));
-      const person = people.get(picked.by);
-      infoText.textContent = assigned
-        ? `Tugas akan tampil di Tugas Saya dengan label “Dari ${person ? person.name : "pemberi tugas"}” dan pengingat sebelum deadline.`
-        : INFO_SELF;
+      const given = kind() === "given";
+      infoIcons.forEach((icon) => (icon.hidden = icon.dataset.infoIcon !== (given ? "given" : "self")));
+      infoText.textContent = given ? INFO_GIVEN : INFO_SELF;
     }
-    // "Ditugaskan oleh" opens only for assigned tasks.
+    // The person field opens only for "Beri Tugas".
     function updateKind() {
-      const assigned = kind() === "assigned";
+      const assigned = kind() === "given";
       window.clearTimeout(settleTimer);
       assignedBlock.inert = !assigned;
       assignedBlock.classList.remove("is-settled");
@@ -1384,7 +1384,7 @@
       const errors = [];
       if (!picked.app) errors.push(["app", "Pilih aplikasi tempat tugas ini berada."]);
       if (!titleInput.value.trim()) errors.push(["title", "Judul tugas wajib diisi."]);
-      if (kind() === "assigned" && !picked.by) errors.push(["by", "Pilih siapa yang memberikan tugas ini."]);
+      if (kind() === "given" && !picked.by) errors.push(["by", "Pilih rekan kerja untuk tugas ini."]);
       if (!dateInput.value) errors.push(["date", "Pilih tanggal tugas."]);
       if (!dueInput.value) errors.push(["due", "Tentukan deadline tugas."]);
       else if (dateInput.value && dueInput.value.slice(0, 10) < dateInput.value) errors.push(["due", "Deadline tidak boleh sebelum tanggal."]);
@@ -1400,7 +1400,7 @@
         kind: kind(),
         app: picked.app,
         title: titleInput.value.trim().slice(0, MAX_TITLE),
-        by: kind() === "assigned" ? picked.by : "",
+        by: kind() === "given" ? picked.by : "",
         start: dateInput.value,
         due: dueInput.value.slice(0, 16),
       };
