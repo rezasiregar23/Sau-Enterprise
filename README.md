@@ -7,9 +7,9 @@ HTML + Tailwind CSS v4 build of **Portal / Desktop SAU V2 Soft** from Figma
 
 | Path | What it is |
 | --- | --- |
-| `index.html` | The page: navbar, hero, Berita & Update, Favorit Harian, Jelajahi Semua Aplikasi, Ajukan akses, footer |
+| `index.html` | The page: navbar, hero, My Task And Notification, Jelajahi Semua Aplikasi, Ajukan akses, footer |
 | `styles.css` | Compiled, minified Tailwind output; works as-is, no build needed |
-| `src/input.css` | Tailwind source: design tokens (`@theme`), components, hero and carousel animation |
+| `src/input.css` | Tailwind source: design tokens (`@theme`), components, hero and calendar animation |
 | `main.js` | All interactions (no dependencies) |
 | `assets/` | SVG icons, app logos and images exported from Figma |
 | `package.json` | Tailwind CLI scripts |
@@ -24,26 +24,34 @@ npm run build   # or: npm run dev  (watch mode)
 ## Features
 
 - **Navbar dropdowns**: Notifikasi, Organisasi, Profil. They close on outside click, Escape (focus returns to
-  the button) and when tabbing away. On phones they open full-width under the navbar.
+  the button) and when tabbing away. On phones they open full-width under the navbar. The bell menu lists
+  the unread items of the Notifikasi panel ("N baru"); opening one marks it read.
 - **Search**: the hero search filters the "Jelajahi Semua Aplikasi" list (name, description, category and the
   keywords in each row's `data-keywords`) and scrolls to it, with a result bar and an empty state. The
-  "Sering dicari" chips run a search. Press `/` anywhere to focus the box.
-- **Berita carousel** (stacked deck, as in Figma): the front card swipes away and the next one moves forward.
-  - Autoplays every 5 s and loops; the active dot fills up as the time runs.
-  - Arrows, dots, ←/→ keys, and drag/swipe on the front card (it follows the finger or mouse).
-  - Pauses on hover, on keyboard focus, while dragging and when the tab is hidden. No autoplay under reduced
-    motion.
-- **Pin / unpin** (Favorit Harian Anda):
-  - Every app row in Jelajahi has a pin next to its name: red when pinned, grey on hover (always visible on
-    touch screens). The pin on a Favorit card unpins it.
-  - Pinned apps appear in Favorit in the order they were pinned. A toast confirms each change, with
-    **Urungkan** (undo).
-  - The pins are saved in `localStorage` (`sau-portal:pins`); the default is MySAU, Moover, SAUpay.
-  - The "Disematkan" filter and all chip counts update live. With nothing pinned, Favorit shows an empty state.
-  - Cards for apps the Figma file has no Favorit card for use their category's colours and the icon or logo
-    from the list.
+  "Sering dicari" chips run a search. Press `/` anywhere to focus the box. "Cari aplikasi" in the Jelajahi
+  header filters as you type (Escape clears); both boxes share one query.
+- **Hero "Add" tile** (orbit/+ future): links to the Ajukan akses panel, which rings briefly on arrival.
+- **Tugas Saya: week calendar** (Monday–Sunday):
+  - Click a day to see its tasks. The blue tile slides to that day, the list slides in from the direction
+    you moved and its height eases to fit. Days without tasks show an empty state.
+  - ‹ › move a week (the same weekday stays selected; the days slide in), **Hari ini** jumps back to today.
+    On touch screens, swipe the day strip sideways to change week.
+  - Keyboard: ←/→ a day (crossing into the next/previous week), Home/End the start/end of the week,
+    PageUp/PageDown a week.
+  - Dots under each date show its number of tasks (max 3). The pill counts the week's tasks ("10 minggu ini",
+    "… minggu lalu", "… minggu depan"). When another day is selected, today's date is shown in blue.
+  - Tasks are the `<li data-task data-date="YYYY-MM-DD">` rows in `index.html`; `data-done` marks a finished
+    one. The demo's "today" is fixed to 19 Oct 2026 (the Figma date) by `data-today` on the panel; remove it
+    to use the real date.
+- **Notifikasi**: Semua / Sudah Dibaca / Belum Dibaca filters (rows animate in), **Tandai dibaca** marks all
+  read with an **Urungkan** (undo) toast; opening a notification marks it read. Rows that drop out of the
+  current filter fold away. `data-read` on a row marks it read.
+- **Pin / unpin**: every app row in Jelajahi has a pin next to its name: red when pinned, grey on hover
+  (always visible on touch screens). A toast confirms each change, with **Urungkan** (undo). Pins are saved
+  in `localStorage` (`sau-portal:pins`; default MySAU, Moover, SAUpay) and listed by the "Disematkan" filter.
 - **Jelajahi**: category filter chips (combine with an active search), sort (Terakhir dibuka uses the apps
-  you actually opened, saved in `sau-portal:last-opened`; Nama A–Z, Z–A), grid/list toggle.
+  you actually opened, including from tasks and notifications, saved in `sau-portal:last-opened`; Nama A–Z,
+  Z–A), grid/list toggle.
 - All links use `href="#"`; point them at the real apps and pages.
 
 ## Hero animation
@@ -74,12 +82,13 @@ npm run build   # or: npm run dev  (watch mode)
 | Width | Layout |
 | --- | --- |
 | ≥ 1280px | As the Figma frame |
-| 1024–1279 | Hero text and orbit side by side (orbit scaled to fit); news controls in a column beside the deck; Favorit in 2 columns |
-| 640–1023 | Orbit below the hero text; news controls in a row under the deck; category panels in 2 columns |
-| < 640 | Single column; orbit scaled to the screen width with labels kept at 11px; smaller deck offsets; filter chips scroll sideways |
+| 1024–1279 | Hero text and orbit side by side (orbit scaled to fit); Tugas Saya and Notifikasi side by side (7 : 5) |
+| 640–1023 | Orbit below the hero text; Tugas Saya above Notifikasi; category panels in 2 columns |
+| < 640 | Single column; orbit scaled to the screen width with labels kept at 11px; task deadline pills move under the task text and notification text wraps instead of being cut; "Cari aplikasi" takes the full width; filter chips scroll sideways |
+| < 360 | The "10 minggu ini" pill and "Tandai dibaca" move under the panel description |
 
-The orbit and the HTML news banners scale with container queries (`tan(atan2(100cqw, …))`), so there's no
-JavaScript. Older browsers show them at full size, clipped.
+The orbit scales with a container query (`tan(atan2(100cqw, …))`), so there's no JavaScript. Older browsers
+show it at full size, clipped.
 
 ## Notes on fidelity
 
@@ -88,16 +97,18 @@ JavaScript. Older browsers show them at full size, clipped.
   wordmark.
 - **Icons** are the SVG exports of each Figma node.
 - **Raster images** were downscaled for the web (Figma exports were up to 4096 px and 2.6 MB for a 44 px
-  logo): logos to 240 px wide, the hero woman to 512 × 768, the news banner to a 1920 px JPEG.
-- **News slides 2–4** are HTML banners (written from the old "Update Terbaru" items) because the Figma file
-  has one banner image, repeated in all four cards. Replace them with real banner images by swapping the
-  `news-canvas` block for an `<img class="news-photo">`, as in slide 1.
+  logo): logos to 240 px wide, the hero woman to 512 × 768. Task rows reuse the same logo files as the list.
+- **Tasks outside 19 Oct**: Figma only shows the list for Senin 19. The other days' tasks are sample data
+  that match the dot counts in Figma (2, 0, 3, 1, 0, 0) plus a few in the weeks before and after, so the
+  week navigation has something to show. Task indicator dots are drawn in CSS (same 5px dots, 3px gap,
+  #2F86F0) because their number changes per day.
+- **Selected day**: Figma's selected tile is 71px high (no border) against 73px for the others; here all
+  tiles are 73px so the sliding tile keeps one size.
 - **Disc mask**: Figma masks the woman with a 200px circle; this uses `clip-path` with the same circle
   (plus the area above the waist, see above), because `mask-image` doesn't load from `file://`.
 - **Counts** are computed from the list, so "Semua" shows 16 apps and "SDM & Karyawan" 4 (the Figma chips say
   6 and 1). "Recruitment· 2" and "Others· 1" get their missing space. To keep the eight chips on one row
   with the longer counts, their gap is 8px instead of 10px at ≥ 1280px.
-- **Carousel dots** are white on a light background in Figma; they get a faint shadow so they stay visible.
 - **1.5px strokes** are inset shadows (`.stroke-15`), because Chrome rounds 1.5px borders to 1px.
 - **Shadows on translucent surfaces** use `.sb`, because Figma draws them *behind* see-through fills too.
 - The hero disc uses Figma's "Glass" effect, which has no CSS equivalent; it renders as its plain

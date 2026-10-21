@@ -45,11 +45,13 @@
   --color-teal-ink: #2e8576;
   --color-orange-ink: #b8691f;
 
-  /* Favorit chips */
-  --color-moover-soft: #d9f6f1;
-  --color-moover-ink: #0a6f66;
-  --color-saupay-soft: #ffecd1;
-  --color-saupay-ink: #a84a07;
+  /* Status pills (Tugas Saya: "10 minggu ini", "Batas …") */
+  --color-urgent-soft: #ffe7e7;
+  --color-urgent-ink: #c82929;
+  --color-warn-soft: #fff4db;
+  --color-warn-ink: #b3730d;
+  --color-calm-soft: #edf1f8;
+  --color-dot: #2f86f0;
 
   --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
@@ -121,16 +123,7 @@
   .grad-moover  { background-image: linear-gradient(135deg, #2dd4bf 14.644%, #0d9488 85.356%); }
   .grad-patrol  { background-image: linear-gradient(135deg, #4ade80 14.644%, #16a34a 85.356%); }
   .grad-travel  { background-image: linear-gradient(135deg, #7fcdee 14.644%, #2a93d5 85.356%); }
-  .grad-saupay  { background-image: linear-gradient(135deg, #fbbf24 14.644%, #f97316 85.356%); }
   .grad-fintera { background-image: linear-gradient(135deg, #a78bfa 14.644%, #6d3fd9 85.356%); }
-  /* For pinned apps the Figma file has no card for (Assessment, Recruitment, Others) */
-  .grad-pink    { background-image: linear-gradient(135deg, #f472b6 14.644%, #db2777 85.356%); }
-  .grad-violet  { background-image: linear-gradient(135deg, #a78bfa 14.644%, #7c3aed 85.356%); }
-  .grad-rose    { background-image: linear-gradient(135deg, #f17c99 14.644%, #9f1239 85.356%); }
-
-  .grad-upd-blue   { background-image: linear-gradient(135deg, #2f86f0 0%, #0957c3 71.429%); }
-  .grad-upd-orange { background-image: linear-gradient(135deg, #fbbf24 0%, #f58c12 71.429%); }
-  .grad-upd-teal   { background-image: linear-gradient(135deg, #2dd4bf 0%, #0d9488 71.429%); }
 
   /* ---------- Hero ---------- */
   .hero-card {
@@ -254,6 +247,19 @@
   .orbit-label--top    { left: 30px; top: -15px; translate: -50% -50%; }
   .orbit-label--bottom { left: 30px; top: 71px;  translate: -50% -50%; }
   .orbit-label--side   { left: 68px; top: 30px;  translate: 0 -50%; }
+  /* orbit/+ future (136:982): dashed slot for the next app */
+  .orbit-tile > .orbit-add {
+    width: 40px;
+    height: 40px;
+    border: 1px dashed rgb(26 111 219 / 0.45);
+    border-radius: 13px;
+    background-color: rgb(255 255 255 / 0.6);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+  .orbit-add img { transition: rotate 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .orbit-app--add:hover .orbit-add,
+  .orbit-app--add:focus-visible .orbit-add { border-color: rgb(26 111 219 / 0.8); background-color: #fff; }
+  .orbit-app--add:hover .orbit-add img { rotate: 90deg; }
 
   /* ---------- Tinted glass panels ----------
    * The tint fades colour→white as it fades out (Figma interpolates
@@ -272,330 +278,293 @@
   .tint--violet { --t0: rgb(243 232 255 / 0.7); --t1: rgb(246 238 255 / 0.525); --t2: rgb(249 244 255 / 0.35); --t3: rgb(252 249 255 / 0.175); }
   .tint--rose   { --t0: rgb(243 215 224 / 0.7); --t1: rgb(246 225 232 / 0.525); --t2: rgb(249 235 240 / 0.35); --t3: rgb(252 245 247 / 0.175); }
 
-  /* ---------- Berita: stacked deck (104:305) ----------
-   * Front card + two cards peeking out behind it, as in Figma: the back cards
-   * are 90% as wide, right-aligned 18px further out and 8px lower. */
-  .news-deck {
-    --peek: 8px;
-    --peek-y: 6px;
-    --card-pad: 12px;
-    --media-px: 8px;
-    --media-py: 8px;
-    --front-w: calc(100% - var(--peek) * 2);
-    /* image area keeps Figma's 1024×311 proportion on the front card */
-    --media-h: calc((100cqw - var(--peek) * 2 - var(--card-pad) * 2 - var(--media-px) * 2) * 311 / 1024);
-    container-type: inline-size;
+  /* ---------- My Task And Notification (64:1326) ---------- */
+  /* Panel header: icon, title + description, and a pill or action on the
+   * right. On phones the description runs under the pill instead of being
+   * squeezed next to it. */
+  .panel-head {
     display: grid;
-    padding-block: calc(var(--peek-y) * 2);
-    touch-action: pan-y;
-    -webkit-user-select: none;
-    user-select: none;
-  }
-  .news-card {
-    grid-area: 1 / 1;
-    align-self: start;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: var(--front-w);
-    margin-left: 0;
-    padding: var(--card-pad);
-    border-radius: 24px;
-    box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.5), 0 12px 28px -8px rgb(51 77 140 / 0.07);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-    transition:
-      width 0.6s var(--ease-out-soft),
-      margin-left 0.6s var(--ease-out-soft),
-      translate 0.6s var(--ease-out-soft),
-      opacity 0.35s ease;
-  }
-  .news-card[data-pos="0"] { z-index: 4; }
-  .news-card[data-pos="1"] {
-    z-index: 3;
-    width: calc(var(--front-w) * 0.9);
-    margin-left: calc(var(--front-w) * 0.1 + var(--peek));
-    translate: 0 var(--peek-y);
-  }
-  .news-card[data-pos="2"],
-  .news-card[data-pos="3"] {
-    z-index: 2;
-    width: calc(var(--front-w) * 0.9);
-    margin-left: calc(var(--front-w) * 0.1 + var(--peek) * 2);
-    translate: 0 calc(var(--peek-y) * 2);
-  }
-  .news-card[data-pos="3"] { z-index: 1; }
-  .news-card[data-leaving] { z-index: 6; pointer-events: none; animation: news-out 0.5s cubic-bezier(0.4, 0, 0.7, 0.4) forwards; }
-  .news-card[data-entering] { z-index: 5; animation: news-in 0.55s var(--ease-out-soft) both; }
-  .news-card[data-dragging] { transition: none; cursor: grabbing; }
-
-  .news-media {
-    display: block;
-    border-radius: 16px;
-    padding: var(--media-py) var(--media-px);
-    background-color: rgb(255 255 255 / 0.92);
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.5);
-    outline: none;
-    -webkit-user-drag: none;
-  }
-  .news-media:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
-  .news-frame {
-    position: relative;
-    display: block;
-    height: var(--media-h);
-    overflow: hidden;
-    container-type: inline-size;
-  }
-  .news-photo {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    max-width: none;
-    object-fit: cover;
-    object-position: top;
-  }
-  /* HTML banners are laid out on a 1024×311 canvas and scaled to the frame,
-   * so they crop and shrink exactly like the image banner. */
-  .news-canvas {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 1024px;
-    height: 311px;
-    color: #fff;
-    transform-origin: 0 0;
-    scale: var(--canvas-scale, 1);
-  }
-  @supports (scale: tan(atan2(1px, 1px))) {
-    .news-canvas { --canvas-scale: tan(atan2(100cqw, 1024px)); }
-  }
-  .news-copy {
-    position: absolute;
-    left: 44px;
-    top: 36px;
-    display: flex;
-    width: 560px;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .news-title { margin-top: 16px; font-size: 32px; font-weight: 800; line-height: 40px; letter-spacing: -0.5px; }
-  .news-desc { margin-top: 10px; max-width: 520px; font-size: 15px; line-height: 24px; color: rgb(255 255 255 / 0.82); }
-  .news-cta {
-    position: absolute;
-    left: 44px;
-    bottom: 30px;
-    display: flex;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    grid-template-areas: "icon title aside" "icon desc desc";
     align-items: center;
-    gap: 8px;
-    border-radius: 16px;
-    background-color: #fff;
-    padding: 11px 18px 11px 20px;
-    font-size: 14px;
-    font-weight: 700;
-    line-height: normal;
-    color: var(--color-brand);
-    box-shadow: 0 6px 14px 0 rgb(5 26 102 / 0.2);
+    column-gap: 12px;
+    row-gap: 2px;
+  }
+  .panel-head > .cat-icon { grid-area: icon; }
+  .panel-head__title { grid-area: title; align-self: end; }
+  .panel-head__desc  { grid-area: desc; align-self: start; }
+  .panel-head__aside { grid-area: aside; justify-self: end; }
+  @media (min-width: 640px) {
+    .panel-head { grid-template-areas: "icon title aside" "icon desc aside"; }
+  }
+  /* Very narrow phones: the pill/action goes under the description */
+  @media (max-width: 359.98px) {
+    .panel-head { grid-template-columns: 44px minmax(0, 1fr); grid-template-areas: "icon title" "icon desc" "icon aside"; }
+    .panel-head__aside { justify-self: start; margin-top: 6px; }
   }
 
-  .banner {
-    background-image: linear-gradient(153.84deg, #2f86f0 0%, #0957c3 39.286%, #0b2a5b 71.429%);
-  }
-  .banner--teal { background-image: linear-gradient(153.84deg, #2dd4bf 0%, #0d9488 39.286%, #0b4a52 71.429%); }
-  .banner--sky  { background-image: linear-gradient(153.84deg, #7fcdee 0%, #2a93d5 39.286%, #0b2a5b 71.429%); }
-  .banner-glass {
-    background-color: rgb(255 255 255 / 0.2);
-    border: 1px solid rgb(255 255 255 / 0.5);
-  }
-  .banner-ikon {
-    background-color: rgb(255 255 255 / 0.18);
-    border: 1px solid rgb(255 255 255 / 0.5);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-  }
-
-  /* Kontrol carousel (95:384) */
-  .news-dot-btn {
-    display: flex;
-    padding: 3px;
-    border-radius: 9999px;
-    outline: none;
-  }
-  .news-dot-btn:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 1px; }
-  .news-dot {
-    position: relative;
-    display: block;
-    width: 8px;
-    height: 8px;
-    overflow: hidden;
-    border-radius: 9999px;
-    background-color: rgb(255 255 255 / 0.7);
-    box-shadow: 0 1px 4px rgb(51 77 140 / 0.22);
-    transition: width 0.35s var(--ease-out-soft), height 0.35s var(--ease-out-soft), background-color 0.35s ease;
-  }
-  .news-dot-btn:hover .news-dot { background-color: #fff; }
-  .news-dot-btn[aria-current="true"] .news-dot { width: 26px; height: 10px; background-color: #fff; }
-  /* autoplay progress, filled inside the active dot */
-  .news-dot::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-color: rgb(9 87 195 / 0.22);
-    transform-origin: left center;
-    scale: 0 1;
-  }
-  .news-dot.is-running::after { animation: dot-fill var(--interval, 5s) linear forwards; }
-  [data-paused] .news-dot::after { animation-play-state: paused; }
-  .news-nav {
-    display: flex;
-    width: 44px;
-    height: 44px;
+  .pill,
+  .task-due {
+    display: inline-flex;
     flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
     border-radius: 9999px;
-    background-color: rgb(255 255 255 / 0.75);
-    border: 1px solid rgb(255 255 255 / 0.85);
-    box-shadow: 0 8px 18px -8px rgb(51 77 140 / 0.07);
-    transition: background-color 0.15s ease, box-shadow 0.2s ease, scale 0.15s ease;
-  }
-  .news-nav:hover { background-color: #fff; box-shadow: 0 10px 22px -8px rgb(51 77 140 / 0.22); }
-  .news-nav:active { scale: 0.94; }
-  .news-nav:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
-
-  /* ---------- Favorit Harian Anda (64:1270) ---------- */
-  .fav-item { position: relative; isolation: isolate; }
-  .fav-item:has(> .fav-card--glass)::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: 28px;
-    background: rgb(10 41 102 / 0.08);
-    filter: blur(16px);
-    transform: translateY(12px);
-    pointer-events: none;
-  }
-  .fav-card {
-    position: relative;
-    display: flex;
-    height: 100%;
-    min-height: 124px;
-    align-items: center;
-    gap: 14px;
-    overflow: hidden;
-    border: 1px solid;
-    border-radius: 28px;
-    padding: 16px 18px;
-    transition: translate 0.2s ease;
-  }
-  .fav-card:hover { translate: 0 -2px; }
-  .fav-card:has(.fav-link:focus-visible) { outline: 2px solid var(--color-brand); outline-offset: 2px; }
-  .fav-card--solid {
-    border-color: rgb(255 255 255 / 0.35);
-    background-image: linear-gradient(162.78deg, #2f86f0 14.644%, #0957c3 65.186%, #0063ff 98.881%);
-    box-shadow: 0 20px 40px -8px rgb(10 51 178 / 0.3);
-  }
-  .fav-card--glass {
-    border-color: rgb(255 255 255 / 0.9);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-    background-image:
-      linear-gradient(162.33deg,
-        var(--f0) 14.644%, var(--f1) 32.322%, var(--f2) 50%, var(--f3) 67.678%,
-        rgb(255 255 255 / 0) 85.356%),
-      linear-gradient(rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.5));
-  }
-  [data-theme="sdm"]         { --f0: rgb(47 134 240 / 0.3);  --f1: rgb(99 164 244 / 0.225);  --f2: rgb(151 195 248 / 0.15); --f3: rgb(203 225 251 / 0.075); --chip-bg: var(--color-brand-soft);  --chip-ink: var(--color-brand); }
-  [data-theme="mobilitas"]   { --f0: rgb(45 212 191 / 0.3);  --f1: rgb(98 222 207 / 0.225);  --f2: rgb(150 234 223 / 0.15); --f3: rgb(203 244 239 / 0.075); --chip-bg: var(--color-moover-soft); --chip-ink: var(--color-moover-ink); }
-  [data-theme="keuangan"]    { --f0: rgb(251 191 36 / 0.3);  --f1: rgb(252 207 91 / 0.225);  --f2: rgb(253 223 146 / 0.15); --f3: rgb(254 239 200 / 0.075); --chip-bg: var(--color-saupay-soft); --chip-ink: var(--color-saupay-ink); }
-  [data-theme="assessment"]  { --f0: rgb(236 72 153 / 0.3);  --f1: rgb(241 118 179 / 0.225); --f2: rgb(246 164 204 / 0.15); --f3: rgb(250 209 230 / 0.075); --chip-bg: #fce7f3; --chip-ink: #be185d; }
-  [data-theme="recruitment"] { --f0: rgb(139 92 246 / 0.3);  --f1: rgb(168 133 248 / 0.225); --f2: rgb(197 174 251 / 0.15); --f3: rgb(226 214 253 / 0.075); --chip-bg: #ede9fe; --chip-ink: #6d28d9; }
-  [data-theme="others"]      { --f0: rgb(225 29 72 / 0.3);   --f1: rgb(233 86 118 / 0.225);  --f2: rgb(240 142 164 / 0.15); --f3: rgb(248 199 209 / 0.075); --chip-bg: #f3d7e0; --chip-ink: #8b1e2e; }
-
-  .fav-tile {
-    display: flex;
-    width: 52px;
-    height: 52px;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    border-radius: 16px;
-  }
-  .fav-tile--logo { background-color: #fff; box-shadow: inset 0 0 0 1px var(--color-line); }
-  .tile--glass {
-    background-color: rgb(255 255 255 / 0.2);
-    border: 1px solid rgb(255 255 255 / 0.55);
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
-  }
-  .fav-text {
-    display: flex;
-    min-width: 0;
-    flex: 1;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 3px;
-  }
-  .fav-chip {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    border-radius: 9999px;
-    padding: 3px 10px;
+    padding: 4px 10px;
     font-size: 11px;
     font-weight: 700;
     line-height: normal;
-    background-color: var(--chip-bg);
-    color: var(--chip-ink);
+    white-space: nowrap;
   }
-  .fav-link {
-    max-width: 100%;
-    font-size: 18px;
-    font-weight: 800;
+
+  /* "Hari ini" (135:126) and the notification filters (136:955–960) */
+  .soft-btn {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    border: 1px solid var(--color-line);
+    border-radius: 9999px;
+    background-color: rgb(255 255 255 / 0.92);
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
     line-height: normal;
-    letter-spacing: -0.4px;
-    color: var(--color-ink);
-    outline: none;
+    white-space: nowrap;
+    color: var(--color-brand);
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.25s ease, scale 0.15s ease;
   }
-  /* the name is the card's link: its ::after makes the whole card clickable */
-  .fav-link::after { content: ""; position: absolute; inset: 0; border-radius: 28px; }
-  .fav-desc { font-size: 12px; line-height: 19px; color: var(--color-body); }
-  .fav-card--solid .fav-chip { background-color: rgb(255 255 255 / 0.22); color: #fff; }
-  .fav-card--solid .fav-link { color: #fff; }
-  .fav-card--solid .fav-desc { color: rgb(255 255 255 / 0.85); }
-  .fav-pin {
+  .soft-btn:hover { border-color: #cfdcf2; background-color: #fff; }
+  .soft-btn:active { scale: 0.95; }
+  .soft-btn:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+  .soft-btn[aria-pressed="true"] {
+    border-color: var(--color-brand);
+    background-color: var(--color-brand);
+    color: #fff;
+    box-shadow: 0 8px 18px -6px rgb(9 87 195 / 0.25);
+  }
+
+  /* Sebelumnya / Berikutnya (135:128, 135:131) */
+  .cal-nav {
+    display: flex;
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-line);
+    border-radius: 9999px;
+    background-color: rgb(255 255 255 / 0.92);
+    transition: background-color 0.2s ease, border-color 0.2s ease, scale 0.15s ease;
+  }
+  .cal-nav:hover { border-color: #cfdcf2; background-color: #fff; }
+  .cal-nav:active { scale: 0.9; }
+  .cal-nav:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+  .cal-nav img { transition: translate 0.2s ease; }
+  .cal-nav[data-cal-prev]:hover img { translate: -1.5px 0; }
+  .cal-nav[data-cal-next]:hover img { translate: 1.5px 0; }
+
+  /* Hari (135:134). The blue tile of the selected day is a single element
+   * (.cal-indicator) that slides to the day you pick. It sits above the day
+   * backgrounds and below their text, so nothing on the buttons themselves
+   * may create a stacking context (no transform/scale/opacity on .cal-day). */
+  .cal-days {
+    --gap: 6px;
     position: relative;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: var(--gap);
+    touch-action: pan-y;
+  }
+  .cal-indicator {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
     z-index: 1;
+    width: calc((100% - 6 * var(--gap)) / 7);
+    border-radius: 14px;
+    background-color: var(--color-brand);
+    box-shadow: 0 8px 18px -6px rgb(9 87 195 / 0.25);
+    translate: calc(var(--sel, 0) * (100% + var(--gap))) 0;
+    transition: translate 0.5s cubic-bezier(0.34, 1.25, 0.64, 1);
+    pointer-events: none;
+  }
+  .cal-day {
     display: flex;
-    width: 32px;
-    height: 32px;
-    margin: -9px;
-    flex-shrink: 0;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid #fff;
+    border-radius: 14px;
+    background-color: rgb(255 255 255 / 0.92);
+    padding: 10px 0;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+  .cal-day > * { position: relative; z-index: 2; }
+  .cal-day:hover { border-color: var(--color-brand-soft); background-color: #fff; }
+  .cal-day:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+  .cal-day__name { font-size: 11px; font-weight: 600; line-height: 14px; color: var(--color-muted); transition: color 0.3s ease; }
+  .cal-day__date { font-size: 18px; font-weight: 800; line-height: 23px; color: var(--color-heading); transition: color 0.3s ease; }
+  .cal-day[data-weekend] .cal-day__date { color: var(--color-muted); }
+  /* the actual today, while another day is selected */
+  .cal-day[data-today] .cal-day__date { color: var(--color-brand); }
+  /* turns white as the sliding tile arrives underneath */
+  .cal-day[aria-selected="true"] :is(.cal-day__name, .cal-day__date) { color: #fff; transition-delay: 0.12s; }
+  /* Indikator tugas: one dot per task, three at most */
+  .cal-dots { display: flex; height: 6px; align-items: center; gap: 3px; }
+  .cal-dots > i { width: 5px; height: 5px; border-radius: 9999px; background-color: var(--color-dot); transition: background-color 0.3s ease; }
+  .cal-day[aria-selected="true"] .cal-dots > i { background-color: #fff; transition-delay: 0.12s; }
+  /* Week change: the day contents slide in from the side you're heading to */
+  .cal-days[data-slide] .cal-day > * {
+    animation: cal-slide 0.42s var(--ease-out-soft) both;
+    animation-delay: calc(var(--i, 0) * 22ms);
+  }
+  .cal-days[data-slide="prev"] { --slide-x: -18px; }
+  @media (min-width: 640px) {
+    .cal-days { --gap: 8px; }
+    .cal-day,
+    .cal-indicator { border-radius: 18px; }
+  }
+
+  /* Daftar tugas (132:136). Phones: the deadline pill moves under the text. */
+  .task-panel { --from-x: 0px; }
+  .task-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    grid-template-areas: "logo text go" "logo due go";
+    align-items: center;
+    column-gap: 12px;
+    row-gap: 6px;
+    border: 1px solid #fff;
+    border-radius: 20px;
+    background-color: rgb(255 255 255 / 0.92);
+    padding: 12px 14px;
+    transition: background-color 0.15s ease;
+  }
+  .task-row:hover { background-color: #fff; }
+  .task-row:has(.task-link:focus-visible) { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+  .task-row > :first-child { grid-area: logo; }
+  .task-text { grid-area: text; display: flex; min-width: 0; flex-direction: column; gap: 4px; line-height: normal; }
+  .task-link { font-size: 14px; font-weight: 800; line-height: 18px; color: var(--color-heading); outline: none; }
+  .task-link::after { content: ""; position: absolute; inset: 0; border-radius: 20px; }
+  .task-meta { font-size: 11px; line-height: 14px; color: var(--color-muted); }
+  .task-due { grid-area: due; justify-self: start; }
+  .task-due--urgent { background-color: var(--color-urgent-soft); color: var(--color-urgent-ink); }
+  .task-due--soon   { background-color: var(--color-warn-soft); color: var(--color-warn-ink); }
+  .task-due--later  { background-color: var(--color-calm-soft); color: var(--color-muted); }
+  .task-due--done   { background-color: var(--color-success-soft); color: var(--color-success-ink); }
+  .task-go {
+    grid-area: go;
+    display: flex;
+    width: 30px;
+    height: 30px;
     align-items: center;
     justify-content: center;
     border-radius: 9999px;
-    transition: background-color 0.15s ease, scale 0.15s ease;
+    background-color: var(--color-brand-soft);
   }
-  .fav-pin:hover { background-color: rgb(255 255 255 / 0.7); }
-  .fav-card--solid .fav-pin:hover { background-color: rgb(255 255 255 / 0.18); }
-  .fav-pin:active { scale: 0.9; }
-  .fav-pin:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 0; }
-  .fav-card--solid .fav-pin:focus-visible { outline-color: #fff; }
-  .fav-go {
+  .task-go img { transition: translate 0.2s ease; }
+  .task-row:hover .task-go img { translate: 2px 0; }
+  .task-row[data-done] { background-color: rgb(255 255 255 / 0.55); }
+  .task-row[data-done] .task-link { color: var(--color-muted); }
+  @media (min-width: 640px) {
+    .task-row {
+      grid-template-columns: 44px minmax(0, 1fr) auto auto;
+      grid-template-areas: "logo text due go";
+    }
+  }
+  .task-empty {
     display: flex;
-    width: 36px;
-    height: 36px;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    border: 1px dashed #c9d6ea;
+    border-radius: 20px;
+    background-color: rgb(255 255 255 / 0.55);
+    padding: 24px 20px;
+    text-align: center;
+  }
+  .task-empty > .cat-icon { margin-bottom: 4px; }
+
+  /* Notifikasi (132:195) */
+  .notif-mark {
+    margin: -4px -6px;
+    border-radius: 8px;
+    padding: 4px 6px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: normal;
+    white-space: nowrap;
+    color: var(--color-brand);
+    transition: background-color 0.15s ease, color 0.2s ease;
+  }
+  .notif-mark:hover:not([aria-disabled="true"]) { background-color: rgb(220 232 255 / 0.6); }
+  .notif-mark:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 1px; }
+  /* aria-disabled (not disabled) so keyboard focus stays on it after use */
+  .notif-mark[aria-disabled="true"] { color: var(--color-subtle); cursor: default; }
+  .notif-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #fff;
+    border-radius: 20px;
+    background-color: rgb(255 255 255 / 0.92);
+    padding: 12px 14px;
+    transition: background-color 0.35s ease;
+  }
+  .notif-row:hover { background-color: #fff; }
+  .notif-row:has(.notif-link:focus-visible) { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+  .notif-icon {
+    display: flex;
+    width: 40px;
+    height: 40px;
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    border-radius: 9999px;
+    border-radius: 12px;
   }
-  .fav-go img { transition: translate 0.2s ease; }
-  .fav-card:hover .fav-go img { translate: 2px 0; }
-  .fav-item.is-entering > .fav-card { animation: fav-in 0.5s var(--ease-out-soft) both; }
-  .fav-item.is-leaving { pointer-events: none; animation: fav-out 0.26s ease forwards; }
+  .notif-text { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 4px; line-height: normal; }
+  .notif-head { display: flex; align-items: center; gap: 8px; }
+  .notif-link { min-width: 0; flex: 1; font-size: 13px; font-weight: 800; line-height: 16px; color: var(--color-heading); outline: none; transition: color 0.35s ease; }
+  .notif-link::after { content: ""; position: absolute; inset: 0; border-radius: 20px; }
+  .notif-time { flex-shrink: 0; font-size: 11px; line-height: 14px; color: var(--color-muted); }
+  .notif-desc { font-size: 11px; line-height: 14px; color: var(--color-muted); }
+  .notif-dot { flex-shrink: 0; transition: opacity 0.3s ease, scale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .notif-row[data-read] { background-color: rgb(255 255 255 / 0.55); }
+  .notif-row[data-read]:hover { background-color: rgb(255 255 255 / 0.85); }
+  .notif-row[data-read] .notif-link { font-weight: 700; color: var(--color-muted); }
+  .notif-row[data-read] .notif-dot { opacity: 0; scale: 0; }
+  /* Single lines with an ellipsis as in Figma; phones wrap instead. */
+  @media (min-width: 640px) {
+    .notif-link,
+    .notif-desc { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  }
+  .notif-empty {
+    border: 1px dashed #c9d6ea;
+    border-radius: 20px;
+    background-color: rgb(255 255 255 / 0.55);
+    padding: 22px 20px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 20px;
+    color: var(--color-muted);
+  }
+
+  /* Rows that (re)appear: tasks of the picked day, filtered notifications */
+  .list-enter {
+    animation: list-enter 0.45s var(--ease-out-soft) both;
+    animation-delay: calc(var(--i, 0) * 50ms);
+  }
+  /* Text that changes with the selected date */
+  .text-swap { animation: text-swap 0.35s var(--ease-out-soft); }
+
+  /* Briefly ring a panel you jumped to (#notifikasi, #ajukan) */
+  .target-ring { outline: 3px solid transparent; outline-offset: 4px; }
+  .target-ring:target { animation: target-ring 1.8s ease 0.35s; }
 
   /* ---------- Jelajahi: filter chips ---------- */
   .filter-chip {
@@ -810,22 +779,23 @@
   }
   .toast-action:hover { background-color: rgb(255 255 255 / 0.1); }
   .toast-action:focus-visible { outline: 2px solid #9cc2ff; outline-offset: 1px; }
+  /* coloured icons (e.g. the green check) are drawn white on the dark toast */
+  .toast-icon--light { filter: brightness(0) invert(1); }
+}
+
+@layer base {
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
 }
 
 @media (min-width: 640px) {
-  .news-deck { --peek: 18px; --peek-y: 8px; --card-pad: 18px; --media-px: 12px; --media-py: 10px; }
-  .news-card { border-radius: 32px; }
-  .news-media { border-radius: 20px; }
   .cat-panel { padding: 23.5px; }
 }
-/* Two-column Favorit: an odd last card takes the full row */
-@media (min-width: 768px) and (max-width: 1279.98px) {
-  .fav-item:last-child:nth-child(odd) { grid-column: 1 / -1; }
-}
-@media (min-width: 1024px) {
-  .news-dot-btn[aria-current="true"] .news-dot { width: 15px; height: 33px; }
-  .news-dot::after { transform-origin: center top; scale: 1 0; }
-}
+
+/* "Cari aplikasi" in the Jelajahi header (138:123) */
+.app-search { transition: background-color 0.2s ease, border-color 0.2s ease; }
+.app-search:focus-within { border-color: rgb(9 87 195 / 0.35); background-color: #fff; }
 
 /* List view for "Jelajahi Semua Aplikasi" (unlayered so it beats the grid utilities) */
 #app-panels[data-view="list"] { grid-template-columns: minmax(0, 1fr); }
@@ -862,17 +832,10 @@
   40% { rotate: -4deg; }
   50% { rotate: 10deg; }
 }
-@keyframes news-out {
-  from { opacity: 1; translate: var(--drag-x, 0px) 0; rotate: var(--drag-r, 0deg); }
-  to   { opacity: 0; translate: calc(var(--drag-x, 0px) - 36%) 0; rotate: -4deg; }
-}
-@keyframes news-in {
-  from { opacity: 0; translate: -36% 0; rotate: -4deg; }
-  to   { opacity: 1; translate: 0 0; rotate: 0deg; }
-}
-@keyframes dot-fill { to { scale: 1 1; } }
-@keyframes fav-in  { from { opacity: 0; scale: 0.94; translate: 0 10px; } to { opacity: 1; scale: 1; translate: 0 0; } }
-@keyframes fav-out { to { opacity: 0; scale: 0.94; } }
+@keyframes cal-slide   { from { opacity: 0; translate: var(--slide-x, 18px) 0; } }
+@keyframes list-enter  { from { opacity: 0; translate: var(--from-x, 0px) 10px; } }
+@keyframes text-swap   { from { opacity: 0; translate: 0 5px; } }
+@keyframes target-ring { 15%, 50% { outline-color: rgb(9 87 195 / 0.3); } }
 @keyframes pin-pop { 0% { scale: 1; } 40% { scale: 1.45; rotate: -14deg; } 100% { scale: 1; rotate: 0deg; } }
 @keyframes toast-in { from { opacity: 0; translate: 0 12px; } to { opacity: 1; translate: 0 0; } }
 
@@ -918,10 +881,9 @@
   .hero-woman, .hero-woman__float, .hero-woman__greet,
   .hero-woman[data-poses="2"] .hero-woman__greet,
   .hero-woman[data-poses="2"] .hero-pose--salam,
-  .news-card[data-leaving], .news-card[data-entering],
-  .fav-item.is-entering > .fav-card, .fav-item.is-leaving,
+  .cal-days[data-slide] .cal-day > *, .list-enter, .text-swap, .target-ring:target,
   .pin-toggle.is-popping img, .toast { animation: none !important; }
   .hero-woman[data-poses="2"] .hero-pose--welcome { animation: none !important; opacity: 0; }
   .orbit-wave { display: none; }
-  .orbit-layer, .orbit-app, .menu-panel, .news-card, .news-dot, .fav-card { transition: none; }
+  .orbit-layer, .orbit-app, .menu-panel, .cal-indicator, .notif-dot { transition: none; }
 }

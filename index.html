@@ -46,42 +46,16 @@
                   class="glass-pill sb flex size-11 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-white [--sb-a:0.07] [--sb-inset:5px]">
             <img src="assets/icon-bell.svg" width="18" height="18" alt="">
           </button>
+          <!-- Lists the unread items of the Notifikasi panel (main.js keeps both in sync) -->
           <div id="menu-notif" data-menu-panel class="menu-panel">
             <div class="flex items-center justify-between px-3 pb-2 pt-1.5">
               <p class="text-[14px] font-extrabold leading-[normal] text-heading">Notifikasi</p>
-              <span class="rounded-full bg-brand-tint px-2.5 py-[3px] text-[11px] font-bold leading-[normal] text-brand">3 baru</span>
+              <span data-notif-badge class="rounded-full bg-brand-tint px-2.5 py-[3px] text-[11px] font-bold leading-[normal] text-brand">3 baru</span>
             </div>
-            <ul role="list" class="flex flex-col gap-0.5">
-              <li>
-                <a href="#" class="menu-item items-start">
-                  <span class="grad-upd-blue flex size-9 shrink-0 items-center justify-center rounded-xl"><img src="assets/update-zap.svg" width="18" height="18" alt=""></span>
-                  <span class="flex min-w-0 flex-col gap-[3px]">
-                    <span class="text-[13px] font-bold leading-[18px]">MySAU v2.4: pengajuan cuti lebih cepat</span>
-                    <span class="text-[11px] font-medium text-muted">Pembaruan · 11 Okt 2026</span>
-                  </span>
-                </a>
-              </li>
-              <li>
-                <a href="#" class="menu-item items-start">
-                  <span class="grad-upd-orange flex size-9 shrink-0 items-center justify-center rounded-xl"><img src="assets/update-shield.svg" width="18" height="18" alt=""></span>
-                  <span class="flex min-w-0 flex-col gap-[3px]">
-                    <span class="text-[13px] font-bold leading-[18px]">Pemeliharaan SAUpay akhir pekan ini</span>
-                    <span class="text-[11px] font-medium text-muted">Pemeliharaan · 10 Okt 2026</span>
-                  </span>
-                </a>
-              </li>
-              <li>
-                <a href="#" class="menu-item items-start">
-                  <span class="grad-upd-teal flex size-9 shrink-0 items-center justify-center rounded-xl"><img src="assets/update-plane.svg" width="18" height="18" alt=""></span>
-                  <span class="flex min-w-0 flex-col gap-[3px]">
-                    <span class="text-[13px] font-bold leading-[18px]">Kebijakan perjalanan dinas terbaru</span>
-                    <span class="text-[11px] font-medium text-muted">Kebijakan · 08 Okt 2026</span>
-                  </span>
-                </a>
-              </li>
-            </ul>
-            <a href="#berita" class="mt-1 flex items-center justify-center gap-1.5 rounded-[14px] px-3 py-2.5 text-[13px] font-bold leading-[normal] text-brand transition-colors hover:bg-brand-soft/55">
-              Lihat semua pembaruan
+            <ul role="list" class="flex flex-col gap-0.5" data-notif-menu></ul>
+            <p data-notif-menu-empty hidden class="px-3 py-5 text-center text-[13px] font-medium leading-[normal] text-muted">Tidak ada notifikasi baru.</p>
+            <a href="#notifikasi" class="mt-1 flex items-center justify-center gap-1.5 rounded-[14px] px-3 py-2.5 text-[13px] font-bold leading-[normal] text-brand transition-colors hover:bg-brand-soft/55">
+              Lihat semua notifikasi
               <img src="assets/icon-arrow-sm-blue.svg" width="14" height="14" alt="">
             </a>
           </div>
@@ -226,10 +200,11 @@
                 <span class="orbit-label orbit-label--bottom">SAU Travel</span>
               </span>
             </a>
-            <a href="#" data-app-link="saupay" class="orbit-app left-[190px] top-[310px] [--i:3]">
+            <!-- orbit/+ future (136:982): placeholder for more apps, leads to "Ajukan akses" -->
+            <a href="#ajukan" class="orbit-app orbit-app--add left-[190px] top-[310px] [--i:3]">
               <span class="orbit-bob">
-                <span class="orbit-tile"><span class="grad-saupay"><img src="assets/orbit-wallet.svg" width="22" height="22" alt=""></span></span>
-                <span class="orbit-label orbit-label--side">SAUpay</span>
+                <span class="orbit-tile"><span class="orbit-add"><img src="assets/orbit-plus.svg" width="16" height="16" alt=""></span></span>
+                <span class="orbit-label orbit-label--side">Add<span class="sr-only">: ajukan akses aplikasi lain</span></span>
               </span>
             </a>
             <a href="#" data-app-link="fintera" class="orbit-app left-[60.1px] top-[235px] [--i:4]">
@@ -249,187 +224,325 @@
       </div>
     </section>
 
-    <!-- Berita & Update Terbaru (64:1326) -->
-    <section id="berita" class="scroll-mt-4 px-5 pt-12 md:px-10" aria-labelledby="berita-title">
-      <div class="mx-auto flex max-w-[1200px] flex-col gap-5">
-        <div class="flex flex-wrap items-end justify-between gap-3">
-          <div class="flex flex-col items-start gap-1">
-            <div class="flex flex-wrap items-center gap-3">
-              <h2 id="berita-title" class="text-[26px] font-extrabold leading-[normal] text-ink sm:text-[30px]">Berita &amp; Update Terbaru</h2>
-              <span class="rounded-full bg-brand-tint px-2.5 py-[3px] text-[12px] font-bold leading-[normal] text-brand">3 baru</span>
-            </div>
-            <p class="text-[14px] leading-[normal] text-body">Pengumuman dan pembaruan terbaru dari ekosistem SAU Enterprise.</p>
-          </div>
-          <a href="#" class="group flex items-center gap-1.5 text-[13px] font-bold leading-[normal] text-brand">
-            Lihat semua
-            <img class="transition-transform group-hover:translate-x-0.5" src="assets/icon-arrow-sm-blue.svg" width="14" height="14" alt="">
-          </a>
-        </div>
-
-        <!-- Konten Berita (64:1338): stacked deck that autoplays, swipes and loops -->
-        <div class="news flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-6" data-carousel aria-roledescription="carousel" aria-label="Berita terbaru">
-          <div class="news-deck min-w-0 flex-1" data-deck aria-live="off">
-
-            <!-- Slide 1: banner from Figma (101:402) -->
-            <article class="news-card tint-panel tint--blue [--tint-angle:159.89deg]" data-slide data-pos="0" aria-roledescription="slide" aria-label="1 dari 4: Discover your future with SAU">
-              <div class="flex items-center justify-between gap-3 whitespace-nowrap leading-[normal]">
-                <p class="text-[16px] font-extrabold text-heading">Berita Terbaru</p>
-                <p class="min-w-0 truncate text-[12px] font-medium text-muted">Rekrutmen · <time datetime="2026-10-13">13 Okt 2026</time></p>
-              </div>
-              <a href="#" class="news-media" draggable="false">
-                <span class="news-frame">
-                  <img class="news-photo" src="assets/news-talenta-brilian.jpg" width="1920" height="727" draggable="false"
-                       alt="Discover your future with SAU: rekrutmen Talenta Brilian">
-                </span>
-              </a>
-            </article>
-
-            <!-- Slides 2–4: HTML banners drawn on a 1024×311 canvas that scales like an image -->
-            <article class="news-card tint-panel tint--blue [--tint-angle:159.89deg]" data-slide data-pos="1" aria-roledescription="slide" aria-label="2 dari 4: SAUpay kini mendukung pembayaran QR">
-              <div class="flex items-center justify-between gap-3 whitespace-nowrap leading-[normal]">
-                <p class="text-[16px] font-extrabold text-heading">Berita Terbaru</p>
-                <p class="min-w-0 truncate text-[12px] font-medium text-muted">Pengumuman · <time datetime="2026-10-12">12 Okt 2026</time></p>
-              </div>
-              <a href="#" class="news-media" draggable="false">
-                <span class="news-frame banner">
-                  <span class="news-canvas">
-                    <img class="absolute right-0 top-0" src="assets/banner-ring.svg" width="290" height="280" alt="">
-                    <img class="absolute right-0 top-[5px]" src="assets/banner-glow.svg" width="215" height="230" alt="">
-                    <span class="banner-ikon absolute right-[84px] top-[100px] flex size-28 items-center justify-center rounded-[36px]"><img src="assets/icon-megaphone.svg" width="52" height="52" alt=""></span>
-                    <span class="news-copy">
-                      <span class="flex items-center gap-2.5">
-                        <span class="banner-glass flex items-center gap-1.5 rounded-full px-3 py-[5px] text-[12px] font-bold leading-[normal]"><img src="assets/icon-bell-sm-white.svg" width="12" height="12" alt="">Pengumuman</span>
-                        <span class="text-[12px] font-medium leading-[normal] text-white/80">12 Oktober 2026</span>
-                      </span>
-                      <span class="news-title">SAUpay kini mendukung pembayaran QR di seluruh unit kerja</span>
-                      <span class="news-desc">Bayar kebutuhan operasional lebih cepat dan aman langsung dari aplikasi SAUpay, tanpa antre dan tanpa uang tunai.</span>
-                    </span>
-                    <span class="news-cta">Baca Selengkapnya <img src="assets/icon-arrow-read.svg" width="16" height="16" alt=""></span>
-                  </span>
-                </span>
-              </a>
-            </article>
-
-            <article class="news-card tint-panel tint--blue [--tint-angle:159.89deg]" data-slide data-pos="2" aria-roledescription="slide" aria-label="3 dari 4: MySAU v2.4">
-              <div class="flex items-center justify-between gap-3 whitespace-nowrap leading-[normal]">
-                <p class="text-[16px] font-extrabold text-heading">Berita Terbaru</p>
-                <p class="min-w-0 truncate text-[12px] font-medium text-muted">Pembaruan · <time datetime="2026-10-11">11 Okt 2026</time></p>
-              </div>
-              <a href="#" class="news-media" draggable="false">
-                <span class="news-frame banner banner--teal">
-                  <span class="news-canvas">
-                    <img class="absolute right-0 top-0" src="assets/banner-ring.svg" width="290" height="280" alt="">
-                    <img class="absolute right-0 top-[5px]" src="assets/banner-glow.svg" width="215" height="230" alt="">
-                    <span class="banner-ikon absolute right-[84px] top-[100px] flex size-28 items-center justify-center rounded-[36px]"><img src="assets/update-zap.svg" width="52" height="52" alt=""></span>
-                    <span class="news-copy">
-                      <span class="flex items-center gap-2.5">
-                        <span class="banner-glass flex items-center gap-1.5 rounded-full px-3 py-[5px] text-[12px] font-bold leading-[normal]"><img src="assets/update-zap.svg" width="12" height="12" alt="">Pembaruan</span>
-                        <span class="text-[12px] font-medium leading-[normal] text-white/80">11 Oktober 2026</span>
-                      </span>
-                      <span class="news-title">MySAU v2.4: pengajuan cuti kini lebih cepat dan praktis</span>
-                      <span class="news-desc">Ajukan, pantau, dan setujui cuti langsung dari MySAU dengan alur persetujuan yang lebih singkat.</span>
-                    </span>
-                    <span class="news-cta">Baca Selengkapnya <img src="assets/icon-arrow-read.svg" width="16" height="16" alt=""></span>
-                  </span>
-                </span>
-              </a>
-            </article>
-
-            <article class="news-card tint-panel tint--blue [--tint-angle:159.89deg]" data-slide data-pos="3" aria-roledescription="slide" aria-label="4 dari 4: Kebijakan perjalanan dinas terbaru">
-              <div class="flex items-center justify-between gap-3 whitespace-nowrap leading-[normal]">
-                <p class="text-[16px] font-extrabold text-heading">Berita Terbaru</p>
-                <p class="min-w-0 truncate text-[12px] font-medium text-muted">Kebijakan · <time datetime="2026-10-08">08 Okt 2026</time></p>
-              </div>
-              <a href="#" class="news-media" draggable="false">
-                <span class="news-frame banner banner--sky">
-                  <span class="news-canvas">
-                    <img class="absolute right-0 top-0" src="assets/banner-ring.svg" width="290" height="280" alt="">
-                    <img class="absolute right-0 top-[5px]" src="assets/banner-glow.svg" width="215" height="230" alt="">
-                    <span class="banner-ikon absolute right-[84px] top-[100px] flex size-28 items-center justify-center rounded-[36px]"><img src="assets/update-plane.svg" width="52" height="52" alt=""></span>
-                    <span class="news-copy">
-                      <span class="flex items-center gap-2.5">
-                        <span class="banner-glass flex items-center gap-1.5 rounded-full px-3 py-[5px] text-[12px] font-bold leading-[normal]"><img src="assets/update-plane.svg" width="12" height="12" alt="">Kebijakan</span>
-                        <span class="text-[12px] font-medium leading-[normal] text-white/80">08 Oktober 2026</span>
-                      </span>
-                      <span class="news-title">Kebijakan perjalanan dinas terbaru mulai berlaku bulan ini</span>
-                      <span class="news-desc">Cek ketentuan tiket, akomodasi, dan klaim biaya perjalanan dinas yang kini dikelola lewat SAU Travel.</span>
-                    </span>
-                    <span class="news-cta">Baca Selengkapnya <img src="assets/icon-arrow-read.svg" width="16" height="16" alt=""></span>
-                  </span>
-                </span>
-              </a>
-            </article>
-          </div>
-
-          <!-- Kontrol carousel (95:384) -->
-          <div class="flex shrink-0 items-center justify-between gap-3.5 px-1 lg:w-14 lg:flex-col lg:justify-center lg:px-0">
-            <div class="flex items-center lg:flex-col" role="group" aria-label="Pilih berita">
-              <button type="button" class="news-dot-btn" data-dot aria-label="Berita 1" aria-current="true"><span class="news-dot"></span></button>
-              <button type="button" class="news-dot-btn" data-dot aria-label="Berita 2" aria-current="false"><span class="news-dot"></span></button>
-              <button type="button" class="news-dot-btn" data-dot aria-label="Berita 3" aria-current="false"><span class="news-dot"></span></button>
-              <button type="button" class="news-dot-btn" data-dot aria-label="Berita 4" aria-current="false"><span class="news-dot"></span></button>
-            </div>
-            <div class="flex gap-3.5 lg:flex-col">
-              <button type="button" data-prev aria-label="Berita sebelumnya" class="news-nav"><img src="assets/icon-chevron-left-navy.svg" width="16" height="16" alt=""></button>
-              <button type="button" data-next aria-label="Berita berikutnya" class="news-nav"><img src="assets/icon-chevron-right-navy.svg" width="16" height="16" alt=""></button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Favorit Harian Anda (64:1264): rendered from the pinned apps (main.js); this is the default set -->
-    <section id="favorit" class="scroll-mt-4 px-5 pt-14 md:px-10" aria-labelledby="favorit-title">
+    <!-- My Task And Notification (64:1326) -->
+    <section id="tugas" class="scroll-mt-4 px-5 pt-12 md:px-10" aria-labelledby="tugas-title">
       <div class="mx-auto flex max-w-[1200px] flex-col gap-5">
         <div class="flex flex-col items-start gap-1">
-          <h2 id="favorit-title" tabindex="-1" class="text-[26px] font-extrabold leading-[normal] tracking-[-0.6px] text-ink outline-none sm:text-[30px]">Favorit Harian Anda</h2>
-          <p class="text-[14px] leading-[normal] text-body">Aplikasi yang Anda sematkan, selalu hanya satu klik.</p>
+          <h2 id="tugas-title" class="text-[26px] font-extrabold leading-[normal] text-ink sm:text-[30px]">My Task And Notification</h2>
+          <p class="text-[14px] leading-[normal] text-body">Pengumuman dan pembaruan terbaru dari ekosistem SAU Enterprise.</p>
         </div>
 
-        <ul role="list" data-fav-list class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <li class="fav-item" data-fav="mysau">
-            <div class="fav-card fav-card--solid">
-              <span class="fav-tile tile--glass"><img src="assets/fav-users.svg" width="24" height="24" alt=""></span>
-              <span class="fav-text">
-                <span class="fav-chip">SDM &amp; Karyawan</span>
-                <a href="#" class="fav-link" data-app-link="mysau">MySAU</a>
-                <span class="fav-desc">HRIS berbasis cloud untuk mengelola SDM</span>
-              </span>
-              <button type="button" class="fav-pin" data-unpin="mysau" aria-label="Lepas sematan MySAU" title="Lepas sematan"><img src="assets/fav-pin-white.svg" width="14" height="14" alt=""></button>
-              <span class="fav-go bg-white" aria-hidden="true"><img src="assets/fav-arrow-blue.svg" width="16" height="16" alt=""></span>
-            </div>
-          </li>
-          <li class="fav-item" data-fav="moover">
-            <div class="fav-card fav-card--glass" data-theme="mobilitas">
-              <span class="fav-tile grad-moover"><img src="assets/fav-car.svg" width="24" height="24" alt=""></span>
-              <span class="fav-text">
-                <span class="fav-chip">Mobilitas &amp; Operasional</span>
-                <a href="#" class="fav-link" data-app-link="moover">Moover</a>
-                <span class="fav-desc">Manajemen perjalanan dan operasional pengemudi</span>
-              </span>
-              <button type="button" class="fav-pin" data-unpin="moover" aria-label="Lepas sematan Moover" title="Lepas sematan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button>
-              <span class="fav-go grad-moover" aria-hidden="true"><img src="assets/fav-arrow-white.svg" width="16" height="16" alt=""></span>
-            </div>
-          </li>
-          <li class="fav-item" data-fav="saupay">
-            <div class="fav-card fav-card--glass" data-theme="keuangan">
-              <span class="fav-tile grad-saupay"><img src="assets/fav-wallet.svg" width="24" height="24" alt=""></span>
-              <span class="fav-text">
-                <span class="fav-chip">Keuangan &amp; Pembayaran</span>
-                <a href="#" class="fav-link" data-app-link="saupay">SAUpay</a>
-                <span class="fav-desc">Pembayaran digital untuk transaksi lebih mudah</span>
-              </span>
-              <button type="button" class="fav-pin" data-unpin="saupay" aria-label="Lepas sematan SAUpay" title="Lepas sematan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button>
-              <span class="fav-go grad-saupay" aria-hidden="true"><img src="assets/fav-arrow-white.svg" width="16" height="16" alt=""></span>
-            </div>
-          </li>
-        </ul>
+        <!-- Konten (132:123) -->
+        <div class="grid items-stretch gap-5 lg:grid-cols-[minmax(0,700fr)_minmax(0,480fr)]">
 
-        <div data-fav-empty hidden class="flex flex-col items-center gap-2 rounded-[28px] border border-dashed border-[#c9d6ea] bg-white/55 px-6 py-8 text-center">
-          <span class="flex size-11 items-center justify-center rounded-2xl bg-white"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></span>
-          <p class="text-[15px] font-extrabold leading-[normal] text-heading">Belum ada aplikasi yang disematkan</p>
-          <p class="max-w-[380px] text-[13px] leading-[20px] text-muted">Tekan ikon pin di samping nama aplikasi pada daftar di bawah untuk menyematkannya di sini.</p>
-          <a href="#jelajahi" class="mt-1 rounded-2xl bg-brand px-5 py-2.5 text-[14px] font-bold leading-[normal] text-white transition-colors hover:bg-[#0849a6]">Jelajahi aplikasi</a>
+          <!-- Panel / Tugas Saya (132:124). data-today is the demo's "today" (the Figma date);
+               remove it to use the real date. Each task row's data-date puts it on the calendar. -->
+          <section class="cat-panel tint-panel tint--blue [--tint-angle:141.54deg]" aria-labelledby="tugas-saya-title" data-calendar data-today="2026-10-19">
+            <div class="panel-head">
+              <span class="cat-icon"><img src="assets/panel-clipboard.svg" width="20" height="20" alt=""></span>
+              <h3 id="tugas-saya-title" class="panel-head__title cat-title text-brand-ink">Tugas Saya</h3>
+              <p class="panel-head__desc cat-desc">Tugas yang menunggu tindakan Anda dari seluruh aplikasi.</p>
+              <span class="panel-head__aside pill bg-warn-soft text-warn-ink" data-week-total>10 minggu ini</span>
+            </div>
+
+            <!-- Kalender 7 hari (135:123) -->
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center gap-2">
+                <p class="min-w-0 flex-1 text-[13px] font-extrabold leading-[normal] text-heading min-[360px]:text-[14px]" data-cal-month>Oktober 2026</p>
+                <button type="button" class="soft-btn" data-cal-today>Hari ini</button>
+                <button type="button" class="cal-nav" data-cal-prev aria-label="Minggu sebelumnya"><img src="assets/icon-chevron-left.svg" width="16" height="16" alt=""></button>
+                <button type="button" class="cal-nav" data-cal-next aria-label="Minggu berikutnya"><img src="assets/icon-chevron-right.svg" width="16" height="16" alt=""></button>
+              </div>
+
+              <div class="cal-days" role="tablist" aria-label="Pilih tanggal" data-cal-days style="--sel: 0">
+                <span class="cal-indicator" aria-hidden="true"></span>
+                <button type="button" role="tab" class="cal-day" data-cal-day aria-selected="true" tabindex="0" aria-controls="task-panel" aria-label="Senin, 19 Oktober 2026, 4 tugas">
+                  <span class="cal-day__name">Sen</span><span class="cal-day__date">19</span><span class="cal-dots"><i></i><i></i><i></i></span>
+                </button>
+                <button type="button" role="tab" class="cal-day" data-cal-day aria-selected="false" tabindex="-1" aria-controls="task-panel" aria-label="Selasa, 20 Oktober 2026, 2 tugas">
+                  <span class="cal-day__name">Sel</span><span class="cal-day__date">20</span><span class="cal-dots"><i></i><i></i></span>
+                </button>
+                <button type="button" role="tab" class="cal-day" data-cal-day aria-selected="false" tabindex="-1" aria-controls="task-panel" aria-label="Rabu, 21 Oktober 2026, tidak ada tugas">
+                  <span class="cal-day__name">Rab</span><span class="cal-day__date">21</span><span class="cal-dots"></span>
+                </button>
+                <button type="button" role="tab" class="cal-day" data-cal-day aria-selected="false" tabindex="-1" aria-controls="task-panel" aria-label="Kamis, 22 Oktober 2026, 3 tugas">
+                  <span class="cal-day__name">Kam</span><span class="cal-day__date">22</span><span class="cal-dots"><i></i><i></i><i></i></span>
+                </button>
+                <button type="button" role="tab" class="cal-day" data-cal-day aria-selected="false" tabindex="-1" aria-controls="task-panel" aria-label="Jumat, 23 Oktober 2026, 1 tugas">
+                  <span class="cal-day__name">Jum</span><span class="cal-day__date">23</span><span class="cal-dots"><i></i></span>
+                </button>
+                <button type="button" role="tab" class="cal-day" data-cal-day data-weekend aria-selected="false" tabindex="-1" aria-controls="task-panel" aria-label="Sabtu, 24 Oktober 2026, tidak ada tugas">
+                  <span class="cal-day__name">Sab</span><span class="cal-day__date">24</span><span class="cal-dots"></span>
+                </button>
+                <button type="button" role="tab" class="cal-day" data-cal-day data-weekend aria-selected="false" tabindex="-1" aria-controls="task-panel" aria-label="Minggu, 25 Oktober 2026, tidak ada tugas">
+                  <span class="cal-day__name">Min</span><span class="cal-day__date">25</span><span class="cal-dots"></span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Label tanggal (135:175) -->
+            <div class="flex items-center gap-2 leading-[normal]">
+              <p id="task-date" class="min-w-0 flex-1 text-[13px] font-bold text-heading" data-cal-label>Senin, 19 Oktober 2026</p>
+              <p class="shrink-0 text-[12px] font-semibold text-muted" data-cal-count>4 tugas</p>
+            </div>
+
+            <!-- Daftar tugas (132:136): main.js shows the rows of the selected date -->
+            <div id="task-panel" role="tabpanel" aria-labelledby="task-date" class="task-panel" data-task-panel>
+              <ul role="list" class="flex flex-col gap-2.5">
+                <!-- Minggu lalu (12–18 Okt) -->
+                <li class="task-row" data-task data-date="2026-10-14" data-done hidden>
+                  <span class="app-logo"><img class="h-3.5 w-11 object-cover" src="assets/logo-inoffice.png" width="240" height="77" alt=""></span>
+                  <span class="task-text">
+                    <a href="#" class="task-link" data-app-link="in-office">Disposisi surat masuk Divisi Umum</a>
+                    <span class="task-meta">In Office · 5 surat</span>
+                  </span>
+                  <span class="task-due task-due--done">Selesai</span>
+                  <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </li>
+                <li class="task-row" data-task data-date="2026-10-16" data-done hidden>
+                  <span class="app-tile bg-[#fbcfe8]"><img src="assets/app-task.svg" width="17.501" height="21.5" alt=""></span>
+                  <span class="task-text">
+                    <a href="#" class="task-link" data-app-link="psikotest">Tetapkan jadwal Psikotest kandidat</a>
+                    <span class="task-meta">Psikotest · 8 kandidat</span>
+                  </span>
+                  <span class="task-due task-due--done">Selesai</span>
+                  <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </li>
+                <li class="task-row" data-task data-date="2026-10-16" data-done hidden>
+                  <span class="app-logo"><img class="h-5 w-11 object-cover" src="assets/logo-mysau.png" width="152" height="68" alt=""></span>
+                  <span class="task-text">
+                    <a href="#" class="task-link" data-app-link="mysau">Rekap absensi tim lapangan</a>
+                    <span class="task-meta">MySAU · Periode 1–15 Okt 2026</span>
+                  </span>
+                  <span class="task-due task-due--done">Selesai</span>
+                  <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </li>
+
+                <!-- Minggu ini (19–25 Okt): Senin 19 is the Figma list -->
+                <li class="task-row" data-task data-date="2026-10-19">
+                  <span class="app-logo"><img class="h-5 w-11 object-cover" src="assets/logo-mysau.png" width="152" height="68" alt=""></span>
+                  <span class="task-text">
+                    <a href="#" class="task-link" data-app-link="mysau">Persetujuan cuti tahunan — Dimas Prasetyo</a>
+                    <span class="task-meta">MySAU · Diajukan 2 hari lalu</span>
+                  </span>
+                  <span class="task-due task-due--urgent">Batas 12.00</span>
+                  <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </li>
+                <li class="task-row" data-task data-date="2026-10-19">
+                  <span class="app-logo"><span class="relative block h-[19px] w-11 overflow-hidden"><img class="absolute left-[-1.85%] top-[-24.74%] h-[149.47%] w-[103.7%] max-w-none" src="assets/logo-sau-travel.png" width="240" height="149" alt=""></span></span>
+                  <span class="task-text">
+                    <a href="#" class="task-link" data-app-link="sau-travel">Verifikasi laporan perjalanan dinas Surabaya</a>
+                    <span class="task-meta">SAU Travel · Rina Wulandari</span>
+                  </span>
+                  <span class="task-due task-due--soon">Batas 15.00</span>
+                  <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </li>
+                <li class="task-row" data-task data-date="2026-10-19">
+                  <span class="app-logo"><img class="h-[17px] w-11 object-cover" src="assets/logo-pervoms.png" width="240" height="90" alt=""></span>
+                  <span class="task-text">
+                    <a href="#" class="task-link" data-app-link="pervoms">Isi penilaian kinerja Kuartal III</a>
+                    <span class="task-meta">Pervoms · Periode Jul–Sep 2026</span>
+                  </span>
+                  <span class="task-due task-due--soon">Batas 17.00</span>
+                  <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </li>
+                <li class="task-row" data-task data-date="2026-10-19">
+                  <span class="app-tile bg-[#fff1e8]"><img src="assets/app-fintera.svg" width="20" height="20" alt=""></span>
+                  <span class="task-text">
+                    <a href="#" class="task-link" data-app-link="fintera">Tinjau klaim reimburse operasional</a>
+                    <span class="task-meta">Fintera · 3 klaim menunggu</span>
+                  </span>
+                  <span class="task-due task-due--later">Batas 23.59</span>
+                  <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </li>
+                <li class="task-row" data-task data-date="2026-10-20" hidden>
+                  <span class="app-logo"><img class="h-5 w-11 object-cover" src="assets/logo-mysau.png" width="152" height="68" alt=""></span>
+                  <span class="task-text">
+                    <a href="#" class="task-link" data-app-link="mysau">Persetujuan lembur tim Operasional</a>
+                    <span class="task-meta">MySAU · Diajukan Andi Saputra</span>
+                  </span>
+                  <span class="task-due task-due--soon">Batas 10.00</span>
+                  <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </li>
+                <li class="task-row" data-task data-date="2026-10-20" hidden>
+                  <span class="app-logo"><span class="relative block h-[9px] w-11 overflow-hidden"><img class="absolute left-[-2.69%] top-[-31.72%] h-[166.67%] w-[104.23%] max-w-none" src="assets/logo-moover.png" width="240" height="80" alt=""></span></span>
+                  <span class="task-text">
+                    <a href="#" class="task-link" data-app-link="moover">Konfirmasi jadwal driver minggu depan</a>
+                    <span class="task-meta">Moover · 6 perjalanan</span>
+                  </span>
+                  <span class="task-due task-due--later">Batas 16.00</span>
+                  <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </li>
+                <li class="task-row" data-task data-date="2026-10-22" hidden>
+                  <span class="app-tile bg-[#fbcfe8]"><img src="assets/app-task.svg" width="17.501" height="21.5" alt=""></span>
+                  <span class="task-text">
+                    <a href="#" class="task-link" data-app-link="psikotest">Pantau sesi Psikotest kandidat</a>
+                    <span class="task-meta">Psikotest · 09.00 WIB, Ruang Asesmen 2</span>
+                  </span>
+                  <span class="task-due task-due--urgent">Batas 09.00</span>
+                  <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </li>
+                <li class="task-row" data-task data-date="2026-10-22" hidden>
+                  <span class="app-logo"><img class="h-[12.14px] w-11 object-cover" src="assets/logo-evalio.jpg" width="240" height="67" alt=""></span>
+                  <span class="task-text">
+                    <a href="#" class="task-link" data-app-link="evalio">Tinjau hasil asesmen tim Keamanan</a>
+                    <span class="task-meta">Evalio · 12 asesmen menunggu</span>
+                  </span>
+                  <span class="task-due task-due--soon">Batas 15.00</span>
+                  <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </li>
+                <li class="task-row" data-task data-date="2026-10-22" hidden>
+                  <span class="app-logo"><span class="relative block h-3 w-11 overflow-hidden"><img class="absolute left-[-16.65%] top-[-81.14%] h-[265.43%] w-[132.37%] max-w-none" src="assets/logo-saupay.png" width="240" height="132" alt=""></span></span>
+                  <span class="task-text">
+                    <a href="#" class="task-link" data-app-link="saupay">Setujui pembayaran vendor</a>
+                    <span class="task-meta">SAUpay · 2 tagihan menunggu</span>
+                  </span>
+                  <span class="task-due task-due--soon">Batas 17.00</span>
+                  <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </li>
+                <li class="task-row" data-task data-date="2026-10-23" hidden>
+                  <span class="app-logo gap-[5.15px]">
+                    <span class="flex h-[21.25px] w-[16.9px] shrink-0 items-center justify-center"><img src="assets/logo-digital-patrol-mark.svg" width="17.5828" height="21.935" alt=""></span>
+                    <span class="dp-wordmark"><span class="text-[#095da1]">DIGITAL</span><span class="text-[#ffa21f]">PATROL</span></span>
+                  </span>
+                  <span class="task-text">
+                    <a href="#" class="task-link" data-app-link="digital-patrol">Kirim laporan patroli mingguan</a>
+                    <span class="task-meta">Digital Patrol · Pos Jakarta Selatan</span>
+                  </span>
+                  <span class="task-due task-due--later">Batas 16.00</span>
+                  <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </li>
+
+                <!-- Minggu depan (26 Okt – 1 Nov) -->
+                <li class="task-row" data-task data-date="2026-10-26" hidden>
+                  <span class="app-logo"><span class="relative block h-[19px] w-11 overflow-hidden"><img class="absolute left-[-1.85%] top-[-24.74%] h-[149.47%] w-[103.7%] max-w-none" src="assets/logo-sau-travel.png" width="240" height="149" alt=""></span></span>
+                  <span class="task-text">
+                    <a href="#" class="task-link" data-app-link="sau-travel">Verifikasi klaim perjalanan dinas Medan</a>
+                    <span class="task-meta">SAU Travel · Budi Santoso</span>
+                  </span>
+                  <span class="task-due task-due--later">Batas 12.00</span>
+                  <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </li>
+                <li class="task-row" data-task data-date="2026-10-26" hidden>
+                  <span class="app-logo"><img class="h-[13px] w-11 object-cover" src="assets/logo-talenta-brilian.png" width="240" height="73" alt=""></span>
+                  <span class="task-text">
+                    <a href="#" class="task-link" data-app-link="talenta-brilian">Seleksi berkas pelamar baru</a>
+                    <span class="task-meta">Talenta Brilian · 24 pelamar</span>
+                  </span>
+                  <span class="task-due task-due--later">Batas 17.00</span>
+                  <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </li>
+                <li class="task-row" data-task data-date="2026-10-28" hidden>
+                  <span class="app-tile bg-[#f3d7e0]"><img src="assets/panel-wallet-others.svg" width="20" height="20" alt=""></span>
+                  <span class="task-text">
+                    <a href="#" class="task-link" data-app-link="qa-uko">Isi survei mutu layanan</a>
+                    <span class="task-meta">QA Uko · Kuartal IV 2026</span>
+                  </span>
+                  <span class="task-due task-due--later">Batas 23.59</span>
+                  <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </li>
+                <li class="task-row" data-task data-date="2026-10-30" hidden>
+                  <span class="app-tile bg-[#e0f2fe]"><img src="assets/app-payroll.svg" width="20" height="20" alt=""></span>
+                  <span class="task-text">
+                    <a href="#" class="task-link" data-app-link="payroll">Validasi data lembur untuk penggajian</a>
+                    <span class="task-meta">Payroll Management · Periode Oktober 2026</span>
+                  </span>
+                  <span class="task-due task-due--later">Batas 15.00</span>
+                  <span class="task-go" aria-hidden="true"><img src="assets/arrow-users.svg" width="14" height="14" alt=""></span>
+                </li>
+              </ul>
+
+              <div class="task-empty" data-task-empty hidden>
+                <span class="cat-icon"><img src="assets/panel-clipboard.svg" width="20" height="20" alt=""></span>
+                <p class="text-[14px] font-extrabold leading-[normal] text-heading">Tidak ada tugas</p>
+                <p class="max-w-[300px] text-[12px] leading-[18px] text-muted">Tidak ada tugas yang jatuh tempo pada tanggal ini.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Panel / Notifikasi (132:195) -->
+          <section id="notifikasi" class="cat-panel tint-panel tint--violet target-ring scroll-mt-6 [--tint-angle:130.8deg]" aria-labelledby="notif-title" data-notifs>
+            <div class="panel-head">
+              <span class="cat-icon"><img src="assets/panel-bell.svg" width="20" height="20" alt=""></span>
+              <h3 id="notif-title" class="panel-head__title cat-title text-[#754ece]">Notifikasi</h3>
+              <p class="panel-head__desc cat-desc">Pembaruan terbaru dari aplikasi Anda.</p>
+              <button type="button" class="panel-head__aside notif-mark" data-notif-mark-all>Tandai dibaca</button>
+            </div>
+
+            <!-- Daftar notifikasi (132:204) -->
+            <div class="flex flex-col gap-2.5">
+              <div class="flex flex-wrap gap-2 sm:gap-2.5" role="group" aria-label="Filter notifikasi">
+                <button type="button" class="soft-btn" data-notif-filter="all" aria-pressed="true">Semua</button>
+                <button type="button" class="soft-btn" data-notif-filter="read" aria-pressed="false">Sudah Dibaca</button>
+                <button type="button" class="soft-btn" data-notif-filter="unread" aria-pressed="false">Belum Dibaca</button>
+              </div>
+
+              <ul role="list" class="flex flex-col gap-2.5" data-notif-list>
+                <li class="notif-row" data-notif>
+                  <span class="notif-icon bg-[#e0f2fe]"><img src="assets/notif-file.svg" width="18" height="18" alt=""></span>
+                  <span class="notif-text">
+                    <span class="notif-head">
+                      <a href="#" class="notif-link" data-app-link="payroll">Slip gaji Oktober tersedia</a>
+                      <span class="notif-time">5 mnt</span>
+                    </span>
+                    <span class="notif-desc">Payroll Management · Unduh slip gaji Anda</span>
+                  </span>
+                  <img class="notif-dot" src="assets/notif-unread.svg" width="8" height="8" alt="">
+                  <span class="sr-only" data-notif-state>Belum dibaca</span>
+                </li>
+                <li class="notif-row" data-notif>
+                  <span class="notif-icon bg-success-soft"><img src="assets/notif-check.svg" width="18" height="18" alt=""></span>
+                  <span class="notif-text">
+                    <span class="notif-head">
+                      <a href="#" class="notif-link" data-app-link="sau-travel">Perjalanan dinas disetujui</a>
+                      <span class="notif-time">1 jam</span>
+                    </span>
+                    <span class="notif-desc">SAU Travel · Tiket Jakarta–Surabaya terbit</span>
+                  </span>
+                  <img class="notif-dot" src="assets/notif-unread.svg" width="8" height="8" alt="">
+                  <span class="sr-only" data-notif-state>Belum dibaca</span>
+                </li>
+                <li class="notif-row" data-notif>
+                  <span class="notif-icon bg-[#fce7f3]"><img src="assets/notif-clock.svg" width="18" height="18" alt=""></span>
+                  <span class="notif-text">
+                    <span class="notif-head">
+                      <a href="#" class="notif-link" data-app-link="psikotest">Jadwal Psikotest ditetapkan</a>
+                      <span class="notif-time">3 jam</span>
+                    </span>
+                    <span class="notif-desc">Psikotest · 22 Okt 2026, 09.00 WIB</span>
+                  </span>
+                  <img class="notif-dot" src="assets/notif-unread.svg" width="8" height="8" alt="">
+                  <span class="sr-only" data-notif-state>Belum dibaca</span>
+                </li>
+                <li class="notif-row" data-notif data-read>
+                  <span class="notif-icon bg-[#fff1e8]"><img src="assets/notif-info.svg" width="18" height="18" alt=""></span>
+                  <span class="notif-text">
+                    <span class="notif-head">
+                      <a href="#" class="notif-link" data-app-link="saupay">Pemeliharaan sistem SAUpay</a>
+                      <span class="notif-time">Kemarin</span>
+                    </span>
+                    <span class="notif-desc">SAUpay · Malam ini pukul 23.00–01.00 WIB</span>
+                  </span>
+                  <img class="notif-dot" src="assets/notif-unread.svg" width="8" height="8" alt="">
+                  <span class="sr-only" data-notif-state>Sudah dibaca</span>
+                </li>
+                <li class="notif-row" data-notif data-read>
+                  <span class="notif-icon bg-[#e0f2fe]"><img src="assets/notif-calendar.svg" width="18" height="18" alt=""></span>
+                  <span class="notif-text">
+                    <span class="notif-head">
+                      <a href="#" class="notif-link" data-app-link="mysau">Pengumuman cuti bersama</a>
+                      <span class="notif-time">2 hari</span>
+                    </span>
+                    <span class="notif-desc">MySAU · Jadwal cuti bersama akhir tahun</span>
+                  </span>
+                  <img class="notif-dot" src="assets/notif-unread.svg" width="8" height="8" alt="">
+                  <span class="sr-only" data-notif-state>Sudah dibaca</span>
+                </li>
+              </ul>
+
+              <p class="notif-empty" data-notif-empty hidden></p>
+            </div>
+          </section>
         </div>
       </div>
     </section>
@@ -446,7 +559,15 @@
             <p class="text-[14px] leading-[normal] text-muted">Aplikasi yang tersedia untuk Anda di PT Siaga Abdi Utama.</p>
           </div>
 
-          <div class="flex items-center gap-2.5">
+          <div class="flex w-full flex-wrap items-center gap-2.5 sm:w-auto">
+            <!-- Cari Aplikasi (138:123): filters the list as you type -->
+            <label class="app-search glass-pill sb flex w-full items-center gap-2.5 rounded-[14px] px-3.5 py-[11px] [--sb-a:0.07] [--sb-inset:5px] sm:w-[280px]">
+              <img src="assets/icon-search-sm.svg" width="16" height="16" alt="">
+              <span class="sr-only">Cari aplikasi</span>
+              <input id="app-q" type="search" autocomplete="off" enterkeyhint="search" placeholder="Cari aplikasi..."
+                     class="h-4 min-w-0 flex-1 bg-transparent text-[13px] leading-4 text-heading outline-none placeholder:text-subtle">
+            </label>
+
             <div role="group" aria-label="Tampilan" class="glass-pill sb flex gap-0.5 rounded-[14px] p-1 [--sb-a:0.07] [--sb-inset:5px]">
               <button type="button" data-set-view="grid" aria-pressed="true" aria-label="Tampilan kisi"
                       class="rounded-[10px] px-2.5 py-[7px] transition-colors hover:bg-brand-soft/50 aria-pressed:bg-brand-soft">
@@ -513,8 +634,7 @@
               </div>
             </div>
             <ul role="list" class="flex flex-col gap-4">
-              <li class="app-row group/row" data-app="mysau" data-name="MySAU" data-order="1" data-keywords="hris sdm karyawan cuti absensi hr"
-                  data-fav-desc="HRIS berbasis cloud untuk mengelola SDM" data-fav-icon="assets/fav-users.svg" data-fav-grad="grad-mysau" data-fav-variant="solid">
+              <li class="app-row group/row" data-app="mysau" data-name="MySAU" data-order="1" data-keywords="hris sdm karyawan cuti absensi hr">
                 <span class="app-logo" data-app-icon><img class="h-5 w-11 object-cover" src="assets/logo-mysau.png" width="152" height="68" alt=""></span>
                 <span class="app-text">
                   <span class="app-name"><a href="#" class="app-link" data-app-link>MySAU</a><button type="button" class="pin-toggle" data-pin aria-pressed="true" aria-label="Sematkan MySAU" title="Lepas sematan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
@@ -525,7 +645,7 @@
               <li class="app-row group/row" data-app="payroll" data-name="Payroll Management" data-order="2" data-keywords="gaji payroll penggajian slip gaji upah">
                 <span class="app-tile bg-[#e0f2fe]" data-app-icon><img src="assets/app-payroll.svg" width="20" height="20" alt=""></span>
                 <span class="app-text">
-                  <span class="app-name"><a href="#" class="app-link" data-app-link>Payroll Management</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Payroll Management" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Payroll Management</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Payroll Management" title="Sematkan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
                   <span class="app-desc">Sistem Pengelolaan Gaji Karyawan</span>
                 </span>
                 <span class="app-go bg-[#e0f2fe]" aria-hidden="true"><img src="assets/arrow-payroll.svg" width="14" height="14" alt=""></span>
@@ -533,7 +653,7 @@
               <li class="app-row group/row" data-app="in-office" data-name="In Office" data-order="3" data-keywords="surat persuratan dokumen disposisi kantor arsip">
                 <span class="app-logo" data-app-icon><img class="h-3.5 w-11 object-cover" src="assets/logo-inoffice.png" width="240" height="77" alt=""></span>
                 <span class="app-text">
-                  <span class="app-name"><a href="#" class="app-link" data-app-link>In Office</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan In Office" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>In Office</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan In Office" title="Sematkan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
                   <span class="app-desc">Sistem Pengelolaan Surat</span>
                 </span>
                 <span class="app-go bg-[#dbeafe]" aria-hidden="true"><img src="assets/arrow-inoffice.svg" width="14" height="14" alt=""></span>
@@ -541,7 +661,7 @@
               <li class="app-row group/row" data-app="pervoms" data-name="Pervoms" data-order="4" data-keywords="kinerja evaluasi performance penilaian kpi">
                 <span class="app-logo" data-app-icon><img class="h-[17px] w-11 object-cover" src="assets/logo-pervoms.png" width="240" height="90" alt=""></span>
                 <span class="app-text">
-                  <span class="app-name"><a href="#" class="app-link" data-app-link>Pervoms</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Pervoms" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Pervoms</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Pervoms" title="Sematkan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
                   <span class="app-desc">Performance Evaluation System</span>
                 </span>
                 <span class="app-go bg-[#bfdbfe]" aria-hidden="true"><img src="assets/arrow-pervoms.svg" width="14" height="14" alt=""></span>
@@ -559,8 +679,7 @@
               </div>
             </div>
             <ul role="list" class="flex flex-col gap-4">
-              <li class="app-row group/row" data-app="moover" data-name="Moover" data-order="5" data-keywords="perjalanan pengemudi driver kendaraan mobil operasional"
-                  data-fav-desc="Manajemen perjalanan dan operasional pengemudi" data-fav-icon="assets/fav-car.svg" data-fav-grad="grad-moover">
+              <li class="app-row group/row" data-app="moover" data-name="Moover" data-order="5" data-keywords="perjalanan pengemudi driver kendaraan mobil operasional">
                 <span class="app-logo" data-app-icon><span class="relative block h-[9px] w-11 overflow-hidden"><img class="absolute left-[-2.69%] top-[-31.72%] h-[166.67%] w-[104.23%] max-w-none" src="assets/logo-moover.png" width="240" height="80" alt=""></span></span>
                 <span class="app-text">
                   <span class="app-name"><a href="#" class="app-link" data-app-link>Moover</a><button type="button" class="pin-toggle" data-pin aria-pressed="true" aria-label="Sematkan Moover" title="Lepas sematan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
@@ -568,23 +687,21 @@
                 </span>
                 <span class="app-go bg-tint-teal" aria-hidden="true"><img src="assets/arrow-car.svg" width="14" height="14" alt=""></span>
               </li>
-              <li class="app-row group/row" data-app="digital-patrol" data-name="Digital Patrol" data-order="6" data-keywords="keamanan security satpam patroli petugas operasional"
-                  data-fav-icon="assets/orbit-shield.svg" data-fav-grad="grad-patrol">
+              <li class="app-row group/row" data-app="digital-patrol" data-name="Digital Patrol" data-order="6" data-keywords="keamanan security satpam patroli petugas operasional">
                 <span class="app-logo gap-[5.15px]" data-app-icon>
                   <span class="flex h-[21.25px] w-[16.9px] shrink-0 items-center justify-center"><img src="assets/logo-digital-patrol-mark.svg" width="17.5828" height="21.935" alt=""></span>
                   <span class="dp-wordmark"><span class="text-[#095da1]">DIGITAL</span><span class="text-[#ffa21f]">PATROL</span></span>
                 </span>
                 <span class="app-text">
-                  <span class="app-name"><a href="#" class="app-link" data-app-link>Digital Patrol</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Digital Patrol" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Digital Patrol</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Digital Patrol" title="Sematkan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
                   <span class="app-desc">Pemantauan petugas keamanan</span>
                 </span>
                 <span class="app-go bg-tint-green" aria-hidden="true"><img src="assets/arrow-shield.svg" width="14" height="14" alt=""></span>
               </li>
-              <li class="app-row group/row" data-app="sau-travel" data-name="SAU Travel" data-order="7" data-keywords="travel perjalanan dinas tiket hotel"
-                  data-fav-icon="assets/orbit-plane.svg" data-fav-grad="grad-travel">
+              <li class="app-row group/row" data-app="sau-travel" data-name="SAU Travel" data-order="7" data-keywords="travel perjalanan dinas tiket hotel">
                 <span class="app-logo" data-app-icon><span class="relative block h-[19px] w-11 overflow-hidden"><img class="absolute left-[-1.85%] top-[-24.74%] h-[149.47%] w-[103.7%] max-w-none" src="assets/logo-sau-travel.png" width="240" height="149" alt=""></span></span>
                 <span class="app-text">
-                  <span class="app-name"><a href="#" class="app-link" data-app-link>SAU Travel</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan SAU Travel" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>SAU Travel</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan SAU Travel" title="Sematkan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
                   <span class="app-desc">Layanan perjalanan dinas</span>
                 </span>
                 <span class="app-go bg-[#dcfce7]" aria-hidden="true"><img src="assets/arrow-travel.svg" width="14" height="14" alt=""></span>
@@ -602,17 +719,15 @@
               </div>
             </div>
             <ul role="list" class="flex flex-col gap-4">
-              <li class="app-row group/row" data-app="fintera" data-name="Fintera" data-order="8" data-keywords="finance keuangan digital"
-                  data-fav-icon="assets/orbit-landmark.svg" data-fav-grad="grad-fintera">
+              <li class="app-row group/row" data-app="fintera" data-name="Fintera" data-order="8" data-keywords="finance keuangan digital">
                 <span class="app-tile bg-[#fff1e8]" data-app-icon><img src="assets/app-fintera.svg" width="20" height="20" alt=""></span>
                 <span class="app-text">
-                  <span class="app-name"><a href="#" class="app-link" data-app-link>Fintera</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Fintera" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Fintera</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Fintera" title="Sematkan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
                   <span class="app-desc">Layanan keuangan digital</span>
                 </span>
                 <span class="app-go bg-[#fff1e8]" aria-hidden="true"><img src="assets/arrow-fintera.svg" width="14" height="14" alt=""></span>
               </li>
-              <li class="app-row group/row" data-app="saupay" data-name="SAUpay" data-order="9" data-keywords="pembayaran payment qr transaksi"
-                  data-fav-desc="Pembayaran digital untuk transaksi lebih mudah" data-fav-icon="assets/fav-wallet.svg" data-fav-grad="grad-saupay">
+              <li class="app-row group/row" data-app="saupay" data-name="SAUpay" data-order="9" data-keywords="pembayaran payment qr transaksi">
                 <span class="app-logo" data-app-icon><span class="relative block h-3 w-11 overflow-hidden"><img class="absolute left-[-16.65%] top-[-81.14%] h-[265.43%] w-[132.37%] max-w-none" src="assets/logo-saupay.png" width="240" height="132" alt=""></span></span>
                 <span class="app-text">
                   <span class="app-name"><a href="#" class="app-link" data-app-link>SAUpay</a><button type="button" class="pin-toggle" data-pin aria-pressed="true" aria-label="Sematkan SAUpay" title="Lepas sematan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
@@ -636,7 +751,7 @@
               <li class="app-row group/row" data-app="evalio" data-name="Evalio" data-order="10" data-keywords="asesmen assessment evaluasi kinerja">
                 <span class="app-logo" data-app-icon><img class="h-[12.14px] w-11 object-cover" src="assets/logo-evalio.jpg" width="240" height="67" alt=""></span>
                 <span class="app-text">
-                  <span class="app-name"><a href="#" class="app-link" data-app-link>Evalio</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Evalio" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Evalio</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Evalio" title="Sematkan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
                   <span class="app-desc">Sistem informasi asesmen kinerja</span>
                 </span>
                 <span class="app-go bg-[#fce7f3]" aria-hidden="true"><img src="assets/arrow-evalio.svg" width="14" height="14" alt=""></span>
@@ -644,7 +759,7 @@
               <li class="app-row group/row" data-app="exam" data-name="Exam" data-order="11" data-keywords="ujian tes evaluasi diri">
                 <span class="app-tile bg-[#fadadd]" data-app-icon><img src="assets/app-task.svg" width="17.501" height="21.5" alt=""></span>
                 <span class="app-text">
-                  <span class="app-name"><a href="#" class="app-link" data-app-link>Exam</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Exam" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Exam</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Exam" title="Sematkan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
                   <span class="app-desc">Platform ujian dan evaluasi diri</span>
                 </span>
                 <span class="app-go bg-[#fadadd]" aria-hidden="true"><img src="assets/arrow-exam.svg" width="14" height="14" alt=""></span>
@@ -652,7 +767,7 @@
               <li class="app-row group/row" data-app="psikotest" data-name="Psikotest" data-order="12" data-keywords="psikotes psikologi tes">
                 <span class="app-tile bg-[#fbcfe8]" data-app-icon><img src="assets/app-task.svg" width="17.501" height="21.5" alt=""></span>
                 <span class="app-text">
-                  <span class="app-name"><a href="#" class="app-link" data-app-link>Psikotest</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Psikotest" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Psikotest</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Psikotest" title="Sematkan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
                   <span class="app-desc">Pengelolaan ujian psikotes</span>
                 </span>
                 <span class="app-go bg-[#fbcfe8]" aria-hidden="true"><img src="assets/arrow-exam.svg" width="14" height="14" alt=""></span>
@@ -660,7 +775,7 @@
               <li class="app-row group/row" data-app="smbc" data-name="Social Media Background Checking" data-order="13" data-keywords="background check media sosial rekam jejak kandidat candidate">
                 <span class="app-tile bg-[#fadadd]" data-app-icon><img src="assets/app-task.svg" width="17.501" height="21.5" alt=""></span>
                 <span class="app-text">
-                  <span class="app-name"><a href="#" class="app-link" data-app-link>Social Media Background Checking</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Social Media Background Checking" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Social Media Background Checking</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Social Media Background Checking" title="Sematkan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
                   <span class="app-desc">Pemeriksaan rekam jejak media sosial candidate</span>
                 </span>
                 <span class="app-go bg-[#fadadd]" aria-hidden="true"><img src="assets/arrow-smbc.svg" width="14" height="14" alt=""></span>
@@ -681,7 +796,7 @@
               <li class="app-row group/row" data-app="talenta-brilian" data-name="Talenta Brilian" data-order="14" data-keywords="rekrutmen lowongan kandidat pendaftaran seleksi karier">
                 <span class="app-logo" data-app-icon><img class="h-[13px] w-11 object-cover" src="assets/logo-talenta-brilian.png" width="240" height="73" alt=""></span>
                 <span class="app-text">
-                  <span class="app-name"><a href="#" class="app-link" data-app-link>Talenta Brilian</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Talenta Brilian" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>Talenta Brilian</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan Talenta Brilian" title="Sematkan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
                   <span class="app-desc">Portal pendaftaran dan seleksi rekrutmen</span>
                 </span>
                 <span class="app-go bg-[#ddd6fe]" aria-hidden="true"><img src="assets/arrow-talenta.svg" width="14" height="14" alt=""></span>
@@ -689,7 +804,7 @@
               <li class="app-row group/row" data-app="bflp" data-name="BFLP Monitoring" data-order="15" data-keywords="bflp program monitoring pemantauan">
                 <span class="app-tile bg-[#e9d5fa]" data-app-icon><img src="assets/panel-building.svg" width="20" height="20" alt=""></span>
                 <span class="app-text">
-                  <span class="app-name"><a href="#" class="app-link" data-app-link>BFLP Monitoring</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan BFLP Monitoring" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>BFLP Monitoring</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan BFLP Monitoring" title="Sematkan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
                   <span class="app-desc">Sistem pemantauan program BFLP</span>
                 </span>
                 <span class="app-go bg-[#e9d5fa]" aria-hidden="true"><img src="assets/arrow-bflp.svg" width="14" height="14" alt=""></span>
@@ -710,7 +825,7 @@
               <li class="app-row group/row" data-app="qa-uko" data-name="QA Uko" data-order="16" data-keywords="quality assurance mutu audit qa">
                 <span class="app-tile bg-[#f3d7e0]" data-app-icon><img src="assets/panel-wallet-others.svg" width="20" height="20" alt=""></span>
                 <span class="app-text">
-                  <span class="app-name"><a href="#" class="app-link" data-app-link>QA Uko</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan QA Uko" title="Sematkan ke Favorit"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
+                  <span class="app-name"><a href="#" class="app-link" data-app-link>QA Uko</a><button type="button" class="pin-toggle" data-pin aria-pressed="false" aria-label="Sematkan QA Uko" title="Sematkan"><img src="assets/fav-pin.svg" width="14" height="14" alt=""></button></span>
                   <span class="app-desc">Sistem penjaminan mutu (Quality Assurance)</span>
                 </span>
                 <span class="app-go bg-[#f3d7e0]" aria-hidden="true"><img src="assets/arrow-others.svg" width="14" height="14" alt=""></span>
@@ -723,7 +838,7 @@
 
     <!-- Ajukan akses (64:1236) -->
     <section class="px-5 pt-10 md:px-10" aria-labelledby="ajukan-title">
-      <div class="ajukan-panel mx-auto flex max-w-[1200px] flex-col items-start gap-[18px] rounded-[32px] px-[21.5px] py-[23.5px] sm:flex-row sm:items-center sm:pl-[29.5px] sm:pr-[25.5px]">
+      <div id="ajukan" class="ajukan-panel target-ring scroll-mt-6 mx-auto flex max-w-[1200px] flex-col items-start gap-[18px] rounded-[32px] px-[21.5px] py-[23.5px] sm:flex-row sm:items-center sm:pl-[29.5px] sm:pr-[25.5px]">
         <span class="flex size-[52px] shrink-0 items-center justify-center rounded-[18px] bg-white">
           <img src="assets/icon-circle-plus.svg" width="24" height="24" alt="">
         </span>

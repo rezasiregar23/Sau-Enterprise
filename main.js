@@ -25,6 +25,13 @@
   const KEY_PINS = "sau-portal:pins";
   const KEY_OPENED = "sau-portal:last-opened";
 
+  const el = (tag, className, text) => {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text != null) node.textContent = text;
+    return node;
+  };
+
   // Run `done` once el's own animation ends, or after `ms` if it never does
   // (animation skipped, element hidden, tab in the background…).
   function afterAnimation(el, ms, done) {
@@ -39,6 +46,17 @@
     const onEnd = (event) => event.target === el && finish();
     const timer = window.setTimeout(finish, ms);
     el.addEventListener("animationend", onEnd);
+  }
+
+  // (Re)start a one-shot animation class on el; only the latest run removes it.
+  const replays = new WeakMap();
+  function replay(el, className, ms) {
+    const run = {};
+    replays.set(el, run);
+    el.classList.remove(className);
+    void el.offsetWidth;
+    el.classList.add(className);
+    afterAnimation(el, ms, () => replays.get(el) === run && el.classList.remove(className));
   }
 
   /* ------------------------------------------------------------------
@@ -71,6 +89,8 @@
     m.root.addEventListener("focusout", (event) => {
       if (isOpen(m) && event.relatedTarget && !m.root.contains(event.relatedTarget)) closeMenu(m);
     });
+    // Clicking a link inside a dropdown closes it (delegated: the bell menu is re-rendered).
+    m.panel.addEventListener("click", (event) => event.target.closest("a") && closeMenu(m));
   });
   document.addEventListener("click", (event) => {
     if (!event.target.closest("[data-menu]")) closeAllMenus();
@@ -80,11 +100,9 @@
     const open = menus.find(isOpen);
     if (open) closeMenu(open, true);
   });
-  // Clicking a link inside a dropdown closes it.
-  menus.forEach((m) => $$("a", m.panel).forEach((a) => a.addEventListener("click", () => closeMenu(m))));
 
   /* ------------------------------------------------------------------
-   * Toast (pin / unpin feedback, with undo)
+   * Toast (feedback with undo)
    * ------------------------------------------------------------------ */
   const toast = $("[data-toast]");
   const toastText = $("[data-toast-text]");
@@ -93,10 +111,11 @@
   let toastTimer = 0;
   let toastUndo = null;
 
-  function showToast(message, { pinned, undo }) {
+  function showToast(message, { icon, light = false, undo }) {
     window.clearTimeout(toastTimer);
     toastText.textContent = message;
-    toastIcon.src = pinned ? "assets/fav-pin.svg" : "assets/fav-pin-white.svg";
+    toastIcon.src = icon;
+    toastIcon.classList.toggle("toast-icon--light", light);
     toastUndo = undo;
     toastAction.hidden = !undo;
     // Restart the entrance animation when a toast replaces another one.
@@ -123,34 +142,13 @@
   const panelsGrid = $("#app-panels");
   const panels = $$("#app-panels > [data-category]");
   const rows = $$("#app-panels [data-app]");
-  const THEME_GRAD = {
-    sdm: "grad-mysau",
-    mobilitas: "grad-moover",
-    keuangan: "grad-saupay",
-    assessment: "grad-pink",
-    recruitment: "grad-violet",
-    others: "grad-rose",
-  };
-
   const apps = new Map(
-    rows.map((row) => {
-      const panel = row.closest("[data-category]");
-      const app = {
-        id: row.dataset.app,
-        row,
-        name: row.dataset.name,
-        category: panel.dataset.category,
-        categoryLabel: $("h3", panel).textContent.trim(),
-        desc: $(".app-desc", row).textContent.trim(),
-        href: $("[data-app-link]", row).getAttribute("href"),
-        pinButton: $("[data-pin]", row),
-      };
-      return [app.id, app];
-    })
+    rows.map((row) => [row.dataset.app, { id: row.dataset.app, row, name: row.dataset.name, pinButton: $("[data-pin]", row) }])
   );
 
   /* ------------------------------------------------------------------
    * "Terakhir dibuka": remember when each app was opened
+   * (from the list, the hero orbit, tasks and notifications)
    * ------------------------------------------------------------------ */
   const lastOpened = store.get(KEY_OPENED, {});
   document.addEventListener("click", (event) => {
@@ -163,99 +161,18 @@
   });
 
   /* ------------------------------------------------------------------
-   * Pin / unpin → "Favorit Harian Anda"
+   * Pin / unpin (the "Disematkan" filter)
    * ------------------------------------------------------------------ */
-  const favList = $("[data-fav-list]");
-  const favEmpty = $("[data-fav-empty]");
   const DEFAULT_PINS = ["mysau", "moover", "saupay"];
   const stored = store.get(KEY_PINS, DEFAULT_PINS);
   let pins = (Array.isArray(stored) ? stored : DEFAULT_PINS).filter((id, i, all) => apps.has(id) && all.indexOf(id) === i);
-
-  const el = (tag, className, text) => {
-    const node = document.createElement(tag);
-    if (className) node.className = className;
-    if (text != null) node.textContent = text;
-    return node;
-  };
-  const img = (src, w, h) => {
-    const node = el("img");
-    Object.assign(node, { src, width: w, height: h, alt: "" });
-    return node;
-  };
-
-  // Same markup as the default cards in index.html.
-  function buildFavCard(app) {
-    const { row } = app;
-    const solid = row.dataset.favVariant === "solid";
-    const grad = row.dataset.favGrad || THEME_GRAD[app.category];
-
-    const li = el("li", "fav-item");
-    li.dataset.fav = app.id;
-    const card = el("div", `fav-card ${solid ? "fav-card--solid" : "fav-card--glass"}`);
-    if (!solid) card.dataset.theme = app.category;
-
-    // Icon: the Figma app tile when there is one, otherwise the icon from the list row.
-    let tile;
-    if (row.dataset.favIcon) {
-      tile = el("span", `fav-tile ${solid ? "tile--glass" : grad}`);
-      const size = row.dataset.favIcon.includes("orbit-") ? 22 : 24;
-      tile.append(img(row.dataset.favIcon, size, size));
-    } else {
-      const icon = $("[data-app-icon]", row).cloneNode(true);
-      icon.removeAttribute("data-app-icon");
-      if (icon.classList.contains("app-tile")) {
-        icon.classList.replace("app-tile", "fav-tile");
-        tile = icon;
-      } else {
-        tile = el("span", "fav-tile fav-tile--logo");
-        tile.append(icon);
-      }
-    }
-
-    const text = el("span", "fav-text");
-    const link = el("a", "fav-link", app.name);
-    link.href = app.href;
-    link.dataset.appLink = app.id;
-    text.append(el("span", "fav-chip", app.categoryLabel), link, el("span", "fav-desc", row.dataset.favDesc || app.desc));
-
-    const pin = el("button", "fav-pin");
-    pin.type = "button";
-    pin.dataset.unpin = app.id;
-    pin.setAttribute("aria-label", `Lepas sematan ${app.name}`);
-    pin.title = "Lepas sematan";
-    pin.append(img(solid ? "assets/fav-pin-white.svg" : "assets/fav-pin.svg", 14, 14));
-
-    const go = el("span", `fav-go ${solid ? "bg-white" : grad}`);
-    go.setAttribute("aria-hidden", "true");
-    go.append(img(solid ? "assets/fav-arrow-blue.svg" : "assets/fav-arrow-white.svg", 16, 16));
-
-    card.append(tile, text, pin, go);
-    li.append(card);
-    return li;
-  }
-
-  // Keep existing cards (and focus) where possible; add/remove/reorder the rest.
-  function renderFavs(enteringId) {
-    const existing = new Map($$("[data-fav]", favList).map((li) => [li.dataset.fav, li]));
-    existing.forEach((li, id) => !pins.includes(id) && li.remove());
-    pins.forEach((id) => {
-      const li = existing.get(id) || buildFavCard(apps.get(id));
-      if (id === enteringId && !reduceMotion.matches) {
-        li.classList.add("is-entering");
-        afterAnimation(li.firstElementChild, 600, () => li.classList.remove("is-entering"));
-      }
-      favList.append(li);
-    });
-    favList.hidden = pins.length === 0;
-    favEmpty.hidden = pins.length > 0;
-  }
 
   function syncPinButtons() {
     apps.forEach((app) => {
       const on = pins.includes(app.id);
       app.row.dataset.pinned = String(on);
       app.pinButton.setAttribute("aria-pressed", String(on));
-      app.pinButton.title = on ? "Lepas sematan" : "Sematkan ke Favorit";
+      app.pinButton.title = on ? "Lepas sematan" : "Sematkan";
     });
   }
 
@@ -269,7 +186,6 @@
       pins.splice(was, 1);
     }
     store.set(KEY_PINS, pins);
-    renderFavs(on ? id : null);
     syncPinButtons();
     updateCounts();
     applyList();
@@ -279,35 +195,16 @@
       app.pinButton.classList.add("is-popping");
     }
     if (notify) {
-      showToast(on ? `${app.name} disematkan ke Favorit` : `${app.name} dilepas dari Favorit`, {
-        pinned: on,
+      showToast(on ? `${app.name} disematkan` : `${app.name} dilepas dari sematan`, {
+        icon: on ? "assets/fav-pin.svg" : "assets/fav-pin-white.svg",
         undo: () => setPinned(id, !on, { at: was > -1 ? was : undefined, notify: false }),
       });
     }
   }
 
-  // Pin toggles in the list.
   apps.forEach((app) =>
     app.pinButton.addEventListener("click", () => setPinned(app.id, !pins.includes(app.id)))
   );
-
-  // Unpin from a Favorit card: animate the card out, then remove it.
-  favList.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-unpin]");
-    if (!button) return;
-    const id = button.dataset.unpin;
-    const li = button.closest(".fav-item");
-    const hadFocus = li.contains(document.activeElement);
-    const next = li.nextElementSibling || li.previousElementSibling;
-    const finish = () => {
-      setPinned(id, false);
-      // Keep keyboard users in place: next card's pin, or the section heading.
-      if (hadFocus) ((next && $("[data-unpin]", next)) || $("#favorit-title")).focus();
-    };
-    if (reduceMotion.matches) return finish();
-    li.classList.add("is-leaving");
-    afterAnimation(li, 320, finish);
-  });
 
   /* ------------------------------------------------------------------
    * Jelajahi Semua Aplikasi: search, filter, sort, view
@@ -317,9 +214,10 @@
   const noResults = $("#no-results");
   const searchInput = $("#q");
   const searchForm = $("#search-form");
+  const appSearch = $("#app-q");
   const state = { filter: "all", query: "", sort: "recent" };
 
-  const normalize = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, " ").trim();
+  const normalize = (s) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
   rows.forEach((row) => {
     const panel = row.closest("[data-category]");
     row.dataset.haystack = normalize(
@@ -362,7 +260,7 @@
     const emptyPins = !searching && state.filter === "pinned";
     $("[data-empty-title]", noResults).textContent = emptyPins ? "Belum ada aplikasi yang disematkan" : "Aplikasi tidak ditemukan";
     $("[data-empty-text]", noResults).textContent = emptyPins
-      ? "Tekan ikon pin di samping nama aplikasi untuk menyematkannya ke Favorit."
+      ? "Tekan ikon pin di samping nama aplikasi untuk menyematkannya."
       : "Coba kata kunci lain, atau ajukan akses ke aplikasi yang Anda butuhkan.";
   }
 
@@ -383,6 +281,13 @@
       });
       items.forEach((item) => list.appendChild(item));
     });
+  }
+
+  // One query for both search boxes (hero and "Cari aplikasi").
+  function setQuery(value) {
+    state.query = value;
+    if (appSearch.value !== value) appSearch.value = value;
+    applyList();
   }
 
   filterChips.forEach((chip) =>
@@ -415,24 +320,24 @@
   // Hero search filters the app list and jumps to it.
   searchForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    state.query = searchInput.value;
     state.filter = "all";
-    applyList();
+    setQuery(searchInput.value);
     scrollToApps();
   });
   // Clearing the box clears the results.
   searchInput.addEventListener("input", () => {
-    if (!searchInput.value.trim() && state.query) {
-      state.query = "";
-      applyList();
-    }
+    if (!searchInput.value.trim() && state.query) setQuery("");
+  });
+  // "Cari aplikasi" filters as you type; Escape clears it.
+  appSearch.addEventListener("input", () => setQuery(appSearch.value));
+  appSearch.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && appSearch.value) setQuery("");
   });
   $$("[data-clear-search]").forEach((button) =>
     button.addEventListener("click", () => {
-      state.query = "";
       state.filter = "all";
       searchInput.value = "";
-      applyList();
+      setQuery("");
     })
   );
 
@@ -453,193 +358,312 @@
     searchInput.focus();
   });
 
-  renderFavs();
   syncPinButtons();
   updateCounts();
   applySort();
   applyList();
 
   /* ------------------------------------------------------------------
-   * Berita: stacked deck — autoplay, arrows, dots, keys, drag/swipe
+   * Tugas Saya: week calendar (Monday–Sunday)
+   * Task rows carry data-date; the strip shows one dot per task (max 3).
    * ------------------------------------------------------------------ */
-  const carousel = $("[data-carousel]");
-  if (carousel) {
-    const deck = $("[data-deck]", carousel);
-    const cards = $$("[data-slide]", carousel);
-    const dots = $$("[data-dot]", carousel);
-    const n = cards.length;
-    const INTERVAL = 5000;
-    let index = 0;
-    let timer = 0;
-    let deadline = 0;
-    let remaining = INTERVAL;
-    const pauses = new Set();
-
-    carousel.style.setProperty("--interval", `${INTERVAL}ms`);
-
-    const posOf = (i) => (i - index + n) % n;
-    function layout() {
-      cards.forEach((card, i) => {
-        const front = posOf(i) === 0;
-        if (!card.hasAttribute("data-leaving")) card.dataset.pos = String(posOf(i));
-        card.inert = !front;
-        card.setAttribute("aria-hidden", String(!front));
-      });
-      dots.forEach((dot, i) => dot.setAttribute("aria-current", String(i === index)));
-    }
-
-    // The old front card swipes away (staying on top until it's gone), then
-    // slots in at the back of the deck.
-    function sendToBack(card) {
-      card.removeAttribute("data-entering");
-      card.toggleAttribute("data-leaving", true);
-      afterAnimation(card, 600, () => {
-        if (!card.hasAttribute("data-leaving")) return; // brought back by "prev" meanwhile
-        card.removeAttribute("data-leaving");
-        card.style.transition = "none";
-        card.style.opacity = "0";
-        card.style.removeProperty("--drag-x");
-        card.style.removeProperty("--drag-r");
-        card.dataset.pos = String(posOf(cards.indexOf(card)));
-        void card.offsetWidth;
-        card.style.transition = "";
-        card.style.opacity = "";
-      });
-    }
-
-    function go(target, { user = false } = {}) {
-      const next = (target + n) % n;
-      if (next === index) return;
-      const from = cards[index];
-      const forward = (next - index + n) % n <= n / 2;
-      index = next;
-      if (reduceMotion.matches) {
-        layout();
-      } else if (forward) {
-        sendToBack(from);
-        layout();
-      } else {
-        // Going back: the card comes in from the left on top of the deck.
-        const to = cards[index];
-        to.style.transition = "none";
-        to.removeAttribute("data-leaving");
-        to.toggleAttribute("data-entering", true);
-        layout();
-        void to.offsetWidth;
-        to.style.transition = "";
-        afterAnimation(to, 650, () => to.removeAttribute("data-entering"));
-      }
-      deck.setAttribute("aria-live", user ? "polite" : "off");
-      restartTimer();
-    }
-
-    // Autoplay with a progress bar in the active dot; pausing keeps the time left.
-    const running = () => !reduceMotion.matches && pauses.size === 0;
-    function restartTimer() {
-      remaining = INTERVAL;
-      dots.forEach((d) => $(".news-dot", d).classList.remove("is-running"));
-      void carousel.offsetWidth;
-      if (!reduceMotion.matches) $(".news-dot", dots[index]).classList.add("is-running");
-      schedule();
-    }
-    function schedule() {
-      window.clearTimeout(timer);
-      carousel.toggleAttribute("data-paused", !running());
-      if (!running()) return;
-      deadline = Date.now() + remaining;
-      timer = window.setTimeout(() => go(index + 1), remaining);
-    }
-    function pause(reason) {
-      if (pauses.has(reason)) return;
-      if (running()) remaining = Math.max(0, deadline - Date.now());
-      pauses.add(reason);
-      schedule();
-    }
-    function resume(reason) {
-      if (!pauses.delete(reason)) return;
-      schedule();
-    }
-
-    $("[data-prev]", carousel).addEventListener("click", () => go(index - 1, { user: true }));
-    $("[data-next]", carousel).addEventListener("click", () => go(index + 1, { user: true }));
-    dots.forEach((dot, i) => dot.addEventListener("click", () => go(i, { user: true })));
-    carousel.addEventListener("keydown", (event) => {
-      if (event.key === "ArrowLeft") go(index - 1, { user: true });
-      if (event.key === "ArrowRight") go(index + 1, { user: true });
-    });
-
-    carousel.addEventListener("pointerenter", (e) => e.pointerType === "mouse" && pause("hover"));
-    carousel.addEventListener("pointerleave", (e) => e.pointerType === "mouse" && resume("hover"));
-    // Keyboard focus pauses; a mouse click on an arrow or dot doesn't.
-    carousel.addEventListener("focusin", (e) => e.target.matches(":focus-visible") && pause("focus"));
-    carousel.addEventListener("focusout", (e) => !carousel.contains(e.relatedTarget) && resume("focus"));
-    document.addEventListener("visibilitychange", () => (document.hidden ? pause("hidden") : resume("hidden")));
-
-    // Drag / swipe the front card: it follows the pointer, and past the
-    // threshold flies off (next) or makes way for the previous card.
-    let drag = null;
-    let suppressClick = false;
-    deck.addEventListener("pointerdown", (event) => {
-      if (event.button !== 0) return;
-      const card = event.target.closest("[data-slide]");
-      if (!card || card.dataset.pos !== "0" || card.hasAttribute("data-leaving")) return;
-      drag = { card, id: event.pointerId, x: event.clientX, y: event.clientY, dx: 0, active: false };
-    });
-    deck.addEventListener("pointermove", (event) => {
-      if (!drag || event.pointerId !== drag.id) return;
-      const dx = event.clientX - drag.x;
-      const dy = event.clientY - drag.y;
-      if (!drag.active) {
-        if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) return (drag = null); // vertical scroll
-        if (Math.abs(dx) < 8) return;
-        drag.active = true;
-        drag.card.setPointerCapture(event.pointerId);
-        drag.card.toggleAttribute("data-dragging", true);
-        pause("drag");
-      }
-      drag.dx = dx;
-      drag.card.style.translate = `${dx}px 0`;
-      drag.card.style.rotate = `${dx * 0.015}deg`;
-    });
-    const endDrag = (event) => {
-      if (!drag || event.pointerId !== drag.id) return;
-      const { card, dx, active } = drag;
-      drag = null;
-      if (!active) return;
-      suppressClick = true;
-      card.removeAttribute("data-dragging");
-      card.style.translate = "";
-      card.style.rotate = "";
-      const threshold = Math.min(90, deck.clientWidth * 0.18);
-      if (dx < -threshold && !reduceMotion.matches) {
-        card.style.setProperty("--drag-x", `${dx}px`);
-        card.style.setProperty("--drag-r", `${dx * 0.015}deg`);
-        go(index + 1, { user: true });
-      } else if (dx < -threshold) {
-        go(index + 1, { user: true });
-      } else if (dx > threshold) {
-        go(index - 1, { user: true });
-      }
-      resume("drag");
+  const cal = $("[data-calendar]");
+  if (cal) {
+    const DAY_NAMES = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+    const MONTHS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    const pad = (n) => String(n).padStart(2, "0");
+    const toKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    const fromKey = (key) => {
+      const [y, m, d] = key.split("-").map(Number);
+      return new Date(y, m - 1, d);
     };
-    deck.addEventListener("pointerup", endDrag);
-    deck.addEventListener("pointercancel", endDrag);
-    // A drag isn't a click on the banner link.
-    deck.addEventListener(
-      "click",
-      (event) => {
-        if (!suppressClick) return;
-        suppressClick = false;
-        event.preventDefault();
-        event.stopPropagation();
-      },
-      true
-    );
-    deck.addEventListener("dragstart", (event) => event.preventDefault());
+    const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+    const mondayOf = (d) => addDays(d, -((d.getDay() + 6) % 7));
+    const weekIndex = (d) => (d.getDay() + 6) % 7;
+    const longDate = (d) => `${DAY_NAMES[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 
-    layout();
-    restartTimer();
-    reduceMotion.addEventListener?.("change", restartTimer);
+    // data-today pins the demo to the Figma date; without it, the real date is used.
+    const now = new Date();
+    const today = cal.dataset.today ? fromKey(cal.dataset.today) : new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const strip = $("[data-cal-days]", cal);
+    const days = $$("[data-cal-day]", cal);
+    const tasks = $$("[data-task]", cal);
+    const taskPanel = $("[data-task-panel]", cal);
+    const taskEmpty = $("[data-task-empty]", cal);
+    const monthLabel = $("[data-cal-month]", cal);
+    const dateLabel = $("[data-cal-label]", cal);
+    const countLabel = $("[data-cal-count]", cal);
+    const weekTotal = $("[data-week-total]", cal);
+
+    const perDay = new Map();
+    tasks.forEach((task) => perDay.set(task.dataset.date, (perDay.get(task.dataset.date) || 0) + 1));
+    days.forEach((day, i) => day.style.setProperty("--i", String(i)));
+
+    let weekStart = mondayOf(today);
+    let selected = today;
+    let slideTimer = 0;
+
+    const setText = (node, text, animate) => {
+      if (node.textContent === text) return;
+      node.textContent = text;
+      if (animate && !reduceMotion.matches) replay(node, "text-swap", 500);
+    };
+
+    function renderWeek(slide) {
+      let total = 0;
+      days.forEach((day, i) => {
+        const date = addDays(weekStart, i);
+        const key = toKey(date);
+        const n = perDay.get(key) || 0;
+        total += n;
+        day.dataset.date = key;
+        $(".cal-day__date", day).textContent = String(date.getDate());
+        $(".cal-dots", day).replaceChildren(...Array.from({ length: Math.min(n, 3) }, () => el("i")));
+        day.setAttribute("aria-label", `${longDate(date)}, ${n ? `${n} tugas` : "tidak ada tugas"}`);
+        day.toggleAttribute("data-today", key === toKey(today));
+      });
+      const offset = Math.round((weekStart - mondayOf(today)) / (7 * 864e5));
+      const when = { "-1": "minggu lalu", 0: "minggu ini", 1: "minggu depan" }[offset] || "tugas";
+      setText(weekTotal, `${total} ${when}`, Boolean(slide));
+
+      if (!slide || reduceMotion.matches) return;
+      window.clearTimeout(slideTimer);
+      strip.removeAttribute("data-slide");
+      void strip.offsetWidth;
+      strip.dataset.slide = slide;
+      slideTimer = window.setTimeout(() => strip.removeAttribute("data-slide"), 700);
+    }
+
+    // Show the tasks of the selected day. The list slides in from the
+    // direction of travel and its height eases to the new size.
+    function showTasks(direction) {
+      const key = toKey(selected);
+      const list = tasks.filter((task) => task.dataset.date === key);
+      setText(countLabel, list.length ? `${list.length} tugas` : "Tidak ada tugas", direction !== 0);
+      const update = () => {
+        tasks.forEach((task) => (task.hidden = task.dataset.date !== key));
+        taskEmpty.hidden = list.length > 0;
+      };
+      if (direction === 0 || reduceMotion.matches) return update();
+
+      const from = taskPanel.offsetHeight;
+      update();
+      const to = taskPanel.offsetHeight;
+      taskPanel.style.setProperty("--from-x", `${direction * 18}px`);
+      (list.length ? list : [taskEmpty]).forEach((node, i) => {
+        node.style.setProperty("--i", String(i));
+        replay(node, "list-enter", 1000);
+      });
+      if (from !== to) {
+        taskPanel.style.overflowY = "clip";
+        const anim = taskPanel.animate([{ height: `${from}px` }, { height: `${to}px` }], {
+          duration: 380,
+          easing: "cubic-bezier(0.2, 0.7, 0.2, 1)",
+        });
+        anim.onfinish = anim.oncancel = () => (taskPanel.style.overflowY = "");
+      }
+    }
+
+    function select(date, { focus = false, animate = true } = {}) {
+      const index = weekIndex(date);
+      if (animate && date.getTime() === selected.getTime()) {
+        if (focus) days[index].focus();
+        return;
+      }
+      const direction = animate ? Math.sign(date - selected) : 0;
+      const week = mondayOf(date);
+      selected = date;
+      if (week.getTime() !== weekStart.getTime()) {
+        const slide = animate ? (week > weekStart ? "next" : "prev") : null;
+        weekStart = week;
+        renderWeek(slide);
+      }
+      days.forEach((day, i) => {
+        day.setAttribute("aria-selected", String(i === index));
+        day.tabIndex = i === index ? 0 : -1;
+      });
+      strip.style.setProperty("--sel", String(index));
+      setText(monthLabel, `${MONTHS[date.getMonth()]} ${date.getFullYear()}`, animate);
+      setText(dateLabel, longDate(date), animate);
+      showTasks(direction);
+      if (focus) days[index].focus();
+    }
+
+    days.forEach((day) => day.addEventListener("click", () => select(fromKey(day.dataset.date))));
+    $("[data-cal-prev]", cal).addEventListener("click", () => select(addDays(selected, -7)));
+    $("[data-cal-next]", cal).addEventListener("click", () => select(addDays(selected, 7)));
+    $("[data-cal-today]", cal).addEventListener("click", () => select(today));
+
+    // Keyboard (tabs pattern): ←/→ a day, Home/End start/end of the week, PageUp/PageDown a week.
+    strip.addEventListener("keydown", (event) => {
+      const i = weekIndex(selected);
+      const step = { ArrowLeft: -1, ArrowRight: 1, Home: -i, End: 6 - i, PageUp: -7, PageDown: 7 }[event.key];
+      if (step === undefined) return;
+      event.preventDefault();
+      select(addDays(selected, step), { focus: true });
+    });
+
+    // Swipe the strip sideways on touch screens to change week.
+    let swipe = null;
+    strip.addEventListener("pointerdown", (event) => {
+      if (event.pointerType !== "mouse") swipe = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    });
+    strip.addEventListener("pointerup", (event) => {
+      if (!swipe || event.pointerId !== swipe.id) return;
+      const dx = event.clientX - swipe.x;
+      const dy = event.clientY - swipe.y;
+      swipe = null;
+      if (Math.abs(dx) >= 40 && Math.abs(dx) > Math.abs(dy) * 1.5) select(addDays(selected, dx < 0 ? 7 : -7));
+    });
+    strip.addEventListener("pointercancel", () => (swipe = null));
+
+    renderWeek(null);
+    select(today, { animate: false });
+  }
+
+  /* ------------------------------------------------------------------
+   * Notifikasi: filters, mark as read, and the navbar bell menu
+   * ------------------------------------------------------------------ */
+  const notifPanel = $("[data-notifs]");
+  if (notifPanel) {
+    const notifs = $$("[data-notif]", notifPanel);
+    const filters = $$("[data-notif-filter]", notifPanel);
+    const markAll = $("[data-notif-mark-all]", notifPanel);
+    const empty = $("[data-notif-empty]", notifPanel);
+    const menuList = $("[data-notif-menu]");
+    const menuEmpty = $("[data-notif-menu-empty]");
+    const badge = $("[data-notif-badge]");
+    const bell = $('[aria-controls="menu-notif"]');
+    const EMPTY_TEXT = {
+      all: "Belum ada notifikasi.",
+      read: "Belum ada notifikasi yang sudah dibaca.",
+      unread: "Semua notifikasi sudah dibaca.",
+    };
+    const leaving = new Map();
+    let filter = "all";
+
+    const isRead = (row) => row.hasAttribute("data-read");
+    const fits = (row) => filter === "all" || (filter === "read") === isRead(row);
+
+    function setRead(row, read) {
+      row.toggleAttribute("data-read", read);
+      $("[data-notif-state]", row).textContent = read ? "Sudah dibaca" : "Belum dibaca";
+    }
+
+    // A row that no longer fits the filter folds away, then hides.
+    function leave(row) {
+      row.style.overflow = "hidden";
+      const anim = row.animate(
+        [
+          { opacity: 1, height: `${row.offsetHeight}px` },
+          { opacity: 0, height: "0px", paddingTop: "0px", paddingBottom: "0px", borderWidth: "0px", marginBottom: "-10px" },
+        ],
+        { duration: 320, easing: "cubic-bezier(0.4, 0, 0.2, 1)", fill: "forwards" }
+      );
+      leaving.set(row, anim);
+      anim.onfinish = () => {
+        leaving.delete(row);
+        row.hidden = !fits(row);
+        row.style.overflow = "";
+        anim.cancel();
+        refreshEmpty();
+      };
+    }
+
+    function refreshEmpty() {
+      const any = notifs.some((row) => !row.hidden);
+      empty.textContent = EMPTY_TEXT[filter];
+      if (empty.hidden === any) return;
+      empty.hidden = any;
+      if (!any && !reduceMotion.matches) replay(empty, "list-enter", 700);
+    }
+
+    // Apply the filter. `enter` replays every visible row's entrance (filter
+    // change); `changed` rows that drop out of the filter fold away.
+    function render({ changed = [], enter = false } = {}) {
+      let i = 0;
+      notifs.forEach((row) => {
+        if (fits(row)) {
+          const anim = leaving.get(row);
+          if (anim) {
+            leaving.delete(row);
+            anim.onfinish = null;
+            anim.cancel();
+            row.style.overflow = "";
+          }
+          const appearing = row.hidden || Boolean(anim);
+          row.hidden = false;
+          if ((enter || appearing) && !reduceMotion.matches) {
+            row.style.setProperty("--i", String(i));
+            replay(row, "list-enter", 900);
+          }
+          i += 1;
+        } else if (!row.hidden && !leaving.has(row)) {
+          if (changed.includes(row) && !reduceMotion.matches) leave(row);
+          else row.hidden = true;
+        }
+      });
+      refreshEmpty();
+      syncMenu();
+    }
+
+    // Unread count, "Tandai dibaca" state and the bell menu.
+    function syncMenu() {
+      const unread = notifs.filter((row) => !isRead(row));
+      badge.textContent = `${unread.length} baru`;
+      badge.hidden = unread.length === 0;
+      bell.setAttribute("aria-label", unread.length ? `Notifikasi, ${unread.length} baru` : "Notifikasi");
+      markAll.setAttribute("aria-disabled", String(unread.length === 0));
+      menuEmpty.hidden = unread.length > 0;
+      menuList.replaceChildren(
+        ...unread.map((row) => {
+          const link = $(".notif-link", row);
+          const item = el("a", "menu-item items-start");
+          item.href = link.getAttribute("href");
+          item.addEventListener("click", () => markRead([row]));
+          const text = el("span", "flex min-w-0 flex-col gap-[3px]");
+          text.append(
+            el("span", "text-[13px] font-bold leading-[18px]", link.textContent),
+            el("span", "text-[11px] font-medium leading-[15px] text-muted", `${$(".notif-desc", row).textContent} · ${$(".notif-time", row).textContent}`)
+          );
+          item.append($(".notif-icon", row).cloneNode(true), text);
+          const li = el("li");
+          li.append(item);
+          return li;
+        })
+      );
+    }
+
+    function markRead(list, { notify = false } = {}) {
+      const changed = list.filter((row) => !isRead(row));
+      if (!changed.length) return;
+      changed.forEach((row) => setRead(row, true));
+      render({ changed });
+      if (notify) {
+        showToast(`${changed.length} notifikasi ditandai sudah dibaca`, {
+          icon: "assets/notif-check.svg",
+          light: true,
+          undo: () => {
+            changed.forEach((row) => setRead(row, false));
+            render({ changed });
+          },
+        });
+      }
+    }
+
+    filters.forEach((button) =>
+      button.addEventListener("click", () => {
+        if (button.dataset.notifFilter === filter) return;
+        filter = button.dataset.notifFilter;
+        filters.forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
+        render({ enter: true });
+      })
+    );
+    markAll.addEventListener("click", () => markRead(notifs, { notify: true }));
+    // Opening a notification marks it as read.
+    notifs.forEach((row) => $(".notif-link", row).addEventListener("click", () => markRead([row])));
+
+    render();
   }
 
   /* ------------------------------------------------------------------
